@@ -285,8 +285,6 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
       <div class="kpi za"><span class="lbl">💸 Costo total</span><span class="v" id="k-total">—</span></div>
       <div class="kpi okc"><span class="lbl">✅ Ya pagado</span><span class="v" id="k-pagado">—</span></div>
       <div class="kpi tz"><span class="lbl">⏳ Por pagar</span><span class="v" id="k-pend">—</span></div>
-      <div class="kpi sc"><span class="lbl">🎁 Fondos</span><span class="v" id="k-fondos">—</span></div>
-      <div class="kpi fly"><span class="lbl">⚖️ Saldo</span><span class="v" id="k-saldo">—</span></div>
     </div>
     <p class="take" id="takeaway">Cargando el presupuesto…</p>
     <div class="card rainbow">
@@ -355,7 +353,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
       <div class="kpi tz"><span class="lbl">⏳ Por pagar</span><span class="v" id="p-pend">—</span></div>
     </div>
     <div class="card rainbow">
-      <div class="card-head"><h2>📈 Avance de pagos</h2><button class="btn ghost add" id="edit-fondos" type="button">🎁 Editar fondos</button></div>
+      <div class="card-head"><h2>📈 Avance de pagos</h2></div>
       <div class="progress" id="pay-progress"></div>
       <p class="muted" id="pay-note">—</p>
     </div>
@@ -611,7 +609,6 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   };
   const editBtn = (coll, row) => { const b = el('button', 'edit', '✎'); b.type = 'button'; b.setAttribute('aria-label', 'Editar ' + SCHEMA[coll].name); b.addEventListener('click', () => openEditor(coll, row)); return b; };
   document.querySelectorAll('[data-add]').forEach((b) => b.addEventListener('click', () => openEditor(b.dataset.add, null)));
-  $('#edit-fondos').addEventListener('click', () => openEditor('config', {...S.fondos}));
 
   /* ---------- pestañas ---------- */
   const TABS = [...document.querySelectorAll('.tab')].map((t) => t.dataset.tab);
@@ -683,12 +680,9 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   function renderResumen() {
     const T = totals(); const ready = S.loaded.pagos;
     set('#k-total', ready ? clp(T.total) : '—'); set('#k-pagado', ready ? clp(T.pagado) : '—'); set('#k-pend', ready ? clp(T.pend) : '—');
-    set('#k-fondos', S.loaded.config ? clp(T.fondos) : '—'); set('#k-saldo', ready && S.loaded.config ? clp(T.saldo) : '—');
-    $('#k-saldo').className = 'v ' + (T.saldo < 0 ? 'bad' : 'good');
     const tk = $('#takeaway');
     if (ready) {
-      tk.replaceChildren(document.createTextNode('Llevan pagado el '), el('b', '', Math.round(T.pct * 100) + '%'), document.createTextNode(' del viaje. Quedan '), el('b', '', clp(T.pend)), document.createTextNode(' por pagar y '),
-        document.createTextNode(T.saldo < 0 ? 'el costo total supera los fondos en ' : 'los fondos alcanzan con un margen de '), el('b', '', clp(Math.abs(T.saldo))), document.createTextNode('.'));
+      tk.replaceChildren(document.createTextNode('Llevan pagado el '), el('b', '', Math.round(T.pct * 100) + '%'), document.createTextNode(' del viaje. Quedan '), el('b', '', clp(T.pend)), document.createTextNode(' por pagar.'));
     }
     // ruta
     const route = $('#route'); route.replaceChildren();
@@ -793,9 +787,9 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   function renderPresupuesto() {
     const T = totals(); const ready = S.loaded.pagos;
     set('#p-ppto', ready ? clp(T.ppto) : '—'); set('#p-total', ready ? clp(T.total) : '—'); set('#p-pagado', ready ? clp(T.pagado) : '—'); set('#p-pend', ready ? clp(T.pend) : '—');
-    const pr = $('#pay-progress'); pr.replaceChildren(); const base = Math.max(T.total, T.fondos, 1);
+    const pr = $('#pay-progress'); pr.replaceChildren(); const base = Math.max(T.total, 1);
     [[T.pagado, 'var(--ok)'], [T.pend, 'var(--pend)']].forEach(([v, c]) => { const s = el('span'); s.style.width = (v / base * 100) + '%'; s.style.background = c; pr.appendChild(s); });
-    set('#pay-note', ready ? `${Math.round(T.pct * 100)}% pagado · fondos ${clp(T.fondos)} (propio ${clp(n(S.fondos.propio))} + regalos ${clp(n(S.fondos.regalos))}) · saldo ${clp(T.saldo)}` : '—');
+    set('#pay-note', ready ? `${Math.round(T.pct * 100)}% pagado · ${clp(T.pagado)} de ${clp(T.total)}` : '—');
     // quién ha pagado
     const per = {Tarjeta: 0, Mario: 0, Trini: 0, Efectivo: 0}; const cnt = {};
     S.pagos.forEach((r) => abonos(r).forEach((a) => { per[a.quien] = (per[a.quien] || 0) + n(a.monto); cnt[a.quien] = (cnt[a.quien] || 0) + 1; }));
