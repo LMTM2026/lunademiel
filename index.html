@@ -1,0 +1,969 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Luna de Miel · LMTM</title>
+<meta name="theme-color" content="#E4572E">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Luna de Miel">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Figtree:wght@400;500;600;700&display=swap">
+<style>
+*, *::before, *::after { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+:root { padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { margin: 0; }
+img { max-width: 100%; }
+/* Layout: portada en degradado de atardecer, pestañas pegajosas, secciones en tarjetas; todo editable */
+:root {
+  --bg: #FBF7F2; --panel: #FFFFFF; --ink: #22181A; --muted: #6E625F; --line: #EADFD6; --soft: #F3ECE5;
+  --za: #E4572E; --tz: #E8912B; --sc: #12A8A3; --fly: #7E6CC4; --ok: #1F9D5A; --warn: #C27A0E; --bad: #C8352B;
+  --pend: #F2B640; --tint: #ffffff;
+  --display: "Bricolage Grotesque", "Avenir Next", system-ui, sans-serif;
+  --body: "Figtree", "Segoe UI", system-ui, sans-serif;
+  --r: 18px;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #16110F; --panel: #211A17; --ink: #F5ECE6; --muted: #B3A49C; --line: #3A2F2A; --soft: #2A221E;
+  --ok: #4CC984; --warn: #F0B04A; --bad: #F06B5E; --tint: #000000; color-scheme: dark; } }
+:root[data-theme="dark"] {
+  --bg: #16110F; --panel: #211A17; --ink: #F5ECE6; --muted: #B3A49C; --line: #3A2F2A; --soft: #2A221E;
+  --ok: #4CC984; --warn: #F0B04A; --bad: #F06B5E; --tint: #000000; color-scheme: dark; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); font-size: 15px; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
+.wrap { max-width: 72rem; margin-inline: auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); padding-block: 16px 48px; display: grid; gap: 22px; font-variant-numeric: tabular-nums; }
+h1, h2, h3 { font-family: var(--display); margin: 0; text-wrap: balance; }
+h2 { font-size: 1.15rem; font-weight: 700; display: flex; gap: 8px; align-items: center; }
+h3 { font-size: 1rem; font-weight: 700; }
+p { margin: 0; }
+.muted { color: var(--muted); font-size: 13px; }
+button { font: inherit; }
+button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible { outline: 2px solid var(--sc); outline-offset: 2px; }
+
+/* Portada */
+.hero { position: relative; overflow: hidden; border-radius: 24px; padding: clamp(1.4rem, 4vw, 2.6rem); color: #fff; display: grid; gap: 10px;
+  background:
+    radial-gradient(circle at 86% 20%, rgba(255,236,170,.95) 0 6%, rgba(255,214,120,.35) 11%, transparent 25%),
+    linear-gradient(115deg, #B93A1B 0%, #E4572E 22%, #F29E38 48%, #18A8A3 78%, #0E5E6F 100%);
+  box-shadow: 0 16px 40px -20px rgba(14,94,111,.6); }
+.hero::after { content: ""; position: absolute; inset: auto 0 0 0; height: 40%; pointer-events: none;
+  background: radial-gradient(ellipse 60% 100% at 18% 100%, rgba(40,20,10,.35), transparent 70%), radial-gradient(ellipse 45% 80% at 64% 100%, rgba(10,40,50,.3), transparent 70%); }
+.hero > * { position: relative; z-index: 1; }
+.kicker { text-transform: uppercase; letter-spacing: .14em; font-size: 12px; font-weight: 700; opacity: .92; }
+.hero h1 { font-size: clamp(2.1rem, 6vw, 3.6rem); font-weight: 800; line-height: 1; letter-spacing: -.02em; }
+.hero .sub { font-size: 16px; opacity: .95; }
+.hero .sub b { font-weight: 700; }
+.stops { display: flex; flex-wrap: wrap; gap: 6px; }
+.stop { background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.38); border-radius: 999px; padding: 4px 11px; font-size: 13px; }
+.hero-row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+.cd { display: inline-flex; gap: 8px; align-items: center; padding: 8px 16px; border-radius: 999px; font-weight: 700; background: #fff; color: #B23A17; box-shadow: 0 6px 18px -8px rgba(0,0,0,.4); }
+.lock { background: rgba(255,255,255,.18); color: #fff; border: 1px solid rgba(255,255,255,.4); border-radius: 999px; padding: 6px 12px; cursor: pointer; font-size: 13px; font-weight: 600; }
+
+/* Pestañas */
+.tabs { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5; background: var(--bg); padding-block: 8px; }
+.tab { white-space: nowrap; border: 1px solid var(--line); background: var(--panel); color: var(--muted); border-radius: 999px; padding: 8px 14px; cursor: pointer; font-size: 13.5px; font-weight: 600; }
+.tab:hover { color: var(--ink); }
+.tab[aria-selected="true"] { background: linear-gradient(115deg, var(--za), var(--tz) 55%, var(--sc)); color: #fff; border-color: transparent; box-shadow: 0 6px 16px -8px rgba(228,87,46,.7); }
+.page { display: grid; gap: 16px; }
+.grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); }
+
+.card { --acc: var(--sc); background: var(--panel); border: 1px solid var(--line); border-radius: var(--r); padding: 20px; display: grid; gap: 12px; align-content: start; min-width: 0; position: relative; overflow: hidden; }
+.card::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 4px; background: var(--acc); }
+.card.rainbow::before { background: linear-gradient(90deg, var(--za), var(--tz), var(--sc)); }
+.card-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+
+/* KPIs */
+.kpis { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9.5rem), 1fr)); }
+@media (max-width: 420px) { .kpi { padding: 12px 14px; } }
+.kpi { --acc: var(--sc); border-radius: var(--r); padding: 14px 18px; display: grid; gap: 4px; border: 1px solid color-mix(in srgb, var(--acc) 35%, var(--line));
+  background: linear-gradient(160deg, color-mix(in srgb, var(--acc) 20%, var(--panel)), var(--panel) 75%); }
+.kpi .lbl { font-size: 13px; color: var(--muted); font-weight: 600; }
+.kpi .v { white-space: nowrap; font-family: var(--display); font-size: clamp(1.1rem, 5.2vw, 1.6rem); font-weight: 700; line-height: 1.1; color: color-mix(in srgb, var(--acc) 70%, var(--ink)); }
+.kpi .v.bad { color: var(--bad); }
+.kpi .v.good { color: var(--ok); }
+.za { --acc: var(--za); } .tz { --acc: var(--tz); } .sc { --acc: var(--sc); } .fly { --acc: var(--fly); } .okc { --acc: var(--ok); }
+.take { padding: 14px 18px; border-radius: 14px; border-left: 4px solid var(--tz); background: color-mix(in srgb, var(--tz) 11%, var(--panel)); }
+.take b { font-weight: 700; }
+
+/* Gráficos */
+.bars { display: grid; gap: 12px; position: relative; }
+.bar-row { display: grid; grid-template-columns: minmax(6rem, 9rem) 1fr auto; gap: 10px; align-items: center; font-size: 13px; }
+.track { height: 16px; display: flex; border-radius: 999px; overflow: hidden; background: var(--soft); }
+.track span { height: 100%; }
+.bar-row > span:last-child { font-weight: 700; }
+.legend { display: flex; gap: 14px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.sw { display: inline-block; width: 11px; height: 11px; border-radius: 50%; margin-right: 6px; vertical-align: -1px; }
+.route { position: relative; display: grid; gap: 8px; }
+.cells { display: grid; gap: 3px; }
+.cells div { height: 46px; border-radius: 8px; display: grid; place-items: center; font-size: 15px; transition: transform .12s; }
+.cells div:hover { transform: translateY(-3px); }
+.runs { display: grid; gap: 3px; font-size: 12px; font-weight: 700; }
+.runs div { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; border-top: 3px solid; padding-top: 4px; }
+.tip { position: absolute; pointer-events: none; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; box-shadow: 0 10px 24px -10px rgba(0,0,0,.35); padding: 6px 10px; font-size: 12.5px; z-index: 6; max-width: 16rem; }
+.tip .t { font-weight: 700; color: var(--muted); }
+
+/* Chips */
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { border: 1px solid var(--line); background: var(--panel); color: var(--ink); border-radius: 999px; padding: 6px 12px; cursor: pointer; font-size: 13px; font-weight: 600; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.chip.za[aria-pressed="true"] { background: var(--za); border-color: var(--za); color: #fff; }
+.chip.tz[aria-pressed="true"] { background: var(--tz); border-color: var(--tz); color: #fff; }
+.chip.sc[aria-pressed="true"] { background: var(--sc); border-color: var(--sc); color: #fff; }
+.toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
+
+/* Botones */
+.btn { border: 0; border-radius: 999px; padding: 8px 14px; cursor: pointer; font-weight: 700; font-size: 13.5px; background: linear-gradient(115deg, var(--za), var(--tz)); color: #fff; box-shadow: 0 6px 14px -8px rgba(228,87,46,.8); }
+.btn.ghost { background: var(--soft); color: var(--ink); box-shadow: none; }
+.btn.danger { background: var(--bad); }
+.edit { border: 1px solid var(--line); background: var(--panel); color: var(--muted); border-radius: 999px; width: 30px; height: 30px; cursor: pointer; display: inline-grid; place-items: center; font-size: 13px; flex: none; }
+.edit:hover { color: var(--ink); border-color: var(--ink); }
+.ro .edit, .ro .add, .ro .toggle-hint { display: none; }
+
+/* Días */
+.days { display: grid; gap: 10px; }
+.day { --acc: var(--sc); display: grid; grid-template-columns: 4.6rem 1fr; border-radius: var(--r); overflow: hidden; border: 1px solid color-mix(in srgb, var(--acc) 30%, var(--line)); background: var(--panel); }
+.day.today { box-shadow: 0 0 0 3px var(--acc), 0 10px 26px -14px var(--acc); }
+.day .when { display: grid; align-content: center; justify-items: center; gap: 2px; padding: 12px 6px; color: #fff; text-align: center; background: linear-gradient(170deg, var(--acc), color-mix(in srgb, var(--acc) 62%, #000)); }
+.day .emo { font-size: 22px; }
+.day .n { font-family: var(--display); font-size: 1.9rem; font-weight: 800; line-height: 1; }
+.day .d { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; opacity: .92; }
+.day .body { display: grid; gap: 8px; min-width: 0; padding: 14px 16px; background: linear-gradient(90deg, color-mix(in srgb, var(--acc) 9%, var(--panel)), var(--panel) 60%); }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.row .grow { flex: 1 1 auto; min-width: 0; }
+.tag { font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 999px; background: color-mix(in srgb, var(--acc, var(--sc)) 18%, transparent); color: color-mix(in srgb, var(--acc, var(--sc)) 72%, var(--ink)); }
+.tag.hoy { background: var(--acc); color: #fff; }
+dl.kv { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 4px 10px; font-size: 13px; }
+dl.kv dt { color: var(--muted); white-space: nowrap; }
+dl.kv dd { margin: 0; overflow-wrap: anywhere; }
+
+/* Vuelos */
+.flights { display: grid; gap: 10px; }
+.flight { display: grid; gap: 10px; border-radius: var(--r); padding: 16px 20px; border: 1px solid color-mix(in srgb, var(--fly) 30%, var(--line));
+  background: linear-gradient(135deg, color-mix(in srgb, var(--fly) 14%, var(--panel)), var(--panel) 55%, color-mix(in srgb, var(--sc) 10%, var(--panel))); }
+.route-f { display: grid; grid-template-columns: auto 1fr auto; gap: 14px; align-items: center; }
+.time { font-family: var(--display); font-size: 1.9rem; font-weight: 700; line-height: 1; }
+.line { height: 2px; background: repeating-linear-gradient(90deg, var(--fly) 0 6px, transparent 6px 11px); position: relative; }
+.line span { position: absolute; left: 50%; top: -11px; transform: translateX(-50%); background: var(--panel); padding: 1px 8px; border-radius: 999px; font-size: 11px; color: var(--muted); white-space: nowrap; border: 1px solid var(--line); max-width: 100%; overflow: hidden; text-overflow: ellipsis; }
+.meta { display: flex; flex-wrap: wrap; gap: 6px; font-size: 13px; }
+.meta span { background: var(--soft); border-radius: 8px; padding: 3px 9px; color: var(--muted); }
+.meta b { color: var(--ink); }
+.pill { font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; border: 0; cursor: default; }
+.pill.ok { background: color-mix(in srgb, var(--ok) 18%, transparent); color: var(--ok); }
+.pill.warn { background: color-mix(in srgb, var(--pend) 25%, transparent); color: var(--warn); }
+button.pill { cursor: pointer; }
+
+/* Hoteles */
+.gantt { position: relative; display: grid; gap: 8px; }
+.g-row { display: grid; grid-template-columns: minmax(7rem, 11rem) 1fr; gap: 10px; align-items: center; font-size: 13px; }
+.g-row .lab { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: 600; }
+.g-track { position: relative; height: 24px; background: var(--soft); border-radius: 8px; }
+.g-track span { position: absolute; top: 0; height: 100%; border-radius: 999px; }
+.g-axis { display: grid; grid-template-columns: minmax(7rem, 11rem) 1fr; gap: 10px; font-size: 11px; color: var(--muted); }
+.g-ticks { position: relative; height: 14px; }
+.g-ticks span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+.hotels { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); }
+.hotel { --acc: var(--sc); border-radius: var(--r); border: 1px solid color-mix(in srgb, var(--acc) 30%, var(--line)); padding: 16px; display: grid; gap: 8px; background: linear-gradient(160deg, color-mix(in srgb, var(--acc) 12%, var(--panel)), var(--panel) 70%); }
+
+/* Tablas */
+.tablebox { max-height: 34rem; overflow: auto; border-radius: 12px; }
+table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+th { position: sticky; top: 0; background: var(--panel); text-align: left; font-weight: 700; color: var(--muted); padding: 8px; border-bottom: 2px solid var(--line); cursor: pointer; white-space: nowrap; text-transform: uppercase; font-size: 11px; letter-spacing: .05em; }
+td { padding: 9px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
+tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
+.num { text-align: right; white-space: nowrap; }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
+.search { font: inherit; font-size: 13.5px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); color: var(--ink); min-width: 0; flex: 1 1 12rem; }
+.progress { height: 14px; border-radius: 999px; overflow: hidden; display: flex; background: var(--soft); }
+.progress span { height: 100%; }
+
+/* Pendientes */
+.checks { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr)); }
+.checks ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.checks li { display: grid; grid-template-columns: 1.7rem 1fr auto; gap: 2px 8px; align-items: start; }
+.box { width: 1.45rem; height: 1.45rem; border-radius: 7px; display: grid; place-items: center; font-size: 12px; font-weight: 800; border: 2px solid var(--line); background: transparent; color: #fff; cursor: pointer; padding: 0; }
+.box.ok { background: var(--ok); border-color: var(--ok); }
+.box.warn { background: var(--pend); border-color: var(--pend); }
+.ro .box { cursor: default; }
+.checks li.done .t { text-decoration: line-through; color: var(--muted); }
+.checks li .n { grid-column: 2; font-size: 12.5px; color: var(--muted); }
+
+/* Tips */
+.tips { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 18rem), 1fr)); }
+.tips dl { margin: 0; display: grid; gap: 10px; font-size: 13.5px; }
+.tips dt { font-weight: 700; display: flex; justify-content: space-between; gap: 6px; align-items: center; }
+.tips dd { margin: 0; color: var(--muted); }
+
+/* Editor */
+.overlay { position: fixed; inset: 0; z-index: 20; background: rgba(20,12,10,.55); display: grid; place-items: center; padding: max(16px, env(safe-area-inset-top, 0px)) max(16px, env(safe-area-inset-right, 0px)) max(16px, env(safe-area-inset-bottom, 0px)) max(16px, env(safe-area-inset-left, 0px)); }
+.sheet { background: var(--panel); color: var(--ink); border-radius: 22px; width: min(100%, 34rem); max-height: 100%; overflow: auto; padding: 22px; display: grid; gap: 14px; box-shadow: 0 24px 60px -20px rgba(0,0,0,.6); }
+.form { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); }
+.field { display: grid; gap: 4px; }
+.field.wide { grid-column: 1 / -1; }
+.field label { font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.field input, .field select, .field textarea { font: inherit; font-size: 15px; padding: 9px 11px; border: 1px solid var(--line); border-radius: 12px; background: var(--bg); color: var(--ink); min-width: 0; }
+.field textarea { min-height: 4.5rem; resize: vertical; }
+.sheet-actions { display: flex; gap: 8px; justify-content: space-between; flex-wrap: wrap; }
+.payers { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); }
+.payer { --acc: var(--sc); border-radius: 14px; padding: 12px 14px; display: grid; gap: 2px; background: color-mix(in srgb, var(--acc) 13%, var(--panel)); border: 1px solid color-mix(in srgb, var(--acc) 35%, var(--line)); }
+.payer .who { font-weight: 700; font-size: 13px; display: flex; gap: 6px; align-items: center; }
+.payer .amt { white-space: nowrap; font-family: var(--display); font-weight: 700; font-size: clamp(1rem, 4.6vw, 1.3rem); color: color-mix(in srgb, var(--acc) 75%, var(--ink)); }
+.minibar { height: 6px; border-radius: 999px; background: var(--soft); overflow: hidden; margin-top: 4px; display: flex; min-width: 4rem; }
+.minibar span { height: 100%; }
+.pill.part { background: color-mix(in srgb, var(--sc) 20%, transparent); color: color-mix(in srgb, var(--sc) 75%, var(--ink)); }
+.abonos { display: grid; gap: 6px; }
+.abono { display: grid; grid-template-columns: auto 1fr auto auto; gap: 10px; align-items: center; padding: 8px 12px; border-radius: 12px; background: var(--soft); font-size: 13.5px; }
+.abono .m { font-weight: 700; }
+.chip-who { font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 999px; color: #fff; }
+.sumbox { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.sumbox div { background: var(--soft); border-radius: 12px; padding: 8px 10px; display: grid; gap: 2px; }
+.sumbox b { font-family: var(--display); font-size: 1.05rem; }
+.toast { position: fixed; left: 50%; bottom: calc(18px + env(safe-area-inset-bottom, 0px)); transform: translateX(-50%); background: var(--ink); color: var(--bg); padding: 10px 16px; border-radius: 999px; font-weight: 700; font-size: 13.5px; z-index: 30; }
+
+/* Acceso */
+.gate { position: fixed; inset: 0; z-index: 40; display: grid; place-items: center; padding: 16px; overflow: auto;
+  background: radial-gradient(circle at 80% 18%, rgba(255,236,170,.9) 0 5%, rgba(255,214,120,.3) 10%, transparent 24%), linear-gradient(140deg, #B93A1B, #E4572E 25%, #F29E38 50%, #18A8A3 78%, #0E5E6F); }
+.gate-card { width: min(100%, 23rem); background: rgba(255,255,255,.95); color: #22181A; border-radius: 24px; padding: 26px; display: grid; gap: 14px; box-shadow: 0 30px 60px -24px rgba(0,0,0,.6); }
+.gate-card h1 { font-size: 2rem; font-weight: 800; line-height: 1; }
+.gate-card p { color: #6E625F; font-size: 14px; }
+.gate-card label { font-size: 12px; font-weight: 700; color: #6E625F; text-transform: uppercase; letter-spacing: .05em; }
+.gate-card input { font: inherit; font-size: 16px; padding: 11px 13px; border: 1px solid #EADFD6; border-radius: 12px; background: #FBF7F2; color: #22181A; width: 100%; box-sizing: border-box; }
+.gate-card .err { color: #C8352B; font-size: 13.5px; font-weight: 600; }
+.empty { padding: 24px; text-align: center; color: var(--muted); border: 2px dashed var(--line); border-radius: var(--r); }
+
+@media (max-width: 560px) { .hide-narrow { display: none; } .day { grid-template-columns: 3.6rem 1fr; } .cells div { font-size: 0; } .time { font-size: 1.5rem; } }
+@media (prefers-reduced-motion: no-preference) {
+  .page:not([hidden]) > * { animation: rise .35s cubic-bezier(.2,.7,.2,1) both; }
+  @keyframes rise { from { opacity: .4; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+}
+.datos { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+.sync { font-size: 12.5px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.4); }
+</style>
+</head>
+<body>
+
+<div class="gate" id="gate" hidden>
+  <form class="gate-card" id="gate-form" autocomplete="off">
+    <span class="kicker" style="color:#E4572E">🌍 Luna de miel 2026</span>
+    <h1>África y Seychelles</h1>
+    <p id="g-msg">Ingresa para ver y editar el viaje.</p>
+    <div style="display:grid;gap:6px"><label for="g-user">Usuario</label><input id="g-user" autocomplete="username"></div>
+    <div style="display:grid;gap:6px"><label for="g-pass">Clave</label><input id="g-pass" type="password" autocomplete="current-password"></div>
+    <p class="err" id="g-err" hidden>Usuario o clave incorrectos.</p>
+    <button class="btn" type="submit">Entrar</button>
+  </form>
+</div>
+
+<div class="wrap" id="app">
+  <header class="hero" id="top">
+    <span class="kicker">🌍 Luna de miel 2026</span>
+    <h1>África y Seychelles</h1>
+    <p class="sub" id="trip-sub">Cape Town, safari en Tanzania, Zanzíbar y Seychelles</p>
+    <div class="stops"><span class="stop">🏙️ Cape Town</span><span class="stop">🦁 Safari en Tanzania</span><span class="stop">🌴 Zanzíbar</span><span class="stop">🐢 Seychelles</span></div>
+    <div class="hero-row"><span class="cd" id="countdown">⏳ Cargando…</span><span style="display:flex;gap:8px;align-items:center"><span class="sync" id="sync">● En línea</span><button class="lock" id="logout" type="button">🔒 Salir</button></span></div>
+  </header>
+
+  <nav class="tabs" role="tablist" aria-label="Secciones">
+    <button class="tab" role="tab" data-tab="resumen">✨ Resumen</button>
+    <button class="tab" role="tab" data-tab="itinerario">🗺️ Itinerario</button>
+    <button class="tab" role="tab" data-tab="vuelos">✈️ Vuelos</button>
+    <button class="tab" role="tab" data-tab="hoteles">🏨 Hoteles</button>
+    <button class="tab" role="tab" data-tab="presupuesto">💰 Presupuesto</button>
+    <button class="tab" role="tab" data-tab="actividades">🤿 Actividades</button>
+    <button class="tab" role="tab" data-tab="pendientes">✅ Pendientes</button>
+    <button class="tab" role="tab" data-tab="tips">💡 Tips</button>
+  </nav>
+
+  <section class="page" id="resumen">
+    <div class="kpis">
+      <div class="kpi za"><span class="lbl">💸 Costo total</span><span class="v" id="k-total">—</span></div>
+      <div class="kpi okc"><span class="lbl">✅ Ya pagado</span><span class="v" id="k-pagado">—</span></div>
+      <div class="kpi tz"><span class="lbl">⏳ Por pagar</span><span class="v" id="k-pend">—</span></div>
+      <div class="kpi sc"><span class="lbl">🎁 Fondos</span><span class="v" id="k-fondos">—</span></div>
+      <div class="kpi fly"><span class="lbl">⚖️ Saldo</span><span class="v" id="k-saldo">—</span></div>
+    </div>
+    <p class="take" id="takeaway">Cargando el presupuesto…</p>
+    <div class="card rainbow">
+      <h2>🧭 La ruta, día a día</h2>
+      <p class="muted">Cada bloque es un día. Pasa el dedo o el cursor para ver el detalle.</p>
+      <div class="route" id="route"></div>
+      <div class="legend"><span><i class="sw" style="background:var(--za)"></i>Ciudad</span><span><i class="sw" style="background:var(--tz)"></i>Safari</span><span><i class="sw" style="background:var(--sc)"></i>Playa</span><span><i class="sw" style="background:var(--fly)"></i>Vuelo</span></div>
+    </div>
+    <div class="grid">
+      <div class="card za"><h2>📊 Gasto por categoría</h2><p class="muted">Monto real en CLP, pagado y por pagar.</p><div class="bars" id="cat-bars"></div>
+        <div class="legend"><span><i class="sw" style="background:var(--ok)"></i>Pagado</span><span><i class="sw" style="background:var(--pend)"></i>Por pagar</span></div></div>
+      <div class="card sc"><h2>💳 Quién ha pagado</h2><p class="muted">Pagos registrados en CLP y lo que falta por pagar.</p><div class="bars" id="who-bars"></div></div>
+    </div>
+    <div class="card fly">
+      <h2>⚙️ Datos</h2>
+      <p class="muted">Descarga un respaldo de todo el viaje o carga el archivo de datos iniciales.</p>
+      <div class="datos">
+        <button class="btn ghost" type="button" id="export">⬇️ Descargar respaldo</button>
+        <label class="btn ghost add" for="import-file" style="cursor:pointer">⬆️ Importar datos</label>
+        <input type="file" id="import-file" accept="application/json,.json" hidden>
+      </div>
+      <p class="muted" id="import-msg" hidden></p>
+    </div>
+  </section>
+
+  <section class="page" id="itinerario" hidden>
+    <div class="card rainbow"><h2>📍 Hoy en el viaje</h2><div id="today"></div></div>
+    <div class="toolbar">
+      <div class="chips" id="pais-chips">
+        <button class="chip" data-pais="" aria-pressed="true">🌍 Todo</button>
+        <button class="chip za" data-pais="Sudáfrica" aria-pressed="false">🇿🇦 Sudáfrica</button>
+        <button class="chip tz" data-pais="Tanzania" aria-pressed="false">🇹🇿 Tanzania</button>
+        <button class="chip sc" data-pais="Seychelles" aria-pressed="false">🇸🇨 Seychelles</button>
+      </div>
+      <button class="btn add" data-add="itinerario" type="button">＋ Agregar día</button>
+    </div>
+    <div class="days" id="days"></div>
+  </section>
+
+  <section class="page" id="vuelos" hidden>
+    <div class="kpis">
+      <div class="kpi fly"><span class="lbl">✈️ Tramos</span><span class="v" id="k-tramos">—</span></div>
+      <div class="kpi okc"><span class="lbl">🎟️ Comprados</span><span class="v" id="k-comprados">—</span></div>
+      <div class="kpi sc"><span class="lbl">💸 Total vuelos (2 pax)</span><span class="v" id="k-vuelos">—</span></div>
+    </div>
+    <div class="toolbar"><p class="muted">Horarios en hora local. (+1) = llega al día siguiente.</p><button class="btn add" data-add="vuelos" type="button">＋ Agregar vuelo</button></div>
+    <div class="flights" id="flights"></div>
+  </section>
+
+  <section class="page" id="hoteles" hidden>
+    <div class="kpis">
+      <div class="kpi fly"><span class="lbl">🌙 Noches en hotel</span><span class="v" id="k-noches">—</span></div>
+      <div class="kpi tz"><span class="lbl">🛏️ Estadías</span><span class="v" id="k-estadias">—</span></div>
+      <div class="kpi sc"><span class="lbl">💸 Total alojamiento</span><span class="v" id="k-aloj">—</span></div>
+    </div>
+    <div class="card rainbow"><h2>📅 Calendario de estadías</h2><div class="gantt" id="gantt"></div></div>
+    <div class="toolbar"><h2>🏨 Hoteles</h2><button class="btn add" data-add="hoteles" type="button">＋ Agregar hotel</button></div>
+    <div class="hotels" id="hotels"></div>
+  </section>
+
+  <section class="page" id="presupuesto" hidden>
+    <div class="kpis">
+      <div class="kpi fly"><span class="lbl">📝 Presupuesto</span><span class="v" id="p-ppto">—</span></div>
+      <div class="kpi za"><span class="lbl">💸 Costo real</span><span class="v" id="p-total">—</span></div>
+      <div class="kpi okc"><span class="lbl">✅ Pagado</span><span class="v" id="p-pagado">—</span></div>
+      <div class="kpi tz"><span class="lbl">⏳ Por pagar</span><span class="v" id="p-pend">—</span></div>
+    </div>
+    <div class="card rainbow">
+      <div class="card-head"><h2>📈 Avance de pagos</h2><button class="btn ghost add" id="edit-fondos" type="button">🎁 Editar fondos</button></div>
+      <div class="progress" id="pay-progress"></div>
+      <p class="muted" id="pay-note">—</p>
+    </div>
+    <div class="card fly">
+      <h2>👥 Quién ha pagado</h2>
+      <p class="muted">Suma de los pagos registrados en cada ítem.</p>
+      <div class="payers" id="payers"></div>
+    </div>
+    <div class="card sc">
+      <div class="card-head"><h2>🧾 Todos los ítems</h2><button class="btn add" data-add="pagos" type="button">＋ Agregar gasto</button></div>
+      <div class="toolbar" style="justify-content:flex-start">
+        <input class="search" id="pay-q" type="search" placeholder="Buscar ítem, categoría o quién pagó" aria-label="Buscar">
+        <div class="chips" id="est-chips">
+          <button class="chip" data-est="" aria-pressed="true">Todos</button>
+          <button class="chip" data-est="Pagado" aria-pressed="false">✅ Pagados</button>
+          <button class="chip" data-est="Parcial" aria-pressed="false">◐ Parciales</button>
+          <button class="chip" data-est="Pendiente" aria-pressed="false">⏳ Pendientes</button>
+        </div>
+      </div>
+      <p class="muted toggle-hint">Toca el estado de un ítem para registrar un pago: quién pagó y cuánto.</p>
+      <div class="tablebox">
+        <table>
+          <thead><tr>
+            <th data-sort="item">Ítem</th><th data-sort="categoria" class="hide-narrow">Categoría</th>
+            <th data-sort="presupuesto_clp" class="num hide-narrow">Presupuesto</th><th data-sort="real_clp" class="num">Real</th><th data-sort="pagado_clp" class="num">Pagado</th><th data-sort="pend_clp" class="num hide-narrow">Por pagar</th><th data-sort="estado">Estado</th><th></th>
+          </tr></thead>
+          <tbody id="pay-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" id="actividades" hidden>
+    <div class="kpis">
+      <div class="kpi sc"><span class="lbl">🤿 Actividades</span><span class="v" id="a-n">—</span></div>
+      <div class="kpi za"><span class="lbl">⭐ Must do</span><span class="v" id="a-must">—</span></div>
+      <div class="kpi okc"><span class="lbl">🎟️ Reservadas o hechas</span><span class="v" id="a-res">—</span></div>
+      <div class="kpi tz"><span class="lbl">💵 Costo est. (2 pax)</span><span class="v" id="a-usd">—</span></div>
+    </div>
+    <div class="card sc">
+      <div class="card-head"><h2>🐬 Tours y actividades</h2><button class="btn add" data-add="actividades" type="button">＋ Agregar actividad</button></div>
+      <p class="muted toggle-hint">Toca el estado para pasarlo a reservado, hecho o por reservar.</p>
+      <div class="tablebox">
+        <table>
+          <thead><tr><th>Actividad</th><th>Destino</th><th class="hide-narrow">Cuándo</th><th class="num">USD pp</th><th>Estado</th><th></th></tr></thead>
+          <tbody id="act-body"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <section class="page" id="pendientes" hidden>
+    <div class="card rainbow">
+      <div class="card-head"><h2>🧳 Antes de partir</h2><button class="btn add" data-add="pendientes" type="button">＋ Agregar pendiente</button></div>
+      <div class="progress" id="todo-progress"></div>
+      <p class="muted" id="todo-note">—</p>
+    </div>
+    <div class="checks" id="checks"></div>
+  </section>
+
+  <section class="page" id="tips" hidden>
+    <div class="toolbar"><p class="muted">Guía práctica del viaje.</p><button class="btn add" data-add="tips" type="button">＋ Agregar tip</button></div>
+    <div class="tips" id="tips-list"></div>
+  </section>
+</div>
+
+<div class="overlay" id="editor" hidden>
+  <form class="sheet" id="editor-form" novalidate>
+    <h2 id="editor-title">Editar</h2>
+    <div class="form" id="editor-fields"></div>
+    <div class="sheet-actions">
+      <button class="btn danger" type="button" id="editor-del">Eliminar</button>
+      <div style="display:flex;gap:8px;margin-left:auto">
+        <button class="btn ghost" type="button" id="editor-cancel">Cancelar</button>
+        <button class="btn" type="submit">Guardar</button>
+      </div>
+    </div>
+  </form>
+</div>
+<div class="overlay" id="paysheet" hidden>
+  <form class="sheet" id="pay-form" novalidate>
+    <div class="row"><h2 class="grow" id="pay-title">Pagos</h2><button class="edit" type="button" id="pay-close" aria-label="Cerrar">✕</button></div>
+    <div class="sumbox"><div><span class="muted">Costo real</span><b id="ps-real">—</b></div><div><span class="muted">Pagado</span><b id="ps-paid">—</b></div><div><span class="muted">Por pagar</span><b id="ps-pend">—</b></div></div>
+    <div class="abonos" id="ps-list"></div>
+    <h3>➕ Registrar un pago</h3>
+    <div class="form">
+      <div class="field"><label for="ab-quien">Quién pagó</label><select id="ab-quien"><option>Tarjeta</option><option>Mario</option><option>Trini</option><option>Efectivo</option></select></div>
+      <div class="field"><label for="ab-monto">Monto CLP</label><input id="ab-monto" type="number" step="any" min="0" inputmode="numeric"></div>
+      <div class="field"><label for="ab-fecha">Fecha</label><input id="ab-fecha" type="date"></div>
+      <div class="field"><label for="ab-nota">Nota</label><input id="ab-nota" type="text" placeholder="Opcional"></div>
+    </div>
+    <p class="err" id="ab-err" style="color:var(--bad);font-weight:600;font-size:13.5px" hidden>Ingresa un monto mayor que cero.</p>
+    <div class="sheet-actions">
+      <button class="btn ghost" type="button" id="ab-todo">Completar lo que falta</button>
+      <button class="btn" type="submit">Guardar pago</button>
+    </div>
+  </form>
+</div>
+<div class="toast" id="toast" hidden></div>
+
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.14.1/firebase-app-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.14.1/firebase-auth-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/firebase@10.14.1/firebase-firestore-compat.js"></script>
+<script>
+(() => {
+  /* ---------- utilidades ---------- */
+  const $ = (s) => document.querySelector(s);
+  const set = (sel, text) => { const e = $(sel); if (e) e.textContent = text; };
+  const el = (tag, cls, text) => { const e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; };
+  const MES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+  const DIA = ['dom','lun','mar','mié','jue','vie','sáb'];
+  const nf = new Intl.NumberFormat('es-CL', {maximumFractionDigits: 0});
+  const n = (x) => { const v = Number(x); return isFinite(v) ? v : 0; };
+  const clp = (v) => (v < 0 ? '−$' : '$') + nf.format(Math.abs(Math.round(v)));
+  const clpM = (v) => '$' + (Math.abs(v) / 1e6).toLocaleString('es-CL', {maximumFractionDigits: 1}) + ' M';
+  const date = (s) => new Date(String(s || '').slice(0, 10) + 'T12:00:00');
+  const valid = (s) => /^\d{4}-\d{2}-\d{2}/.test(String(s || ''));
+  const fd = (s) => { if (!valid(s)) return '—'; const d = date(s); return d.getDate() + ' ' + MES[d.getMonth()]; };
+  const fdl = (s) => { if (!valid(s)) return '—'; const d = date(s); return DIA[d.getDay()] + ' ' + d.getDate() + ' ' + MES[d.getMonth()]; };
+  const todayISO = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0'); };
+  const COL = {Ciudad: 'var(--za)', Safari: 'var(--tz)', Playa: 'var(--sc)', Vuelo: 'var(--fly)', 'Sudáfrica': 'var(--za)', Tanzania: 'var(--tz)', Seychelles: 'var(--sc)', Chile: 'var(--fly)'};
+  const color = (k) => COL[k] || 'var(--fly)';
+  const emoji = (d) => d.tipo === 'Vuelo' ? '✈️' : d.tipo === 'Safari' ? '🦁' : d.tipo === 'Ciudad' ? '🏙️' : /digue/i.test(d.destino || '') ? '🚲' : d.pais === 'Seychelles' ? '🐢' : '🌴';
+  const byDate = (k) => (a, b) => String(a[k] || '').localeCompare(String(b[k] || ''));
+  const store = {get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }, del(k) { try { localStorage.removeItem(k); } catch (e) {} }};
+  let toastTimer;
+  const toast = (msg) => { const t = $('#toast'); t.textContent = msg; t.hidden = false; clearTimeout(toastTimer); toastTimer = setTimeout(() => { t.hidden = true; }, 2200); };
+  const tip = (box, ev, title, lines) => {
+    let t = box.querySelector(':scope > .tip');
+    if (!t) { t = el('div', 'tip'); box.appendChild(t); }
+    t.replaceChildren(el('div', 't', title), ...lines.filter(Boolean).map((l) => el('div', '', l)));
+    t.hidden = false;
+    const r = box.getBoundingClientRect();
+    let x = ev.clientX - r.left + 12; const y = ev.clientY - r.top + 14;
+    if (x + t.offsetWidth > r.width) x = Math.max(0, ev.clientX - r.left - t.offsetWidth - 12);
+    t.style.left = x + 'px'; t.style.top = y + 'px';
+  };
+  const untip = (box) => { const t = box.querySelector(':scope > .tip'); if (t) t.hidden = true; };
+  const hover = (node, box, title, lines) => { node.addEventListener('pointermove', (ev) => tip(box, ev, title, lines)); node.addEventListener('pointerleave', () => untip(box)); };
+
+  /* ---------- Firebase ---------- */
+  // ⚠️ Pega aquí la configuración de tu proyecto de Firebase (Configuración del proyecto → Tus apps → Web).
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyAWBFyoOYK9FFPeFq6Y6-58Hqr9IgXsdmI",
+    authDomain: "lmtm-lunademiel.firebaseapp.com",
+    projectId: "lmtm-lunademiel",
+    storageBucket: "lmtm-lunademiel.firebasestorage.app",
+    messagingSenderId: "366738042824",
+    appId: "1:366738042824:web:1b9f3897b3a635d0489afd",
+  };
+  const EMAIL_DOMAIN = 'lmtm.app'; // el usuario "LMTM" entra como lmtm@lmtm.app
+  const configured = !/PEGAR/.test(FIREBASE_CONFIG.apiKey);
+  let auth = null, fs = null;
+  const showGate = (msg) => { $('#gate').hidden = false; $('#app').setAttribute('aria-hidden', 'true'); if (msg) set('#g-msg', msg); };
+  const hideGate = () => { $('#gate').hidden = true; $('#app').removeAttribute('aria-hidden'); };
+  if (!configured || typeof firebase === 'undefined') {
+    showGate(!configured ? 'Falta pegar la configuración de Firebase en index.html.' : 'Sin conexión: no se pudo cargar la app. Conéctate y vuelve a abrirla.');
+  } else {
+    firebase.initializeApp(FIREBASE_CONFIG);
+    auth = firebase.auth(); fs = firebase.firestore();
+    fs.enablePersistence({synchronizeTabs: true}).catch(() => {});
+  }
+  const errMsg = (e) => {
+    const c = (e && e.code) || '';
+    if (/wrong-password|invalid-credential|user-not-found|invalid-email|invalid-login/.test(c)) return 'Usuario o clave incorrectos.';
+    if (/too-many-requests/.test(c)) return 'Demasiados intentos. Espera un momento y prueba de nuevo.';
+    if (/network/.test(c)) return 'Sin conexión. Para entrar la primera vez necesitas internet.';
+    return 'No se pudo entrar (' + c + ').';
+  };
+  $('#gate-form').addEventListener('submit', (e) => {
+    e.preventDefault(); if (!auth) return;
+    let u = $('#g-user').value.trim(); if (!u.includes('@')) u = u.toLowerCase() + '@' + EMAIL_DOMAIN;
+    $('#g-err').hidden = true; set('#g-msg', 'Conectando…');
+    auth.signInWithEmailAndPassword(u, $('#g-pass').value).then(() => { $('#g-pass').value = ''; })
+      .catch((err) => { set('#g-msg', 'Ingresa para ver y editar el viaje.'); set('#g-err', errMsg(err)); $('#g-err').hidden = false; });
+  });
+  $('#logout').addEventListener('click', () => { if (auth) auth.signOut(); });
+  const upd = () => set('#sync', navigator.onLine ? '● En línea' : '○ Sin conexión · se guarda al volver');
+  window.addEventListener('online', upd); window.addEventListener('offline', upd); upd();
+
+  /* ---------- esquema editable ---------- */
+  const PAISES = ['Chile', 'Sudáfrica', 'Tanzania', 'Seychelles'];
+  const SCHEMA = {
+    itinerario: {name: 'día', fields: [['dia', 'Día n°', 'number'], ['fecha', 'Fecha', 'date'], ['pais', 'País', PAISES], ['tipo', 'Tipo', ['Vuelo', 'Ciudad', 'Safari', 'Playa']], ['destino', 'Destino', 'text', 'wide'], ['am', 'Mañana', 'area'], ['pm', 'Tarde', 'area'], ['alojamiento', 'Alojamiento'], ['transporte', 'Transporte'], ['notas', 'Notas', 'area']]},
+    vuelos: {name: 'vuelo', fields: [['tramo', 'Tramo (Origen → Destino)', 'text', 'wide'], ['fecha', 'Fecha', 'date'], ['salida', 'Salida'], ['llegada', 'Llegada'], ['duracion', 'Duración'], ['escala', 'Escala'], ['agencia', 'Agencia'], ['codigo', 'Código de reserva'], ['total_clp', 'Total CLP (2 pax)', 'number'], ['estado', 'Estado', ['Comprado', 'Por confirmar', 'Pendiente']], ['notas', 'Notas', 'area']]},
+    hoteles: {name: 'hotel', fields: [['hotel', 'Hotel', 'text', 'wide'], ['zona', 'Zona'], ['pais', 'País', PAISES], ['check_in', 'Check-in', 'date'], ['check_out', 'Check-out', 'date'], ['noches', 'Noches', 'number'], ['total_clp', 'Total CLP', 'number'], ['monto_original', 'Monto en moneda original'], ['regimen', 'Régimen'], ['pagado_por', 'Pagado por'], ['notas', 'Notas / confirmación', 'area']]},
+    pagos: {name: 'gasto', fields: [['item', 'Ítem', 'text', 'wide'], ['categoria', 'Categoría', ['Vuelos', 'Alojamiento', 'Transporte', 'Actividades', 'Comidas', 'Compras', 'Visas y trámites', 'Salud', 'Seguros', 'Roaming', 'Imprevistos', 'Gastos en viaje']], ['presupuesto_clp', 'Presupuesto CLP', 'number'], ['real_clp', 'Costo real CLP', 'number'], ['notas', 'Notas', 'area']]},
+    actividades: {name: 'actividad', fields: [['actividad', 'Actividad', 'text', 'wide'], ['destino', 'Destino'], ['cuando', 'Cuándo'], ['usd_pp', 'USD por persona', 'number'], ['prioridad', 'Prioridad', ['', 'Must do']], ['estado', 'Estado', ['Por reservar', 'Reservado', 'Hecho', 'Por confirmar', 'Libre']], ['notas', 'Notas', 'area']]},
+    pendientes: {name: 'pendiente', fields: [['tarea', 'Tarea', 'text', 'wide'], ['categoria', 'Categoría', ['Documentos', 'Salud', 'Reservas', 'Antes de viajar', 'Durante el viaje']], ['estado', 'Estado', ['Pendiente', 'Por confirmar', 'Listo']], ['nota', 'Nota', 'area']]},
+    tips: {name: 'tip', fields: [['seccion', 'Sección'], ['tema', 'Tema'], ['texto', 'Texto', 'area']]},
+    config: {name: 'fondos', fields: [['propio', 'Fondos propios CLP', 'number'], ['regalos', 'Regalos CLP', 'number']]},
+  };
+  const COLLS = ['itinerario', 'vuelos', 'hoteles', 'pagos', 'actividades', 'pendientes', 'tips'];
+  const S = {loaded: {}, fondos: {propio: 0, regalos: 0}};
+  COLLS.forEach((c) => { S[c] = []; });
+  let db = null, canWrite = true;
+
+  /* ---------- editor ---------- */
+  let editing = null; let delArmed = false;
+  const openEditor = (coll, row) => {
+    if (!db || !canWrite) return;
+    const sc = SCHEMA[coll]; editing = {coll, id: row && row._id};
+    $('#editor-title').textContent = (row ? 'Editar ' : 'Agregar ') + sc.name;
+    const box = $('#editor-fields'); box.replaceChildren();
+    sc.fields.forEach(([k, label, type, wide]) => {
+      const f = el('div', 'field' + (wide || type === 'area' ? ' wide' : ''));
+      const id = 'ed-' + k; const lab = el('label', '', label); lab.htmlFor = id;
+      let input;
+      if (Array.isArray(type)) { input = el('select'); type.forEach((o) => input.appendChild(new Option(o || '—', o))); }
+      else if (type === 'area') input = el('textarea');
+      else { input = el('input'); input.type = type === 'number' ? 'number' : type === 'date' ? 'date' : 'text'; if (type === 'number') input.step = 'any'; }
+      input.id = id; input.name = k;
+      const v = row ? row[k] : '';
+      input.value = v == null ? '' : String(v);
+      if (Array.isArray(type) && row && v && !type.includes(v)) { input.appendChild(new Option(v, v)); input.value = v; }
+      f.append(lab, input); box.appendChild(f);
+    });
+    $('#editor-del').hidden = !row; delArmed = false; $('#editor-del').textContent = 'Eliminar';
+    $('#editor').hidden = false;
+    setTimeout(() => { const first = box.querySelector('input,select,textarea'); if (first) first.focus(); }, 30);
+  };
+  const closeEditor = () => { $('#editor').hidden = true; editing = null; };
+  $('#editor-cancel').addEventListener('click', closeEditor);
+  $('#editor').addEventListener('click', (e) => { if (e.target.id === 'editor') closeEditor(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('#editor').hidden) closeEditor(); });
+  const writeErr = (e) => {
+    if (e && e.code === 'permission-denied') toast('No tienes permiso para editar');
+    else if (e && e.code === 'resource-exhausted') toast('Se alcanzó el límite gratuito de Firebase por hoy');
+    else toast('No se pudo guardar. Revisa tu conexión e intenta de nuevo.');
+  };
+  $('#editor-form').addEventListener('submit', async (e) => {
+    e.preventDefault(); if (!editing) return;
+    const {coll, id} = editing; const sc = SCHEMA[coll]; const data = {};
+    sc.fields.forEach(([k, , type]) => { const v = $('#ed-' + k).value; data[k] = type === 'number' ? (v === '' ? 0 : Number(v)) : v.trim(); });
+    if (coll === 'hoteles' && valid(data.check_in) && valid(data.check_out) && !data.noches) data.noches = Math.round((date(data.check_out) - date(data.check_in)) / 864e5);
+    closeEditor();
+    try {
+      if (coll === 'config') await db.doc('config/fondos').set(data);
+      else if (id) await db.collection(coll).doc(id).update(data);
+      else { if (coll === 'pagos') data.abonos = []; await db.collection(coll).add(data); }
+      toast('Guardado ✓');
+    } catch (err) { writeErr(err); }
+  });
+  $('#editor-del').addEventListener('click', async () => {
+    if (!editing || !editing.id) return;
+    if (!delArmed) { delArmed = true; $('#editor-del').textContent = '¿Seguro? Toca de nuevo'; return; }
+    const {coll, id} = editing; closeEditor();
+    try { await db.collection(coll).doc(id).delete(); toast('Eliminado'); } catch (err) { writeErr(err); }
+  });
+  const quick = async (coll, row, patch) => {
+    if (!db || !canWrite) return;
+    try { await db.collection(coll).doc(row._id).update(patch); } catch (err) { writeErr(err); }
+  };
+  const editBtn = (coll, row) => { const b = el('button', 'edit', '✎'); b.type = 'button'; b.setAttribute('aria-label', 'Editar ' + SCHEMA[coll].name); b.addEventListener('click', () => openEditor(coll, row)); return b; };
+  document.querySelectorAll('[data-add]').forEach((b) => b.addEventListener('click', () => openEditor(b.dataset.add, null)));
+  $('#edit-fondos').addEventListener('click', () => openEditor('config', {...S.fondos}));
+
+  /* ---------- pestañas ---------- */
+  const TABS = [...document.querySelectorAll('.tab')].map((t) => t.dataset.tab);
+  const show = (id) => {
+    if (!TABS.includes(id)) id = 'resumen';
+    document.querySelectorAll('.page').forEach((s) => { s.hidden = s.id !== id; });
+    document.querySelectorAll('.tab').forEach((t) => t.setAttribute('aria-selected', t.dataset.tab === id ? 'true' : 'false'));
+    render();
+  };
+  document.querySelectorAll('.tab').forEach((t) => t.addEventListener('click', () => { if (location.hash !== '#' + t.dataset.tab) location.hash = t.dataset.tab; else show(t.dataset.tab); }));
+  window.addEventListener('hashchange', () => show(location.hash.slice(1)));
+
+  const UI = {pais: '', est: '', q: '', sort: 'real_clp', dir: -1};
+  const chipGroup = (sel, key, attr) => document.querySelectorAll(sel + ' .chip').forEach((b) => b.addEventListener('click', () => {
+    UI[key] = b.dataset[attr]; document.querySelectorAll(sel + ' .chip').forEach((x) => x.setAttribute('aria-pressed', x === b ? 'true' : 'false')); render();
+  }));
+  chipGroup('#pais-chips', 'pais', 'pais'); chipGroup('#est-chips', 'est', 'est');
+  $('#pay-q').addEventListener('input', (e) => { UI.q = e.target.value.trim().toLowerCase(); render(); });
+  document.querySelectorAll('th[data-sort]').forEach((th) => th.addEventListener('click', () => {
+    const c = th.dataset.sort; UI.dir = UI.sort === c ? -UI.dir : (/clp$/.test(c) ? -1 : 1); UI.sort = c;
+    document.querySelectorAll('th[data-sort]').forEach((x) => x.setAttribute('aria-sort', x.dataset.sort === c ? (UI.dir > 0 ? 'ascending' : 'descending') : 'none'));
+    render();
+  }));
+
+  /* ---------- cálculos ---------- */
+  const abonos = (r) => Array.isArray(r.abonos) ? r.abonos : [];
+  const paidOf = (r) => abonos(r).reduce((s, a) => s + n(a.monto), 0);
+  const pendOf = (r) => Math.max(n(r.real_clp) - paidOf(r), 0);
+  const stateOf = (r) => { const p = paidOf(r), t = n(r.real_clp); return p <= 0 ? (t <= 0 ? 'Pagado' : 'Pendiente') : p >= t ? 'Pagado' : 'Parcial'; };
+  const PAYER = {Tarjeta: ['💳', 'var(--sc)'], Mario: ['🙋‍♂️', 'var(--za)'], Trini: ['🙋‍♀️', 'var(--tz)'], Efectivo: ['💵', 'var(--ok)']};
+  const totals = () => {
+    const p = S.pagos;
+    const total = p.reduce((s, r) => s + n(r.real_clp), 0);
+    const ppto = p.reduce((s, r) => s + n(r.presupuesto_clp), 0);
+    const pagado = p.reduce((s, r) => s + Math.min(paidOf(r), Math.max(n(r.real_clp), paidOf(r))), 0);
+    const fondos = n(S.fondos.propio) + n(S.fondos.regalos);
+    return {total, ppto, pagado, pend: p.reduce((s, r) => s + pendOf(r), 0), fondos, saldo: fondos - total, pct: total ? pagado / total : 0};
+  };
+  const emptyMsg = (box, coll, msg) => { box.replaceChildren(el('div', 'empty', S.loaded[coll] ? msg : 'Cargando…')); };
+
+  /* ---------- render ---------- */
+  function render() {
+    const page = TABS.find((t) => !document.getElementById(t).hidden) || 'resumen';
+    renderHeader();
+    ({resumen: renderResumen, itinerario: renderItin, vuelos: renderVuelos, hoteles: renderHoteles, presupuesto: renderPresupuesto, actividades: renderAct, pendientes: renderPend, tips: renderTips})[page]();
+  }
+  function renderHeader() {
+    const days = [...S.itinerario].filter((d) => valid(d.fecha)).sort(byDate('fecha'));
+    if (!days.length) { set('#countdown', S.loaded.itinerario ? '⏳ Sin fechas aún' : '⏳ Cargando…'); return; }
+    const a = days[0].fecha, b = days[days.length - 1].fecha, t = todayISO();
+    const noches = Math.round((date(b) - date(a)) / 864e5);
+    $('#trip-sub').replaceChildren(el('b', '', fd(a) + ' – ' + fd(b) + ' ' + a.slice(0, 4)), document.createTextNode(' · ' + noches + ' noches juntos'));
+    const diff = Math.round((date(a) - date(t)) / 864e5);
+    if (t < a) set('#countdown', diff === 1 ? '⏳ ¡Mañana parten!' : `⏳ Faltan ${diff} días para partir`);
+    else if (t > b) set('#countdown', '💛 Viaje terminado');
+    else { const d = days.find((x) => x.fecha === t); set('#countdown', `📍 Día ${-diff} de ${noches}` + (d ? ' · ' + d.destino : '')); }
+  }
+  function barRows(box, rows, label, parts, total) {
+    box.replaceChildren();
+    const max = Math.max(...rows.map(total), 1);
+    rows.forEach((r) => {
+      const row = el('div', 'bar-row'); const tr = el('div', 'track');
+      parts.forEach(([key, col]) => { const s = el('span'); s.style.width = (r[key] / max * 100) + '%'; s.style.background = col; tr.appendChild(s); });
+      row.append(el('span', '', label(r)), tr, el('span', '', clpM(total(r))));
+      hover(row, box, label(r), parts.length > 1 ? ['Pagado: ' + clp(r.pagado), 'Por pagar: ' + clp(r.pend), 'Total: ' + clp(total(r))] : [clp(total(r))]);
+      box.appendChild(row);
+    });
+  }
+  function renderResumen() {
+    const T = totals(); const ready = S.loaded.pagos;
+    set('#k-total', ready ? clp(T.total) : '—'); set('#k-pagado', ready ? clp(T.pagado) : '—'); set('#k-pend', ready ? clp(T.pend) : '—');
+    set('#k-fondos', S.loaded.config ? clp(T.fondos) : '—'); set('#k-saldo', ready && S.loaded.config ? clp(T.saldo) : '—');
+    $('#k-saldo').className = 'v ' + (T.saldo < 0 ? 'bad' : 'good');
+    const tk = $('#takeaway');
+    if (ready) {
+      tk.replaceChildren(document.createTextNode('Llevan pagado el '), el('b', '', Math.round(T.pct * 100) + '%'), document.createTextNode(' del viaje. Quedan '), el('b', '', clp(T.pend)), document.createTextNode(' por pagar y '),
+        document.createTextNode(T.saldo < 0 ? 'el costo total supera los fondos en ' : 'los fondos alcanzan con un margen de '), el('b', '', clp(Math.abs(T.saldo))), document.createTextNode('.'));
+    }
+    // ruta
+    const route = $('#route'); route.replaceChildren();
+    const days = [...S.itinerario].filter((d) => valid(d.fecha)).sort(byDate('fecha'));
+    if (days.length) {
+      const cols = `repeat(${days.length}, minmax(0, 1fr))`; const t = todayISO();
+      const cells = el('div', 'cells'); cells.style.gridTemplateColumns = cols;
+      days.forEach((d) => {
+        const c = el('div', '', emoji(d)); const k = color(d.tipo);
+        c.style.background = `linear-gradient(180deg, ${k}, color-mix(in srgb, ${k} 70%, #000))`;
+        if (d.fecha === t) c.style.outline = '3px solid var(--ink)';
+        hover(c, route, `Día ${d.dia ?? ''} · ${fdl(d.fecha)}`, [d.destino, d.alojamiento ? '🛏️ ' + d.alojamiento : '']);
+        cells.appendChild(c);
+      });
+      const runs = []; days.forEach((d, i) => { const l = runs[runs.length - 1]; if (l && l.pais === d.pais) l.n++; else runs.push({pais: d.pais, s: i, n: 1}); });
+      const lab = el('div', 'runs'); lab.style.gridTemplateColumns = cols; const w = route.clientWidth || 600;
+      runs.forEach((r) => { const d = el('div', '', (w / days.length) * r.n > 70 ? r.pais : ''); d.style.gridColumn = `${r.s + 1} / span ${r.n}`; d.style.borderColor = color(r.pais); d.style.color = color(r.pais); lab.appendChild(d); });
+      route.append(cells, lab);
+    } else emptyMsg(route, 'itinerario', 'Agrega días en la pestaña Itinerario.');
+    // categorías
+    const m = new Map();
+    S.pagos.forEach((r) => { const o = m.get(r.categoria) || {categoria: r.categoria || 'Sin categoría', real: 0, pagado: 0, pend: 0}; o.real += n(r.real_clp); o.pagado += Math.min(paidOf(r), n(r.real_clp)); o.pend += pendOf(r); m.set(r.categoria, o); });
+    const cats = [...m.values()].sort((a, b) => b.real - a.real);
+    if (cats.length) barRows($('#cat-bars'), cats, (r) => r.categoria, [['pagado', 'var(--ok)'], ['pend', 'var(--pend)']], (r) => r.real); else emptyMsg($('#cat-bars'), 'pagos', 'Sin gastos todavía.');
+    const q = new Map(); S.pagos.forEach((r) => abonos(r).forEach((a) => q.set(a.quien || '—', (q.get(a.quien || '—') || 0) + n(a.monto))));
+    const T0 = totals(); if (T0.pend > 0) q.set('Por pagar', T0.pend);
+    const WHO = {Tarjeta: 'var(--sc)', Mario: 'var(--za)', Trini: 'var(--tz)', 'Por pagar': 'var(--pend)', Efectivo: 'var(--ok)'};
+    const who = [...q].map(([quien, monto]) => ({quien, monto})).sort((a, b) => b.monto - a.monto);
+    const wb = $('#who-bars');
+    if (who.length) {
+      wb.replaceChildren(); const max = Math.max(...who.map((r) => r.monto), 1);
+      who.forEach((r) => { const row = el('div', 'bar-row'); const tr = el('div', 'track'); const s = el('span'); const k = WHO[r.quien] || 'var(--fly)';
+        s.style.width = (r.monto / max * 100) + '%'; s.style.background = `linear-gradient(90deg, color-mix(in srgb, ${k} 65%, #fff), ${k})`; tr.appendChild(s);
+        row.append(el('span', '', r.quien), tr, el('span', '', clpM(r.monto))); hover(row, wb, r.quien, [clp(r.monto)]); wb.appendChild(row); });
+    } else emptyMsg(wb, 'pagos', 'Sin gastos todavía.');
+  }
+  function dayCard(d, today) {
+    const card = el('article', 'day' + (today ? ' today' : '')); card.style.setProperty('--acc', color(d.tipo));
+    const when = el('div', 'when'); when.append(el('span', 'emo', emoji(d)), el('span', 'n', d.dia != null && d.dia !== '' ? String(d.dia) : '·'), el('span', 'd', fdl(d.fecha)));
+    const body = el('div', 'body'); const top = el('div', 'row'); const h = el('h3', 'grow', d.destino || 'Sin destino');
+    top.append(h, el('span', 'tag', d.tipo || '—')); if (today) top.appendChild(el('span', 'tag hoy', '📍 Hoy')); top.appendChild(editBtn('itinerario', d));
+    const dl = el('dl', 'kv');
+    [['☀️ Mañana', d.am], ['🌅 Tarde', d.pm], ['🛏️ Noche', d.alojamiento], ['🚙 Transporte', d.transporte], ['📝 Notas', d.notas]].forEach(([k, v]) => { if (v) dl.append(el('dt', '', k), el('dd', '', v)); });
+    body.append(top, dl); card.append(when, body); return card;
+  }
+  function renderItin() {
+    const days = [...S.itinerario].sort(byDate('fecha')); const t = todayISO();
+    const box = $('#days'); box.replaceChildren();
+    const list = days.filter((d) => !UI.pais || d.pais === UI.pais);
+    if (list.length) list.forEach((d) => box.appendChild(dayCard(d, d.fecha === t))); else emptyMsg(box, 'itinerario', 'No hay días para este filtro.');
+    const tb = $('#today'); tb.replaceChildren();
+    const dated = days.filter((d) => valid(d.fecha));
+    if (!dated.length) { emptyMsg(tb, 'itinerario', 'Sin días aún.'); return; }
+    let d = dated.find((r) => r.fecha === t), note;
+    if (!d) { const before = t < dated[0].fecha; d = before ? dated[0] : dated[dated.length - 1]; note = before ? 'El viaje aún no empieza; así parte el primer día.' : 'El viaje terminó; este fue el último día.'; }
+    else { const nx = dated.find((r) => r.fecha > t); note = nx ? 'Mañana: ' + nx.destino : 'Último día del viaje.'; }
+    tb.append(dayCard(d, d.fecha === t), el('p', 'muted', note));
+  }
+  function renderVuelos() {
+    const v = [...S.vuelos].sort(byDate('fecha'));
+    set('#k-tramos', S.loaded.vuelos ? String(v.length) : '—'); set('#k-comprados', S.loaded.vuelos ? String(v.filter((x) => x.estado === 'Comprado').length) : '—');
+    set('#k-vuelos', S.loaded.vuelos ? clp(v.reduce((s, x) => s + n(x.total_clp), 0)) : '—');
+    const box = $('#flights'); box.replaceChildren();
+    if (!v.length) { emptyMsg(box, 'vuelos', 'Sin vuelos todavía.'); return; }
+    v.forEach((f) => {
+      const card = el('article', 'flight'); const [o, de] = String(f.tramo || '').split('→').map((s) => s.trim());
+      const head = el('div', 'row'); const ok = f.estado === 'Comprado';
+      head.append(el('h3', 'grow', '✈️ ' + fdl(f.fecha) + ' · ' + (f.tramo || '')), el('span', 'pill ' + (ok ? 'ok' : 'warn'), (ok ? '✓ ' : '? ') + (f.estado || '—')), editBtn('vuelos', f));
+      const r = el('div', 'route-f'); const a = el('div'); a.append(el('div', 'time', f.salida || '—'), el('div', 'muted', o || ''));
+      const line = el('div', 'line'); line.appendChild(el('span', '', [f.duracion, f.escala].filter(Boolean).join(' · ') || '—'));
+      const b = el('div'); b.style.textAlign = 'right'; b.append(el('div', 'time', f.llegada || '—'), el('div', 'muted', de || '')); r.append(a, line, b);
+      const meta = el('div', 'meta'); const kv = (k, val) => { const s = el('span', '', k + ' '); s.appendChild(el('b', '', val)); return s; };
+      meta.append(kv('Agencia', f.agencia || '—'), kv('Código', f.codigo || '—'), kv('Total', n(f.total_clp) ? clp(n(f.total_clp)) : '—'));
+      card.append(head, r, meta); if (f.notas) card.appendChild(el('p', 'muted', '📝 ' + f.notas)); box.appendChild(card);
+    });
+  }
+  function renderHoteles() {
+    const hs = [...S.hoteles].sort(byDate('check_in'));
+    set('#k-noches', S.loaded.hoteles ? String(hs.reduce((s, h) => s + n(h.noches), 0)) : '—'); set('#k-estadias', S.loaded.hoteles ? String(hs.length) : '—');
+    set('#k-aloj', S.loaded.hoteles ? clp(hs.reduce((s, h) => s + n(h.total_clp), 0)) : '—');
+    const g = $('#gantt'); g.replaceChildren(); const ok = hs.filter((h) => valid(h.check_in) && valid(h.check_out));
+    if (ok.length) {
+      const t0 = Math.min(...ok.map((h) => +date(h.check_in))), t1 = Math.max(...ok.map((h) => +date(h.check_out))), span = Math.max(t1 - t0, 864e5);
+      const pos = (s) => ((date(s) - t0) / span) * 100;
+      ok.forEach((h) => { const row = el('div', 'g-row'); const tr = el('div', 'g-track'); const bar = el('span'); const k = color(h.pais);
+        bar.style.left = pos(h.check_in) + '%'; bar.style.width = Math.max(pos(h.check_out) - pos(h.check_in), 1.5) + '%'; bar.style.background = `linear-gradient(90deg, color-mix(in srgb, ${k} 60%, #fff), ${k})`;
+        tr.appendChild(bar); row.append(el('span', 'lab', String(h.hotel || '').split('(')[0].split(':')[0].trim()), tr);
+        hover(row, g, h.hotel, [`${fd(h.check_in)} → ${fd(h.check_out)} · ${n(h.noches)} noches`, h.regimen, n(h.total_clp) ? clp(n(h.total_clp)) : '']); g.appendChild(row); });
+      const ax = el('div', 'g-axis'); const ticks = el('div', 'g-ticks'); const step = (g.clientWidth || 600) < 480 ? 14 : 7;
+      for (let t = t0; t <= t1; t += 864e5 * step) { const d = new Date(t); const s = el('span', '', d.getDate() + ' ' + MES[d.getMonth()]); s.style.left = ((t - t0) / span * 100) + '%'; ticks.appendChild(s); }
+      ax.append(el('span'), ticks); g.appendChild(ax);
+    } else emptyMsg(g, 'hoteles', 'Agrega hoteles con fechas para ver el calendario.');
+    const box = $('#hotels'); box.replaceChildren();
+    if (!hs.length) { emptyMsg(box, 'hoteles', 'Sin hoteles todavía.'); return; }
+    hs.forEach((h) => { const c = el('article', 'hotel'); c.style.setProperty('--acc', color(h.pais));
+      const top = el('div', 'row'); top.append(el('h3', 'grow', h.hotel || '—'), editBtn('hoteles', h));
+      const dl = el('dl', 'kv');
+      [['📍 Zona', h.zona], ['📅 Fechas', `${fd(h.check_in)} → ${fd(h.check_out)} · ${n(h.noches)} noches`], ['🍽️ Régimen', h.regimen], ['💸 Total', n(h.total_clp) ? clp(n(h.total_clp)) + (h.monto_original ? ' · ' + h.monto_original : '') : ''], ['💳 Pagado por', h.pagado_por], ['📝 Notas', h.notas]]
+        .forEach(([k, v]) => { if (v) dl.append(el('dt', '', k), el('dd', '', v)); });
+      c.append(top, dl); box.appendChild(c); });
+  }
+  function renderPresupuesto() {
+    const T = totals(); const ready = S.loaded.pagos;
+    set('#p-ppto', ready ? clp(T.ppto) : '—'); set('#p-total', ready ? clp(T.total) : '—'); set('#p-pagado', ready ? clp(T.pagado) : '—'); set('#p-pend', ready ? clp(T.pend) : '—');
+    const pr = $('#pay-progress'); pr.replaceChildren(); const base = Math.max(T.total, T.fondos, 1);
+    [[T.pagado, 'var(--ok)'], [T.pend, 'var(--pend)']].forEach(([v, c]) => { const s = el('span'); s.style.width = (v / base * 100) + '%'; s.style.background = c; pr.appendChild(s); });
+    set('#pay-note', ready ? `${Math.round(T.pct * 100)}% pagado · fondos ${clp(T.fondos)} (propio ${clp(n(S.fondos.propio))} + regalos ${clp(n(S.fondos.regalos))}) · saldo ${clp(T.saldo)}` : '—');
+    // quién ha pagado
+    const per = {Tarjeta: 0, Mario: 0, Trini: 0, Efectivo: 0}; const cnt = {};
+    S.pagos.forEach((r) => abonos(r).forEach((a) => { per[a.quien] = (per[a.quien] || 0) + n(a.monto); cnt[a.quien] = (cnt[a.quien] || 0) + 1; }));
+    const pb = $('#payers'); pb.replaceChildren(); const sumPaid = Object.values(per).reduce((s, v) => s + v, 0) || 1;
+    Object.entries(per).filter(([k, v]) => v > 0 || k !== 'Efectivo').forEach(([k, v]) => {
+      const m = PAYER[k] || ['👤', 'var(--fly)']; const c = el('div', 'payer'); c.style.setProperty('--acc', m[1]);
+      const mb = el('div', 'minibar'); const s = el('span'); s.style.width = (v / sumPaid * 100) + '%'; s.style.background = m[1]; mb.appendChild(s);
+      c.append(el('span', 'who', m[0] + ' ' + k), el('span', 'amt', clp(v)), el('span', 'muted', (cnt[k] || 0) + ' pagos · ' + Math.round(v / sumPaid * 100) + '%'), mb); pb.appendChild(c);
+    });
+    { const c = el('div', 'payer'); c.style.setProperty('--acc', 'var(--pend)'); c.append(el('span', 'who', '⏳ Por pagar'), el('span', 'amt', clp(T.pend)), el('span', 'muted', S.pagos.filter((r) => pendOf(r) > 0).length + ' ítems con saldo')); pb.appendChild(c); }
+    const body = $('#pay-body'); body.replaceChildren(); const num = /clp$/.test(UI.sort);
+    const val = (r, k) => k === 'pagado_clp' ? paidOf(r) : k === 'pend_clp' ? pendOf(r) : k === 'estado' ? stateOf(r) : r[k];
+    const rows = S.pagos.filter((r) => (!UI.est || stateOf(r) === UI.est) && (!UI.q || `${r.item} ${r.categoria} ${abonos(r).map((a) => a.quien).join(' ')}`.toLowerCase().includes(UI.q)))
+      .sort((a, b) => num ? (n(val(a, UI.sort)) - n(val(b, UI.sort))) * UI.dir : String(val(a, UI.sort) || '').localeCompare(String(val(b, UI.sort) || ''), 'es') * UI.dir);
+    const CAT = {Vuelos: 'var(--fly)', Alojamiento: 'var(--tz)', Transporte: 'var(--za)', Actividades: 'var(--sc)'};
+    rows.forEach((r) => {
+      const tr = el('tr'); const name = el('td'); const dot = el('span', 'dot'); dot.style.background = CAT[r.categoria] || 'var(--pend)'; name.append(dot, document.createTextNode(r.item || '—'));
+      const who = [...new Set(abonos(r).map((a) => a.quien))];
+      if (who.length) { const w = el('div', 'muted'); w.textContent = 'Pagó: ' + who.map((k) => (PAYER[k] || ['👤'])[0] + ' ' + k).join(' · '); name.appendChild(w); }
+      const stt = stateOf(r); const st = el('td');
+      const b = el('button', 'pill ' + (stt === 'Pagado' ? 'ok' : stt === 'Parcial' ? 'part' : 'warn'), stt === 'Pagado' ? '✓ Pagado' : stt === 'Parcial' ? '◐ Parcial' : '⏳ Pendiente'); b.type = 'button';
+      b.setAttribute('aria-label', 'Ver y registrar pagos de ' + (r.item || 'este ítem'));
+      b.addEventListener('click', () => openPay(r)); st.appendChild(b);
+      const real = n(r.real_clp), paid = paidOf(r);
+      const pt = el('td', 'num', clp(paid)); if (real > 0 && paid > 0 && paid < real) { const mb = el('div', 'minibar'); const s = el('span'); s.style.width = Math.min(paid / real * 100, 100) + '%'; s.style.background = 'var(--ok)'; mb.appendChild(s); pt.appendChild(mb); }
+      const ed = el('td'); ed.appendChild(editBtn('pagos', r));
+      tr.append(name, el('td', 'hide-narrow', r.categoria || ''), el('td', 'num hide-narrow', clp(n(r.presupuesto_clp))), el('td', 'num', clp(real)), pt, el('td', 'num hide-narrow', clp(pendOf(r))), st, ed);
+      body.appendChild(tr);
+    });
+    if (!rows.length) { const tr = el('tr'); const td = el('td', 'muted', S.loaded.pagos ? 'Nada coincide con la búsqueda.' : 'Cargando…'); td.colSpan = 8; tr.appendChild(td); body.appendChild(tr); }
+    if (payId) fillPay();
+  }
+  /* ---------- pagos por ítem ---------- */
+  let payId = null;
+  const payRow = () => S.pagos.find((r) => r._id === payId);
+  function fillPay() {
+    const r = payRow(); if (!r) { closePay(); return; }
+    set('#pay-title', '💳 ' + (r.item || 'Pagos')); set('#ps-real', clp(n(r.real_clp))); set('#ps-paid', clp(paidOf(r))); set('#ps-pend', clp(pendOf(r)));
+    const list = $('#ps-list'); list.replaceChildren();
+    const ab = abonos(r);
+    if (!ab.length) list.appendChild(el('p', 'muted', 'Aún no hay pagos registrados para este ítem.'));
+    ab.forEach((a, i) => {
+      const m = PAYER[a.quien] || ['👤', 'var(--fly)']; const row = el('div', 'abono');
+      const chip = el('span', 'chip-who', m[0] + ' ' + (a.quien || '—')); chip.style.background = m[1];
+      const info = el('div'); info.append(el('div', 'm', clp(n(a.monto))), el('div', 'muted', [valid(a.fecha) ? fdl(a.fecha) : '', a.nota].filter(Boolean).join(' · ')));
+      const del = el('button', 'edit', '🗑'); del.type = 'button'; del.setAttribute('aria-label', 'Borrar este pago'); let armed = false;
+      del.addEventListener('click', async () => {
+        if (!armed) { armed = true; del.textContent = '¿?'; del.title = 'Toca de nuevo para borrar'; return; }
+        const next = abonos(r).filter((_, j) => j !== i);
+        try { await db.collection('pagos').doc(r._id).update({abonos: next}); toast('Pago borrado'); } catch (e) { writeErr(e); }
+      });
+      row.append(chip, info, el('span'), del); list.appendChild(row);
+    });
+  }
+  function openPay(r) {
+    if (!db) return; payId = r._id; $('#ab-monto').value = pendOf(r) || ''; $('#ab-fecha').value = todayISO(); $('#ab-nota').value = ''; $('#ab-err').hidden = true;
+    $('#pay-form').querySelectorAll('.form, h3, .sheet-actions').forEach((x) => { x.hidden = !canWrite; });
+    fillPay(); $('#paysheet').hidden = false;
+  }
+  function closePay() { $('#paysheet').hidden = true; payId = null; }
+  $('#pay-close').addEventListener('click', closePay);
+  $('#paysheet').addEventListener('click', (e) => { if (e.target.id === 'paysheet') closePay(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('#paysheet').hidden) closePay(); });
+  $('#ab-todo').addEventListener('click', () => { const r = payRow(); if (r) $('#ab-monto').value = pendOf(r); });
+  $('#pay-form').addEventListener('submit', async (e) => {
+    e.preventDefault(); const r = payRow(); if (!r || !canWrite) return;
+    const monto = Number($('#ab-monto').value);
+    if (!(monto > 0)) { $('#ab-err').hidden = false; return; }
+    $('#ab-err').hidden = true;
+    const ab = {quien: $('#ab-quien').value, monto, fecha: $('#ab-fecha').value || todayISO(), nota: $('#ab-nota').value.trim()};
+    try { await db.collection('pagos').doc(r._id).update({abonos: [...abonos(r), ab]}); toast('Pago registrado ✓'); $('#ab-nota').value = ''; const rr = payRow(); $('#ab-monto').value = rr ? pendOf(rr) || '' : ''; }
+    catch (err) { writeErr(err); }
+  });
+  const ACT_NEXT = {'Por reservar': 'Reservado', Reservado: 'Hecho', Hecho: 'Por reservar', 'Por confirmar': 'Reservado', Libre: 'Hecho'};
+  function renderAct() {
+    const a = S.actividades; const L = S.loaded.actividades;
+    set('#a-n', L ? String(a.length) : '—'); set('#a-must', L ? String(a.filter((r) => /must/i.test(r.prioridad)).length) : '—');
+    set('#a-res', L ? String(a.filter((r) => r.estado === 'Reservado' || r.estado === 'Hecho').length) : '—'); set('#a-usd', L ? 'USD ' + nf.format(a.reduce((s, r) => s + n(r.usd_pp) * 2, 0)) : '—');
+    const body = $('#act-body'); body.replaceChildren();
+    const order = ['Cape Town', 'Tanzania', 'Zanzíbar', 'Praslin', 'La Digue', 'Mahé'];
+    [...a].sort((x, y) => ((order.indexOf(x.destino) + 99) % 99) - ((order.indexOf(y.destino) + 99) % 99) || String(x.actividad).localeCompare(String(y.actividad), 'es')).forEach((r) => {
+      const tr = el('tr'); const name = el('td', '', r.actividad || '—');
+      if (/must/i.test(r.prioridad)) { const s = el('span', 'tag', '⭐ Must do'); s.style.marginLeft = '6px'; s.style.setProperty('--acc', 'var(--za)'); name.appendChild(s); }
+      if (r.notas) name.appendChild(el('div', 'muted', r.notas));
+      const st = el('td'); const done = r.estado === 'Reservado' || r.estado === 'Hecho';
+      const b = el('button', 'pill ' + (done ? 'ok' : 'warn'), (r.estado === 'Hecho' ? '✓ ' : r.estado === 'Reservado' ? '🎟️ ' : '') + (r.estado || '—')); b.type = 'button';
+      b.addEventListener('click', () => quick('actividades', r, {estado: ACT_NEXT[r.estado] || 'Reservado'})); st.appendChild(b);
+      const ed = el('td'); ed.appendChild(editBtn('actividades', r));
+      tr.append(name, el('td', '', r.destino || ''), el('td', 'hide-narrow', r.cuando || ''), el('td', 'num', n(r.usd_pp) ? String(n(r.usd_pp)) : 'Gratis'), st, ed);
+      body.appendChild(tr);
+    });
+    if (!a.length) { const tr = el('tr'); const td = el('td', 'muted', L ? 'Sin actividades todavía.' : 'Cargando…'); td.colSpan = 6; tr.appendChild(td); body.appendChild(tr); }
+  }
+  function renderPend() {
+    const p = S.pendientes; const tot = Math.max(p.length, 1);
+    const listos = p.filter((r) => r.estado === 'Listo').length, conf = p.filter((r) => r.estado === 'Por confirmar').length;
+    const pr = $('#todo-progress'); pr.replaceChildren();
+    [[listos, 'var(--ok)'], [conf, 'var(--pend)']].forEach(([v, c]) => { const s = el('span'); s.style.width = (v / tot * 100) + '%'; s.style.background = c; pr.appendChild(s); });
+    set('#todo-note', S.loaded.pendientes ? `${listos} listos de ${p.length} · ${p.length - listos - conf} pendientes · ${conf} por confirmar` : '—');
+    const box = $('#checks'); box.replaceChildren();
+    if (!p.length) { emptyMsg(box, 'pendientes', 'Sin pendientes. ¡Todo listo!'); return; }
+    const META = {Documentos: ['🛂', 'var(--za)'], Salud: ['💉', 'var(--sc)'], Reservas: ['📌', 'var(--tz)'], 'Antes de viajar': ['🧳', 'var(--fly)'], 'Durante el viaje': ['🌍', 'var(--ok)']};
+    const groups = new Map(); p.forEach((r) => { const k = r.categoria || 'Otros'; if (!groups.has(k)) groups.set(k, []); groups.get(k).push(r); });
+    for (const [cat, items] of groups) {
+      const m = META[cat] || ['📋', 'var(--fly)']; const card = el('div', 'card'); card.style.setProperty('--acc', m[1]);
+      card.appendChild(el('h2', '', m[0] + ' ' + cat)); const ul = el('ul');
+      items.forEach((r) => {
+        const li = el('li', r.estado === 'Listo' ? 'done' : ''); const st = r.estado === 'Listo' ? ['✓', 'ok'] : r.estado === 'Por confirmar' ? ['?', 'warn'] : ['', ''];
+        const box2 = el('button', 'box ' + st[1], st[0]); box2.type = 'button'; box2.setAttribute('aria-label', r.estado === 'Listo' ? 'Marcar como pendiente' : 'Marcar como listo');
+        box2.addEventListener('click', () => quick('pendientes', r, {estado: r.estado === 'Listo' ? 'Pendiente' : 'Listo'}));
+        li.append(box2, el('span', 't', r.tarea || '—'), editBtn('pendientes', r)); if (r.nota) li.appendChild(el('span', 'n', r.nota)); ul.appendChild(li);
+      });
+      card.appendChild(ul); box.appendChild(card);
+    }
+  }
+  function renderTips() {
+    const box = $('#tips-list'); box.replaceChildren();
+    if (!S.tips.length) { emptyMsg(box, 'tips', 'Sin tips todavía.'); return; }
+    const META = {Documentos: ['🛂', 'var(--za)'], Dinero: ['💵', 'var(--tz)'], Salud: ['🩺', 'var(--sc)'], Seguridad: ['🛡️', 'var(--fly)'], Safari: ['🦒', 'var(--tz)'], 'Zanzíbar': ['🌴', 'var(--sc)'], Seychelles: ['🐢', 'var(--sc)'], Clima: ['🌤️', 'var(--za)']};
+    const groups = new Map(); S.tips.forEach((r) => { const k = r.seccion || 'Otros'; if (!groups.has(k)) groups.set(k, []); groups.get(k).push(r); });
+    for (const [sec, items] of groups) {
+      const m = META[sec] || ['💡', 'var(--fly)']; const card = el('div', 'card'); card.style.setProperty('--acc', m[1]);
+      card.appendChild(el('h2', '', m[0] + ' ' + sec)); const dl = el('dl');
+      items.forEach((r) => { const dt = el('dt'); dt.append(el('span', '', r.tema || '—'), editBtn('tips', r)); dl.append(dt, el('dd', '', r.texto || '')); });
+      card.appendChild(dl); box.appendChild(card);
+    }
+  }
+
+  /* ---------- respaldo e importación ---------- */
+  const ALL = [...COLLS];
+  $('#export').addEventListener('click', () => {
+    const out = {config: {fondos: S.fondos}};
+    ALL.forEach((c) => { out[c] = {}; S[c].forEach((r) => { const {_id, ...rest} = r; out[c][_id] = rest; }); });
+    const blob = new Blob([JSON.stringify(out, null, 2)], {type: 'application/json'});
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'luna-de-miel-respaldo-' + todayISO() + '.json';
+    document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 500);
+  });
+  $('#import-file').addEventListener('change', async (e) => {
+    const f = e.target.files && e.target.files[0]; e.target.value = ''; if (!f || !db) return;
+    const msg = $('#import-msg'); msg.hidden = false; msg.textContent = 'Importando…';
+    try {
+      const data = JSON.parse(await f.text()); let count = 0; let batch = db.batch(); let inBatch = 0;
+      const put = async (ref, body) => { batch.set(ref, body); count++; if (++inBatch >= 400) { await batch.commit(); batch = db.batch(); inBatch = 0; } };
+      for (const c of ALL) for (const [id, body] of Object.entries(data[c] || {})) await put(db.collection(c).doc(id), body);
+      if (data.config && data.config.fondos) await put(db.doc('config/fondos'), data.config.fondos);
+      await batch.commit();
+      msg.textContent = `Listo: se importaron ${count} registros.`;
+    } catch (err) { msg.textContent = 'No se pudo importar: revisa que sea el archivo correcto (' + (err.code || err.message) + ').'; }
+  });
+
+  /* ---------- datos en vivo ---------- */
+  let rq = 0; const schedule = () => { cancelAnimationFrame(rq); rq = requestAnimationFrame(render); };
+  window.addEventListener('resize', schedule);
+  show(location.hash.slice(1));
+  let unsubs = [];
+  const stop = () => { unsubs.forEach((u) => u()); unsubs = []; };
+  if (auth) auth.onAuthStateChanged((user) => {
+    stop();
+    if (!user) { db = null; COLLS.forEach((c) => { S[c] = []; S.loaded[c] = false; }); showGate('Ingresa para ver y editar el viaje.'); schedule(); return; }
+    hideGate(); db = fs; canWrite = true; document.body.classList.remove('ro');
+    const fail = (c) => (err) => { S.loaded[c] = true; if (err && err.code === 'permission-denied') toast('Esta cuenta no tiene acceso a los datos'); schedule(); };
+    COLLS.forEach((c) => unsubs.push(db.collection(c).onSnapshot((snap) => {
+      S[c] = snap.docs.map((d) => ({...d.data(), _id: d.id})); S.loaded[c] = true; schedule();
+    }, fail(c))));
+    unsubs.push(db.doc('config/fondos').onSnapshot((d) => { S.fondos = d.exists ? {...d.data()} : {propio: 0, regalos: 0}; S.loaded.config = true; schedule(); }, fail('config')));
+  });
+  if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => {});
+})();
+</script>
+</body>
+</html>
