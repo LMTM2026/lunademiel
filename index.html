@@ -270,14 +270,14 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   </header>
 
   <nav class="tabs" role="tablist" aria-label="Secciones">
-    <button class="tab" role="tab" data-tab="resumen">✨ Resumen</button>
     <button class="tab" role="tab" data-tab="itinerario">🗺️ Itinerario</button>
     <button class="tab" role="tab" data-tab="vuelos">✈️ Vuelos</button>
     <button class="tab" role="tab" data-tab="hoteles">🏨 Hoteles</button>
-    <button class="tab" role="tab" data-tab="presupuesto">💰 Presupuesto</button>
     <button class="tab" role="tab" data-tab="actividades">🤿 Actividades</button>
     <button class="tab" role="tab" data-tab="pendientes">✅ Pendientes</button>
     <button class="tab" role="tab" data-tab="tips">💡 Tips</button>
+    <button class="tab" role="tab" data-tab="presupuesto">💰 Presupuesto</button>
+    <button class="tab" role="tab" data-tab="resumen">✨ Resumen</button>
   </nav>
 
   <section class="page" id="resumen">
@@ -613,7 +613,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   /* ---------- pestañas ---------- */
   const TABS = [...document.querySelectorAll('.tab')].map((t) => t.dataset.tab);
   const show = (id) => {
-    if (!TABS.includes(id)) id = 'resumen';
+    if (!TABS.includes(id)) id = 'itinerario';
     document.querySelectorAll('.page').forEach((s) => { s.hidden = s.id !== id; });
     document.querySelectorAll('.tab').forEach((t) => t.setAttribute('aria-selected', t.dataset.tab === id ? 'true' : 'false'));
     render();
