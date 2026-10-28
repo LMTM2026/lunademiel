@@ -941,7 +941,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   });
 
   /* ---------- datos en vivo ---------- */
-  let rq = 0; const schedule = () => { cancelAnimationFrame(rq); rq = requestAnimationFrame(render); };
+  let rq = 0; const schedule = () => { clearTimeout(rq); rq = setTimeout(render, 16); };
   window.addEventListener('resize', schedule);
   show(location.hash.slice(1));
   let unsubs = [];
