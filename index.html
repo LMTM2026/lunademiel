@@ -667,7 +667,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     if (!days.length) { set('#countdown', S.loaded.itinerario ? '⏳ Sin fechas aún' : '⏳ Cargando…'); return; }
     const a = days[0].fecha, b = days[days.length - 1].fecha, t = todayISO();
     const noches = Math.round((date(b) - date(a)) / 864e5);
-    $('#trip-sub').replaceChildren(el('b', '', fd(a) + ' – ' + fd(b) + ' ' + a.slice(0, 4)), document.createTextNode(' · ' + noches + ' noches juntos'));
+    $('#trip-sub').replaceChildren(el('b', '', fd(a) + ' – ' + fd(b) + ' ' + a.slice(0, 4)));
     const diff = Math.round((date(a) - date(t)) / 864e5);
     if (t < a) set('#countdown', diff === 1 ? '⏳ ¡Mañana parten!' : `⏳ Faltan ${diff} días para partir`);
     else if (t > b) set('#countdown', '💛 Viaje terminado');
