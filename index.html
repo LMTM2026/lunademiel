@@ -244,6 +244,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
 }
 .datos { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .sync { font-size: 12.5px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.4); }
+.sin-montos .money { display: none !important; }
 </style>
 </head>
 <body>
@@ -276,24 +277,24 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     <button class="tab" role="tab" data-tab="actividades">🤿 Actividades</button>
     <button class="tab" role="tab" data-tab="pendientes">✅ Pendientes</button>
     <button class="tab" role="tab" data-tab="tips">💡 Tips</button>
-    <button class="tab" role="tab" data-tab="presupuesto">💰 Presupuesto</button>
+    <button class="tab money" role="tab" data-tab="presupuesto">💰 Presupuesto</button>
     <button class="tab" role="tab" data-tab="resumen">✨ Resumen</button>
   </nav>
 
   <section class="page" id="resumen">
-    <div class="kpis">
+    <div class="kpis money">
       <div class="kpi za"><span class="lbl">💸 Costo total</span><span class="v" id="k-total">—</span></div>
       <div class="kpi okc"><span class="lbl">✅ Ya pagado</span><span class="v" id="k-pagado">—</span></div>
       <div class="kpi tz"><span class="lbl">⏳ Por pagar</span><span class="v" id="k-pend">—</span></div>
     </div>
-    <p class="take" id="takeaway">Cargando el presupuesto…</p>
+    <p class="take money" id="takeaway">Cargando el presupuesto…</p>
     <div class="card rainbow">
       <h2>🧭 La ruta, día a día</h2>
       <p class="muted">Cada bloque es un día. Pasa el dedo o el cursor para ver el detalle.</p>
       <div class="route" id="route"></div>
       <div class="legend"><span><i class="sw" style="background:var(--za)"></i>Ciudad</span><span><i class="sw" style="background:var(--tz)"></i>Safari</span><span><i class="sw" style="background:var(--sc)"></i>Playa</span><span><i class="sw" style="background:var(--fly)"></i>Vuelo</span></div>
     </div>
-    <div class="grid">
+    <div class="grid money">
       <div class="card za"><h2>📊 Gasto por categoría</h2><p class="muted">Monto real en CLP, pagado y por pagar.</p><div class="bars" id="cat-bars"></div>
         <div class="legend"><span><i class="sw" style="background:var(--ok)"></i>Pagado</span><span><i class="sw" style="background:var(--pend)"></i>Por pagar</span></div></div>
       <div class="card sc"><h2>💳 Quién ha pagado</h2><p class="muted">Pagos registrados en CLP y lo que falta por pagar.</p><div class="bars" id="who-bars"></div></div>
@@ -328,7 +329,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     <div class="kpis">
       <div class="kpi fly"><span class="lbl">✈️ Tramos</span><span class="v" id="k-tramos">—</span></div>
       <div class="kpi okc"><span class="lbl">🎟️ Comprados</span><span class="v" id="k-comprados">—</span></div>
-      <div class="kpi sc"><span class="lbl">💸 Total vuelos (2 pax)</span><span class="v" id="k-vuelos">—</span></div>
+      <div class="kpi sc money"><span class="lbl">💸 Total vuelos (2 pax)</span><span class="v" id="k-vuelos">—</span></div>
     </div>
     <div class="toolbar"><p class="muted">Horarios en hora local. (+1) = llega al día siguiente.</p><button class="btn add" data-add="vuelos" type="button">＋ Agregar vuelo</button></div>
     <div class="flights" id="flights"></div>
@@ -338,7 +339,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     <div class="kpis">
       <div class="kpi fly"><span class="lbl">🌙 Noches en hotel</span><span class="v" id="k-noches">—</span></div>
       <div class="kpi tz"><span class="lbl">🛏️ Estadías</span><span class="v" id="k-estadias">—</span></div>
-      <div class="kpi sc"><span class="lbl">💸 Total alojamiento</span><span class="v" id="k-aloj">—</span></div>
+      <div class="kpi sc money"><span class="lbl">💸 Total alojamiento</span><span class="v" id="k-aloj">—</span></div>
     </div>
     <div class="card rainbow"><h2>📅 Calendario de estadías</h2><div class="gantt" id="gantt"></div></div>
     <div class="toolbar"><h2>🏨 Hoteles</h2><button class="btn add" data-add="hoteles" type="button">＋ Agregar hotel</button></div>
@@ -391,14 +392,14 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
       <div class="kpi sc"><span class="lbl">🤿 Actividades</span><span class="v" id="a-n">—</span></div>
       <div class="kpi za"><span class="lbl">⭐ Must do</span><span class="v" id="a-must">—</span></div>
       <div class="kpi okc"><span class="lbl">🎟️ Reservadas o hechas</span><span class="v" id="a-res">—</span></div>
-      <div class="kpi tz"><span class="lbl">💵 Costo est. (2 pax)</span><span class="v" id="a-usd">—</span></div>
+      <div class="kpi tz money"><span class="lbl">💵 Costo est. (2 pax)</span><span class="v" id="a-usd">—</span></div>
     </div>
     <div class="card sc">
       <div class="card-head"><h2>🐬 Tours y actividades</h2><button class="btn add" data-add="actividades" type="button">＋ Agregar actividad</button></div>
       <p class="muted toggle-hint">Toca el estado para pasarlo a reservado, hecho o por reservar.</p>
       <div class="tablebox">
         <table>
-          <thead><tr><th>Actividad</th><th>Destino</th><th class="hide-narrow">Cuándo</th><th class="num">USD pp</th><th>Estado</th><th></th></tr></thead>
+          <thead><tr><th>Actividad</th><th>Destino</th><th class="hide-narrow">Cuándo</th><th class="num money">USD pp</th><th>Estado</th><th></th></tr></thead>
           <tbody id="act-body"></tbody>
         </table>
       </div>
@@ -494,6 +495,12 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   const untip = (box) => { const t = box.querySelector(':scope > .tip'); if (t) t.hidden = true; };
   const hover = (node, box, title, lines) => { node.addEventListener('pointermove', (ev) => tip(box, ev, title, lines)); node.addEventListener('pointerleave', () => untip(box)); };
 
+  /* ---------- montos ---------- */
+  // Cambiar a true para volver a mostrar montos, presupuesto y pagos.
+  const MOSTRAR_MONTOS = false;
+  const MONEY_FIELD = /clp|usd|monto|pagado_por/;
+  if (!MOSTRAR_MONTOS) document.body.classList.add('sin-montos');
+
   /* ---------- Firebase ---------- */
   // ⚠️ Pega aquí la configuración de tu proyecto de Firebase (Configuración del proyecto → Tus apps → Web).
   const FIREBASE_CONFIG = {
@@ -558,7 +565,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     const sc = SCHEMA[coll]; editing = {coll, id: row && row._id};
     $('#editor-title').textContent = (row ? 'Editar ' : 'Agregar ') + sc.name;
     const box = $('#editor-fields'); box.replaceChildren();
-    sc.fields.forEach(([k, label, type, wide]) => {
+    sc.fields.filter(([k]) => MOSTRAR_MONTOS || !MONEY_FIELD.test(k)).forEach(([k, label, type, wide]) => {
       const f = el('div', 'field' + (wide || type === 'area' ? ' wide' : ''));
       const id = 'ed-' + k; const lab = el('label', '', label); lab.htmlFor = id;
       let input;
@@ -587,7 +594,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   $('#editor-form').addEventListener('submit', async (e) => {
     e.preventDefault(); if (!editing) return;
     const {coll, id} = editing; const sc = SCHEMA[coll]; const data = {};
-    sc.fields.forEach(([k, , type]) => { const v = $('#ed-' + k).value; data[k] = type === 'number' ? (v === '' ? 0 : Number(v)) : v.trim(); });
+    sc.fields.forEach(([k, , type]) => { const inp = $('#ed-' + k); if (!inp) return; const v = inp.value; data[k] = type === 'number' ? (v === '' ? 0 : Number(v)) : v.trim(); });
     if (coll === 'hoteles' && valid(data.check_in) && valid(data.check_out) && !data.noches) data.noches = Math.round((date(data.check_out) - date(data.check_in)) / 864e5);
     closeEditor();
     try {
@@ -613,7 +620,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   /* ---------- pestañas ---------- */
   const TABS = [...document.querySelectorAll('.tab')].map((t) => t.dataset.tab);
   const show = (id) => {
-    if (!TABS.includes(id)) id = 'itinerario';
+    if (!TABS.includes(id) || (!MOSTRAR_MONTOS && id === 'presupuesto')) id = 'itinerario';
     document.querySelectorAll('.page').forEach((s) => { s.hidden = s.id !== id; });
     document.querySelectorAll('.tab').forEach((t) => t.setAttribute('aria-selected', t.dataset.tab === id ? 'true' : 'false'));
     render();
@@ -755,7 +762,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
       const line = el('div', 'line'); line.appendChild(el('span', '', [f.duracion, f.escala].filter(Boolean).join(' · ') || '—'));
       const b = el('div'); b.style.textAlign = 'right'; b.append(el('div', 'time', f.llegada || '—'), el('div', 'muted', de || '')); r.append(a, line, b);
       const meta = el('div', 'meta'); const kv = (k, val) => { const s = el('span', '', k + ' '); s.appendChild(el('b', '', val)); return s; };
-      meta.append(kv('Agencia', f.agencia || '—'), kv('Código', f.codigo || '—'), kv('Total', n(f.total_clp) ? clp(n(f.total_clp)) : '—'));
+      meta.append(kv('Agencia', f.agencia || '—'), kv('Código', f.codigo || '—')); if (MOSTRAR_MONTOS) meta.append(kv('Total', n(f.total_clp) ? clp(n(f.total_clp)) : '—'));
       card.append(head, r, meta); if (f.notas) card.appendChild(el('p', 'muted', '📝 ' + f.notas)); box.appendChild(card);
     });
   }
@@ -770,7 +777,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
       ok.forEach((h) => { const row = el('div', 'g-row'); const tr = el('div', 'g-track'); const bar = el('span'); const k = color(h.pais);
         bar.style.left = pos(h.check_in) + '%'; bar.style.width = Math.max(pos(h.check_out) - pos(h.check_in), 1.5) + '%'; bar.style.background = `linear-gradient(90deg, color-mix(in srgb, ${k} 60%, #fff), ${k})`;
         tr.appendChild(bar); row.append(el('span', 'lab', String(h.hotel || '').split('(')[0].split(':')[0].trim()), tr);
-        hover(row, g, h.hotel, [`${fd(h.check_in)} → ${fd(h.check_out)} · ${n(h.noches)} noches`, h.regimen, n(h.total_clp) ? clp(n(h.total_clp)) : '']); g.appendChild(row); });
+        hover(row, g, h.hotel, [`${fd(h.check_in)} → ${fd(h.check_out)} · ${n(h.noches)} noches`, h.regimen, MOSTRAR_MONTOS && n(h.total_clp) ? clp(n(h.total_clp)) : '']); g.appendChild(row); });
       const ax = el('div', 'g-axis'); const ticks = el('div', 'g-ticks'); const step = (g.clientWidth || 600) < 480 ? 14 : 7;
       for (let t = t0; t <= t1; t += 864e5 * step) { const d = new Date(t); const s = el('span', '', d.getDate() + ' ' + MES[d.getMonth()]); s.style.left = ((t - t0) / span * 100) + '%'; ticks.appendChild(s); }
       ax.append(el('span'), ticks); g.appendChild(ax);
@@ -780,7 +787,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     hs.forEach((h) => { const c = el('article', 'hotel'); c.style.setProperty('--acc', color(h.pais));
       const top = el('div', 'row'); top.append(el('h3', 'grow', h.hotel || '—'), editBtn('hoteles', h));
       const dl = el('dl', 'kv');
-      [['📍 Zona', h.zona], ['📅 Fechas', `${fd(h.check_in)} → ${fd(h.check_out)} · ${n(h.noches)} noches`], ['🍽️ Régimen', h.regimen], ['💸 Total', n(h.total_clp) ? clp(n(h.total_clp)) + (h.monto_original ? ' · ' + h.monto_original : '') : ''], ['💳 Pagado por', h.pagado_por], ['📝 Notas', h.notas]]
+      [['📍 Zona', h.zona], ['📅 Fechas', `${fd(h.check_in)} → ${fd(h.check_out)} · ${n(h.noches)} noches`], ['🍽️ Régimen', h.regimen], ['💸 Total', MOSTRAR_MONTOS && n(h.total_clp) ? clp(n(h.total_clp)) + (h.monto_original ? ' · ' + h.monto_original : '') : ''], ['💳 Pagado por', MOSTRAR_MONTOS ? h.pagado_por : ''], ['📝 Notas', h.notas]]
         .forEach(([k, v]) => { if (v) dl.append(el('dt', '', k), el('dd', '', v)); });
       c.append(top, dl); box.appendChild(c); });
   }
@@ -878,7 +885,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
       const b = el('button', 'pill ' + (done ? 'ok' : 'warn'), (r.estado === 'Hecho' ? '✓ ' : r.estado === 'Reservado' ? '🎟️ ' : '') + (r.estado || '—')); b.type = 'button';
       b.addEventListener('click', () => quick('actividades', r, {estado: ACT_NEXT[r.estado] || 'Reservado'})); st.appendChild(b);
       const ed = el('td'); ed.appendChild(editBtn('actividades', r));
-      tr.append(name, el('td', '', r.destino || ''), el('td', 'hide-narrow', r.cuando || ''), el('td', 'num', n(r.usd_pp) ? String(n(r.usd_pp)) : 'Gratis'), st, ed);
+      tr.append(name, el('td', '', r.destino || ''), el('td', 'hide-narrow', r.cuando || ''), el('td', 'num money', n(r.usd_pp) ? String(n(r.usd_pp)) : 'Gratis'), st, ed);
       body.appendChild(tr);
     });
     if (!a.length) { const tr = el('tr'); const td = el('td', 'muted', L ? 'Sin actividades todavía.' : 'Cargando…'); td.colSpan = 6; tr.appendChild(td); body.appendChild(tr); }
