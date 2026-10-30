@@ -178,6 +178,9 @@ th { position: sticky; top: 0; background: var(--panel); text-align: left; font-
 td { padding: 9px 8px; border-bottom: 1px solid var(--line); vertical-align: middle; }
 tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
 .num { text-align: right; white-space: nowrap; }
+.over { color: var(--bad) !important; font-weight: 700; }
+.box.bad { background: var(--bad); border-color: var(--bad); }
+.pill.over-pill { background: color-mix(in srgb, var(--bad) 18%, transparent); color: var(--bad); }
 .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; vertical-align: 1px; }
 .search { font: inherit; font-size: 13.5px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 999px; background: var(--bg); color: var(--ink); min-width: 0; flex: 1 1 12rem; }
 .progress { height: 14px; border-radius: 999px; overflow: hidden; display: flex; background: var(--soft); }
@@ -283,7 +286,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
 
   <section class="page" id="resumen">
     <div class="kpis money">
-      <div class="kpi za"><span class="lbl">💸 Costo total</span><span class="v" id="k-total">—</span></div>
+      <div class="kpi za"><span class="lbl">📝 Presupuesto total</span><span class="v" id="k-total">—</span></div>
       <div class="kpi okc"><span class="lbl">✅ Ya pagado</span><span class="v" id="k-pagado">—</span></div>
       <div class="kpi tz"><span class="lbl">⏳ Por pagar</span><span class="v" id="k-pend">—</span></div>
     </div>
@@ -349,7 +352,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   <section class="page" id="presupuesto" hidden>
     <div class="kpis">
       <div class="kpi fly"><span class="lbl">📝 Presupuesto</span><span class="v" id="p-ppto">—</span></div>
-      <div class="kpi za"><span class="lbl">💸 Costo real</span><span class="v" id="p-total">—</span></div>
+      <div class="kpi za"><span class="lbl">🚨 Sobre presupuesto</span><span class="v" id="p-total">—</span></div>
       <div class="kpi okc"><span class="lbl">✅ Pagado</span><span class="v" id="p-pagado">—</span></div>
       <div class="kpi tz"><span class="lbl">⏳ Por pagar</span><span class="v" id="p-pend">—</span></div>
     </div>
@@ -374,12 +377,12 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
           <button class="chip" data-est="Pendiente" aria-pressed="false">⏳ Pendientes</button>
         </div>
       </div>
-      <p class="muted toggle-hint">Toca la casilla de un ítem para registrar un pago (quién pagó y cuánto). Puedes agregar varios pagos parciales.</p>
+      <p class="muted toggle-hint">Toca la casilla de un ítem para registrar un pago (quién pagó y cuánto). Puedes agregar varios pagos parciales. Si lo pagado supera el presupuesto, se marca en rojo; el presupuesto solo cambia si lo editan con ✎.</p>
       <div class="tablebox">
         <table>
           <thead><tr>
             <th></th><th data-sort="item">Ítem</th><th data-sort="categoria" class="hide-narrow">Categoría</th>
-            <th data-sort="presupuesto_clp" class="num hide-narrow">Presupuesto</th><th data-sort="real_clp" class="num">Real</th><th data-sort="pagado_clp" class="num">Pagado</th><th data-sort="pend_clp" class="num hide-narrow">Por pagar</th><th data-sort="estado">Estado</th><th></th>
+            <th data-sort="presupuesto_clp" class="num">Presupuesto</th><th data-sort="pagado_clp" class="num">Pagado</th><th data-sort="pend_clp" class="num hide-narrow">Por pagar</th><th data-sort="estado">Estado</th><th></th>
           </tr></thead>
           <tbody id="pay-body"></tbody>
         </table>
@@ -439,7 +442,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
 <div class="overlay" id="paysheet" hidden>
   <form class="sheet" id="pay-form" novalidate>
     <div class="row"><h2 class="grow" id="pay-title">Pagos</h2><button class="edit" type="button" id="pay-close" aria-label="Cerrar">✕</button></div>
-    <div class="sumbox"><div><span class="muted">Costo real</span><b id="ps-real">—</b></div><div><span class="muted">Pagado</span><b id="ps-paid">—</b></div><div><span class="muted">Por pagar</span><b id="ps-pend">—</b></div></div>
+    <div class="sumbox"><div><span class="muted">Presupuesto</span><b id="ps-real">—</b></div><div><span class="muted">Pagado</span><b id="ps-paid">—</b></div><div><span class="muted">Por pagar</span><b id="ps-pend">—</b></div></div>
     <div class="abonos" id="ps-list"></div>
     <h3>➕ Registrar un pago</h3>
     <div class="form">
@@ -566,7 +569,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     itinerario: {name: 'día', fields: [['dia', 'Día n°', 'number'], ['fecha', 'Fecha', 'date'], ['pais', 'País', PAISES], ['tipo', 'Tipo', ['Vuelo', 'Ciudad', 'Safari', 'Playa']], ['destino', 'Destino', 'text', 'wide'], ['am', 'Mañana', 'area'], ['pm', 'Tarde', 'area'], ['alojamiento', 'Alojamiento'], ['transporte', 'Transporte'], ['notas', 'Notas', 'area']]},
     vuelos: {name: 'vuelo', fields: [['tramo', 'Tramo (Origen → Destino)', 'text', 'wide'], ['fecha', 'Fecha', 'date'], ['salida', 'Salida'], ['llegada', 'Llegada'], ['duracion', 'Duración'], ['escala', 'Escala'], ['agencia', 'Agencia'], ['codigo', 'Código de reserva'], ['total_clp', 'Total CLP (2 pax)', 'number'], ['estado', 'Estado', ['Comprado', 'Por confirmar', 'Pendiente']], ['notas', 'Notas', 'area']]},
     hoteles: {name: 'hotel', fields: [['hotel', 'Hotel', 'text', 'wide'], ['zona', 'Zona'], ['pais', 'País', PAISES], ['check_in', 'Check-in', 'date'], ['check_out', 'Check-out', 'date'], ['noches', 'Noches', 'number'], ['total_clp', 'Total CLP', 'number'], ['monto_original', 'Monto en moneda original'], ['regimen', 'Régimen'], ['pagado_por', 'Pagado por'], ['notas', 'Notas / confirmación', 'area']]},
-    pagos: {name: 'gasto', fields: [['item', 'Ítem', 'text', 'wide'], ['categoria', 'Categoría', ['Vuelos', 'Alojamiento', 'Transporte', 'Actividades', 'Comidas', 'Compras', 'Visas y trámites', 'Salud', 'Seguros', 'Roaming', 'Propinas', 'Imprevistos', 'Gastos en viaje']], ['presupuesto_clp', 'Presupuesto CLP', 'number'], ['real_clp', 'Costo real CLP', 'number'], ['notas', 'Notas', 'area']]},
+    pagos: {name: 'gasto', fields: [['item', 'Ítem', 'text', 'wide'], ['categoria', 'Categoría', ['Vuelos', 'Alojamiento', 'Transporte', 'Actividades', 'Comidas', 'Compras', 'Visas y trámites', 'Salud', 'Seguros', 'Roaming', 'Propinas', 'Imprevistos', 'Gastos en viaje']], ['presupuesto_clp', 'Presupuesto CLP', 'number'], ['notas', 'Notas', 'area']]},
     actividades: {name: 'actividad', fields: [['actividad', 'Actividad', 'text', 'wide'], ['destino', 'Destino'], ['cuando', 'Cuándo'], ['usd_pp', 'USD por persona', 'number'], ['prioridad', 'Prioridad', ['', 'Must do']], ['estado', 'Estado', ['Por reservar', 'Reservado', 'Hecho', 'Por confirmar', 'Libre']], ['notas', 'Notas', 'area']]},
     pendientes: {name: 'pendiente', fields: [['tarea', 'Tarea', 'text', 'wide'], ['categoria', 'Categoría', ['Documentos', 'Salud', 'Reservas', 'Antes de viajar', 'Durante el viaje']], ['estado', 'Estado', ['Pendiente', 'Por confirmar', 'Listo']], ['pago', 'Gasto del presupuesto (si tiene costo)', 'pagosref'], ['nota', 'Nota', 'area']]},
     tips: {name: 'tip', fields: [['seccion', 'Sección'], ['tema', 'Tema'], ['texto', 'Texto', 'area']]},
@@ -648,7 +651,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   document.querySelectorAll('.tab').forEach((t) => t.addEventListener('click', () => { if (location.hash !== '#' + t.dataset.tab) location.hash = t.dataset.tab; else show(t.dataset.tab); }));
   window.addEventListener('hashchange', () => show(location.hash.slice(1)));
 
-  const UI = {pais: '', est: '', q: '', sort: 'real_clp', dir: -1};
+  const UI = {pais: '', est: '', q: '', sort: 'presupuesto_clp', dir: -1};
   const chipGroup = (sel, key, attr) => document.querySelectorAll(sel + ' .chip').forEach((b) => b.addEventListener('click', () => {
     UI[key] = b.dataset[attr]; document.querySelectorAll(sel + ' .chip').forEach((x) => x.setAttribute('aria-pressed', x === b ? 'true' : 'false')); render();
   }));
@@ -663,18 +666,22 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   /* ---------- cálculos ---------- */
   const abonos = (r) => Array.isArray(r.abonos) ? r.abonos : [];
   const paidOf = (r) => abonos(r).reduce((s, a) => s + n(a.monto), 0);
-  const pendOf = (r) => Math.max(n(r.real_clp) - paidOf(r), 0);
-  const realOf = (r) => Math.max(n(r.real_clp), paidOf(r));
-  const stateOf = (r) => { const p = paidOf(r), t = n(r.real_clp); return p <= 0 ? (t <= 0 ? 'Pagado' : 'Pendiente') : p >= t ? 'Pagado' : 'Parcial'; };
+  // El presupuesto de cada ítem es fijo: solo cambia si lo editan. Lo pagado de más se muestra como sobrecosto.
+  const pptoOf = (r) => n(r.presupuesto_clp);
+  const pendOf = (r) => Math.max(pptoOf(r) - paidOf(r), 0);
+  const overOf = (r) => Math.max(paidOf(r) - pptoOf(r), 0);
+  const realOf = pptoOf;
+  const stateOf = (r) => { const p = paidOf(r), t = pptoOf(r); return p <= 0 ? (t <= 0 ? 'Pagado' : 'Pendiente') : p >= t ? 'Pagado' : 'Parcial'; };
   const PAYER = {Tarjeta: ['💳', 'var(--sc)'], Mario: ['🙋‍♂️', 'var(--za)'], Trini: ['🙋‍♀️', 'var(--tz)'], Efectivo: ['💵', 'var(--ok)']};
   const USD_CLP = 950;
   const totals = () => {
     const p = S.pagos;
     const total = p.reduce((s, r) => s + realOf(r), 0);
     const ppto = p.reduce((s, r) => s + n(r.presupuesto_clp), 0);
-    const pagado = p.reduce((s, r) => s + Math.min(paidOf(r), Math.max(n(r.real_clp), paidOf(r))), 0);
+    const pagado = p.reduce((s, r) => s + paidOf(r), 0);
+    const over = p.reduce((s, r) => s + overOf(r), 0);
     const fondos = n(S.fondos.propio) + n(S.fondos.regalos);
-    return {total, ppto, pagado, pend: p.reduce((s, r) => s + pendOf(r), 0), fondos, saldo: fondos - total, pct: total ? pagado / total : 0};
+    return {total, ppto, pagado, over, pend: p.reduce((s, r) => s + pendOf(r), 0), fondos, saldo: fondos - total, pct: total ? pagado / total : 0};
   };
   const emptyMsg = (box, coll, msg) => { box.replaceChildren(el('div', 'empty', S.loaded[coll] ? msg : 'Cargando…')); };
 
@@ -711,7 +718,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     set('#k-total', ready ? clp(T.total) : '—'); set('#k-pagado', ready ? clp(T.pagado) : '—'); set('#k-pend', ready ? clp(T.pend) : '—');
     const tk = $('#takeaway');
     if (ready) {
-      tk.replaceChildren(document.createTextNode('Llevan pagado el '), el('b', '', Math.round(T.pct * 100) + '%'), document.createTextNode(' del viaje. Quedan '), el('b', '', clp(T.pend)), document.createTextNode(' por pagar.'));
+      tk.replaceChildren(document.createTextNode('Llevan pagado el '), el('b', '', Math.round(T.pct * 100) + '%'), document.createTextNode(' del viaje. Quedan '), el('b', '', clp(T.pend)), document.createTextNode(T.over > 0 ? ' por pagar y van ' + clp(T.over) + ' sobre el presupuesto.' : ' por pagar.'));
     }
     // ruta
     const route = $('#route'); route.replaceChildren();
@@ -815,7 +822,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   }
   function renderPresupuesto() {
     const T = totals(); const ready = S.loaded.pagos;
-    set('#p-ppto', ready ? clp(T.ppto) : '—'); set('#p-total', ready ? clp(T.total) : '—'); set('#p-pagado', ready ? clp(T.pagado) : '—'); set('#p-pend', ready ? clp(T.pend) : '—');
+    set('#p-ppto', ready ? clp(T.ppto) : '—'); set('#p-total', ready ? clp(T.over) : '—'); $('#p-total').classList.toggle('over', T.over > 0); set('#p-pagado', ready ? clp(T.pagado) : '—'); set('#p-pend', ready ? clp(T.pend) : '—');
     const pr = $('#pay-progress'); pr.replaceChildren(); const base = Math.max(T.total, 1);
     [[T.pagado, 'var(--ok)'], [T.pend, 'var(--pend)']].forEach(([v, c]) => { const s = el('span'); s.style.width = (v / base * 100) + '%'; s.style.background = c; pr.appendChild(s); });
     set('#pay-note', ready ? `${Math.round(T.pct * 100)}% pagado · ${clp(T.pagado)} de ${clp(T.total)}` : '—');
@@ -841,12 +848,15 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
       const stt = stateOf(r); const st = el('td');
       const b = el('button', 'pill ' + (stt === 'Pagado' ? 'ok' : stt === 'Parcial' ? 'part' : 'warn'), stt === 'Pagado' ? '✓ Pagado' : stt === 'Parcial' ? '◐ Parcial' : '⏳ Pendiente'); b.type = 'button';
       b.setAttribute('aria-label', 'Ver y registrar pagos de ' + (r.item || 'este ítem'));
+      if (overOf(r) > 0) { b.className = 'pill over-pill'; b.textContent = '⚠ Sobre presupuesto'; }
       b.addEventListener('click', () => openPay(r)); st.appendChild(b);
       const real = realOf(r), paid = paidOf(r);
       const ck = el('td'); const cb = el('button', 'box ' + (stt === 'Pagado' ? 'ok' : stt === 'Parcial' ? 'warn' : ''), stt === 'Pagado' ? '✓' : stt === 'Parcial' ? '◐' : ''); cb.type = 'button'; cb.setAttribute('aria-label', 'Registrar pago de ' + (r.item || 'este ítem')); cb.addEventListener('click', () => openPay(r)); ck.appendChild(cb);
+      const ov = overOf(r); if (ov > 0) { cb.className = 'box bad'; cb.textContent = '!'; }
       const pt = el('td', 'num', clp(paid)); if (real > 0 && paid > 0 && paid < real) { const mb = el('div', 'minibar'); const s = el('span'); s.style.width = Math.min(paid / real * 100, 100) + '%'; s.style.background = 'var(--ok)'; mb.appendChild(s); pt.appendChild(mb); }
       const ed = el('td'); ed.appendChild(editBtn('pagos', r));
-      tr.append(ck, name, el('td', 'hide-narrow', r.categoria || ''), el('td', 'num hide-narrow', clp(n(r.presupuesto_clp))), el('td', 'num', clp(real)), pt, el('td', 'num hide-narrow', clp(pendOf(r))), st, ed);
+      if (ov > 0) pt.classList.add('over');
+      tr.append(ck, name, el('td', 'hide-narrow', r.categoria || ''), el('td', 'num', clp(n(r.presupuesto_clp))), pt, el('td', 'num hide-narrow' + (ov > 0 ? ' over' : ''), ov > 0 ? '+' + clp(ov) + ' de más' : clp(pendOf(r))), st, ed);
       body.appendChild(tr);
     });
     if (!rows.length) { const tr = el('tr'); const td = el('td', 'muted', S.loaded.pagos ? 'Nada coincide con la búsqueda.' : 'Cargando…'); td.colSpan = 9; tr.appendChild(td); body.appendChild(tr); }
@@ -855,7 +865,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   /* ---------- pendientes con costo ---------- */
   // Un pendiente con costo queda listo cuando su gasto del presupuesto está pagado completo.
   const syncPend = async (item, nuevos) => {
-    const paid = nuevos.reduce((s, a) => s + n(a.monto), 0); const full = paid > 0 && paid >= n(item.real_clp);
+    const paid = nuevos.reduce((s, a) => s + n(a.monto), 0); const full = paid > 0 && paid >= n(item.presupuesto_clp);
     for (const q of S.pendientes.filter((x) => x.pago === item._id)) {
       const want = full ? 'Listo' : (q.estado === 'Listo' ? 'Pendiente' : q.estado);
       if (want !== q.estado) await db.collection('pendientes').doc(q._id).update({estado: want});
@@ -866,7 +876,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   const payRow = () => S.pagos.find((r) => r._id === payId);
   function fillPay() {
     const r = payRow(); if (!r) { closePay(); return; }
-    set('#pay-title', '💳 ' + (r.item || 'Pagos')); set('#ps-real', clp(realOf(r))); set('#ps-paid', clp(paidOf(r))); set('#ps-pend', clp(pendOf(r)));
+    set('#pay-title', '💳 ' + (r.item || 'Pagos')); set('#ps-real', clp(realOf(r))); set('#ps-paid', clp(paidOf(r))); const ovp = overOf(r); set('#ps-pend', ovp > 0 ? '+' + clp(ovp) : clp(pendOf(r))); $('#ps-pend').classList.toggle('over', ovp > 0); $('#ps-pend').previousElementSibling.textContent = ovp > 0 ? 'Sobre presupuesto' : 'Por pagar';
     const list = $('#ps-list'); list.replaceChildren();
     const ab = abonos(r);
     if (!ab.length) list.appendChild(el('p', 'muted', 'Aún no hay pagos registrados para este ítem.'));
