@@ -286,6 +286,25 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
 .in-body p { margin: 0; font-size: 14.5px; line-height: 1.5; }
 .in-price { display: flex; gap: 6px 8px; align-items: center; flex-wrap: wrap; background: var(--soft); border-radius: 12px; padding: 9px 12px; font-size: 14px; }
 .in-body .credit { font-size: 11.5px; }
+.agenda { list-style: none; margin: 0; padding: 0; display: grid; gap: 5px; font-size: 13.5px; }
+.agenda li { display: flex; gap: 8px; align-items: baseline; }
+.agenda .ico { width: 1.3rem; text-align: center; flex: none; }
+.agenda .ag-vuelo { font-weight: 700; }
+.agenda .ag-act .act-name { font-weight: 600; }
+.agenda .warn-fly { color: var(--warn); font-weight: 700; }
+.day-add { justify-self: start; font: inherit; font-size: 12.5px; font-weight: 700; padding: 3px 11px; border-radius: 999px; border: 1px dashed color-mix(in srgb, var(--acc) 55%, var(--line)); background: transparent; color: color-mix(in srgb, var(--acc) 75%, var(--ink)); cursor: pointer; }
+.in-plan { display: grid; gap: 8px; background: var(--soft); border-radius: 14px; padding: 12px; }
+.in-plan h3 { margin: 0; font-size: 14px; }
+.in-plan-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.sheet, .in-body, .in-plan { grid-template-columns: minmax(0, 1fr); min-width: 0; }
+.in-plan select { width: 100%; }
+.in-plan select { font: inherit; font-size: 14px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); color: var(--ink); min-width: 0; flex: 1 1 10rem; }
+.in-plan .agenda { font-size: 13px; }
+tr.grp td { background: color-mix(in srgb, var(--sc) 10%, var(--panel)); font-weight: 800; font-size: 13px; padding: 7px 8px; }
+.act-when { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+.pend-t { font: inherit; text-align: left; background: none; border: 0; padding: 0; color: inherit; cursor: pointer; line-height: 1.35; }
+.checks li.done .pend-t { text-decoration: line-through; color: var(--muted); }
+.checks li .flag { font-size: 13px; }
 .act-name { font: inherit; font-weight: 600; text-align: left; background: none; border: 0; padding: 0; color: inherit; cursor: pointer; text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--ink) 25%, transparent); text-underline-offset: 3px; }
 .hero-row .lock, .hero-row .sync { white-space: nowrap; }
 </style>
@@ -334,18 +353,16 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     <p class="take money" id="takeaway">Cargando el presupuesto…</p>
     <div class="card rainbow">
       <h2>🧭 La ruta, día a día</h2>
-      <p class="muted">Cada bloque es un día. Pasa el dedo o el cursor para ver el detalle.</p>
       <div class="route" id="route"></div>
       <div class="legend"><span><i class="sw" style="background:var(--za)"></i>Ciudad</span><span><i class="sw" style="background:var(--tz)"></i>Safari</span><span><i class="sw" style="background:var(--sc)"></i>Playa</span><span><i class="sw" style="background:var(--fly)"></i>Vuelo</span></div>
     </div>
     <div class="grid money">
-      <div class="card za"><div class="card-head"><h2>📊 Gasto por categoría</h2><button class="eye" type="button" data-eye="res-cat">▸ Ver montos</button></div><p class="muted">Presupuesto en CLP, pagado y por pagar. <b>Toca una categoría para ver el detalle.</b></p><div class="bars" id="cat-bars"></div>
+      <div class="card za"><div class="card-head"><h2>📊 Gasto por categoría</h2><button class="eye" type="button" data-eye="res-cat">▸ Ver montos</button></div><div class="bars" id="cat-bars"></div>
         <div class="legend"><span><i class="sw" style="background:var(--ok)"></i>Pagado</span><span><i class="sw" style="background:var(--pend)"></i>Por pagar</span></div></div>
-      <div class="card sc"><div class="card-head"><h2>💳 Quién ha pagado</h2><button class="eye" type="button" data-eye="res-who">▸ Ver montos</button></div><p class="muted">Pagos registrados en CLP y lo que falta por pagar.</p><div class="bars" id="who-bars"></div></div>
+      <div class="card sc"><div class="card-head"><h2>💳 Quién ha pagado</h2><button class="eye" type="button" data-eye="res-who">▸ Ver montos</button></div><div class="bars" id="who-bars"></div></div>
     </div>
     <div class="card fly">
       <h2>⚙️ Datos</h2>
-      <p class="muted">Descarga un respaldo de todo el viaje o carga el archivo de datos iniciales.</p>
       <div class="datos">
         <button class="btn ghost" type="button" id="export">⬇️ Descargar respaldo</button>
         <label class="btn ghost add" for="import-file" style="cursor:pointer">⬆️ Importar datos</label>
@@ -407,7 +424,6 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     </div>
     <div class="card fly">
       <h2>👥 Quién ha pagado</h2>
-      <p class="muted">Suma de los pagos registrados en cada ítem.</p>
       <div class="payers" id="payers"></div>
     </div>
     <div class="card sc">
@@ -421,7 +437,6 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
           <button class="chip" data-est="Pendiente" aria-pressed="false">⏳ Pendientes</button>
         </div>
       </div>
-      <p class="muted toggle-hint">Toca la casilla de un ítem para registrar un pago (quién pagó y cuánto). Puedes agregar varios pagos parciales. Si lo pagado supera el presupuesto, se marca en rojo; el presupuesto solo cambia si lo editan con ✎. Toca los totales de arriba o a una persona para filtrar.</p>
       <div class="filter-banner" id="pay-filter" hidden><span id="pay-filter-txt"></span><button class="chip" type="button" id="pay-filter-x">✕ Ver todo</button></div>
       <div class="tablebox">
         <table>
@@ -446,7 +461,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     </div>
     <div class="card sc">
       <div class="card-head"><h2>🐬 Tours y actividades</h2><button class="btn add" data-add="actividades" type="button">＋ Agregar actividad</button></div>
-      <p class="muted toggle-hint">Toca el nombre de una actividad para ver fotos, detalles y cómo hacerla. Toca la casilla cuando hagan una actividad: registras cuánto costó y quién pagó, y se suma al presupuesto. El estado cambia entre reservado y por reservar.</p>
+      <div class="chips" id="base-chips" style="margin:4px 0 10px"></div>
       <div class="tablebox">
         <table>
           <thead><tr><th>✓</th><th>Actividad</th><th class="hide-narrow">Destino</th><th class="hide-narrow">Cuándo</th><th class="num money">Precio (2)</th><th class="num money hide-narrow">Gastado</th><th>Estado</th><th class="hide-narrow"></th></tr></thead>
@@ -461,7 +476,6 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
       <div class="card-head"><h2>🧳 Antes de partir</h2><button class="btn add" data-add="pendientes" type="button">＋ Agregar pendiente</button></div>
       <div class="progress" id="todo-progress"></div>
       <p class="muted" id="todo-note">—</p>
-      <p class="muted toggle-hint">Los pendientes con costo están ligados al presupuesto: al tocar la casilla registras el pago, y quedan listos cuando se paga completo.</p>
     </div>
     <div class="checks" id="checks"></div>
   </section>
@@ -498,6 +512,17 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     <div class="sheet-actions">
       <button class="btn ghost" type="button" id="in-edit">✎ Editar</button>
       <button class="btn" type="button" id="in-done" style="margin-left:auto">Marcar como hecha</button>
+    </div>
+  </div>
+</div>
+<div class="overlay" id="pendsheet" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="pd-title">
+    <div class="row"><h2 class="grow" id="pd-title">Pendiente</h2><button class="edit" type="button" id="pd-close" aria-label="Cerrar">✕</button></div>
+    <div class="in-tags" id="pd-tags"></div>
+    <div class="in-body" id="pd-body"></div>
+    <div class="sheet-actions">
+      <button class="btn ghost" type="button" id="pd-edit">✎ Editar</button>
+      <button class="btn" type="button" id="pd-main" style="margin-left:auto">Marcar como listo</button>
     </div>
   </div>
 </div>
@@ -653,7 +678,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     vuelos: {name: 'vuelo', fields: [['tramo', 'Tramo (Origen → Destino)', 'text', 'wide'], ['fecha', 'Fecha', 'date'], ['salida', 'Salida'], ['llegada', 'Llegada'], ['duracion', 'Duración'], ['escala', 'Escala'], ['agencia', 'Agencia'], ['codigo', 'Código de reserva'], ['total_clp', 'Total CLP (2 pax)', 'number'], ['estado', 'Estado', ['Comprado', 'Por confirmar', 'Pendiente']], ['notas', 'Notas', 'area']]},
     hoteles: {name: 'hotel', fields: [['hotel', 'Hotel', 'text', 'wide'], ['zona', 'Zona'], ['pais', 'País', PAISES], ['check_in', 'Check-in', 'date'], ['check_out', 'Check-out', 'date'], ['noches', 'Noches', 'number'], ['total_clp', 'Total CLP', 'number'], ['monto_original', 'Monto en moneda original'], ['regimen', 'Régimen'], ['pagado_por', 'Pagado por'], ['notas', 'Notas / confirmación', 'area']]},
     pagos: {name: 'gasto', fields: [['item', 'Ítem', 'text', 'wide'], ['categoria', 'Categoría', ['Vuelos', 'Alojamiento', 'Transporte', 'Actividades', 'Comidas', 'Compras', 'Visas y trámites', 'Salud', 'Seguros', 'Roaming', 'Propinas', 'Imprevistos', 'Gastos en viaje']], ['presupuesto_clp', 'Presupuesto CLP', 'number'], ['notas', 'Notas', 'area']]},
-    actividades: {name: 'actividad', fields: [['actividad', 'Actividad', 'text', 'wide'], ['destino', 'Destino'], ['cuando', 'Cuándo'], ['usd_pp', 'USD por persona', 'number'], ['prioridad', 'Prioridad', ['', 'Must do']], ['estado', 'Estado', ['Por reservar', 'Reservado', 'Hecho', 'Por confirmar', 'Libre']], ['notas', 'Duración y datos', 'area'], ['descripcion', 'Qué es', 'area'], ['como', 'Cómo hacerlo', 'area'], ['tips', 'Tips', 'area']]},
+    actividades: {name: 'actividad', fields: [['actividad', 'Actividad', 'text', 'wide'], ['destino', 'Destino'], ['cuando', 'Cuándo'], ['usd_pp', 'USD por persona', 'number'], ['prioridad', 'Prioridad', ['', 'Must do']], ['estado', 'Estado', ['Por reservar', 'Reservado', 'Hecho', 'Por confirmar', 'Libre']], ['fecha', 'Día en el itinerario', 'date'], ['franja', 'Momento del día', ['', 'Todo el día', 'Mañana', 'Tarde', 'Noche']], ['base', 'Estadía', ['', 'Cape Town', 'Arusha', 'Safari', 'Nungwi', 'Jambiani', 'Praslin', 'Mahé']], ['notas', 'Duración y datos', 'area'], ['descripcion', 'Qué es', 'area'], ['como', 'Cómo hacerlo', 'area'], ['tips', 'Tips', 'area']]},
     pendientes: {name: 'pendiente', fields: [['tarea', 'Tarea', 'text', 'wide'], ['categoria', 'Categoría', ['Documentos', 'Salud', 'Reservas', 'Antes de viajar', 'Durante el viaje']], ['estado', 'Estado', ['Pendiente', 'Por confirmar', 'Listo']], ['pago', 'Gasto del presupuesto (si tiene costo)', 'pagosref'], ['nota', 'Nota', 'area']]},
     tips: {name: 'tip', fields: [['seccion', 'Sección'], ['tema', 'Tema'], ['texto', 'Texto', 'area']]},
     config: {name: 'fondos', fields: [['propio', 'Fondos propios CLP', 'number'], ['regalos', 'Regalos CLP', 'number']]},
@@ -727,6 +752,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   const TABS = [...document.querySelectorAll('.tab')].map((t) => t.dataset.tab);
   const show = (id) => {
     if (!TABS.includes(id) || (!MOSTRAR_MONTOS && id === 'presupuesto')) id = 'itinerario';
+    if (infoId) closeInfo(); if (pendId) closePend(); if (catName) closeCat();
     document.querySelectorAll('.page').forEach((s) => { s.hidden = s.id !== id; });
     document.querySelectorAll('.tab').forEach((t) => t.setAttribute('aria-selected', t.dataset.tab === id ? 'true' : 'false'));
     render();
@@ -734,7 +760,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   document.querySelectorAll('.tab').forEach((t) => t.addEventListener('click', () => { if (location.hash !== '#' + t.dataset.tab) location.hash = t.dataset.tab; else show(t.dataset.tab); }));
   window.addEventListener('hashchange', () => show(location.hash.slice(1)));
 
-  const UI = {pais: '', est: '', q: '', sort: 'presupuesto_clp', dir: -1};
+  const UI = {pais: '', est: '', q: '', sort: 'presupuesto_clp', dir: -1, base: ''};
   const chipGroup = (sel, key, attr) => document.querySelectorAll(sel + ' .chip').forEach((b) => b.addEventListener('click', () => {
     UI[key] = b.dataset[attr]; document.querySelectorAll(sel + ' .chip').forEach((x) => x.setAttribute('aria-pressed', x === b ? 'true' : 'false')); render();
   }));
@@ -786,6 +812,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     renderHeader();
     if (catName) fillCat();
     if (infoId) fillInfo();
+    if (pendId) fillPend();
     withKey(null, ({resumen: renderResumen, itinerario: renderItin, vuelos: renderVuelos, hoteles: renderHoteles, presupuesto: renderPresupuesto, actividades: renderAct, pendientes: renderPend, tips: renderTips})[page]);
   }
   function renderHeader() {
@@ -860,10 +887,48 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     const when = el('div', 'when'); when.append(el('span', 'emo', emoji(d)), el('span', 'n', d.dia != null && d.dia !== '' ? String(d.dia) : '·'), el('span', 'd', fdl(d.fecha)));
     const body = el('div', 'body'); const top = el('div', 'row'); const h = el('h3', 'grow', d.destino || 'Sin destino');
     top.append(h, el('span', 'tag', d.tipo || '—')); if (today) top.appendChild(el('span', 'tag hoy', '📍 Hoy')); top.appendChild(editBtn('itinerario', d));
+    body.appendChild(top);
+    const ag = agenda(d.fecha); if (ag.length) body.appendChild(agendaList(ag));
     const dl = el('dl', 'kv');
     [['☀️ Mañana', d.am], ['🌅 Tarde', d.pm], ['🛏️ Noche', d.alojamiento], ['🚙 Transporte', d.transporte], ['📝 Notas', d.notas]].forEach(([k, v]) => { if (v) dl.append(el('dt', '', k), el('dd', '', v)); });
-    body.append(top, dl); card.append(when, body); return card;
+    if (dl.children.length) body.appendChild(dl);
+    const base = baseOfDay(d);
+    if (base && db) { const ad = el('button', 'day-add', '＋ Actividad'); ad.type = 'button'; ad.addEventListener('click', () => { UI.base = base; location.hash = 'actividades'; }); body.appendChild(ad); }
+    card.append(when, body); return card;
   }
+  /* ---------- agenda automática del día: vuelos, hoteles y actividades ---------- */
+  const addDays = (iso, k) => { const [y, m, dd] = String(iso).slice(0, 10).split('-').map(Number); return new Date(Date.UTC(y, m - 1, dd + k)).toISOString().slice(0, 10); };
+  const hhmm = (x) => (String(x || '').match(/\d{1,2}:\d{2}/) || [''])[0].padStart(5, '0');
+  const plusD = (x) => { const m = String(x || '').match(/\(\+(\d)\)/); return m ? +m[1] : 0; };
+  const FRANJA_T = {'Todo el día': '08:00', 'Mañana': '09:00', 'Tarde': '15:00', 'Noche': '20:00'};
+  const arrDate = (f) => addDays(f.fecha, plusD(f.llegada));
+  function agenda(fecha) {
+    const out = []; if (!valid(fecha)) return out;
+    let lastArr = '', firstDep = '99:99';
+    S.vuelos.forEach((f) => {
+      if (!valid(f.fecha)) return; const de = String(f.tramo || '').split('→')[1];
+      if (f.fecha === fecha) { const t = hhmm(f.salida) || '00:00'; firstDep = t < firstDep ? t : firstDep; out.push({t, ico: '✈️', txt: `${hhmm(f.salida)} Vuelo ${f.tramo || ''}` + (f.llegada ? ` · llega ${f.llegada}` : ''), kind: 'vuelo', f}); }
+      if (arrDate(f) === fecha && f.llegada) { const t = hhmm(f.llegada); lastArr = t > lastArr ? t : lastArr; if (plusD(f.llegada)) out.push({t, ico: '🛬', txt: `${t} Llegada a ${(de || '').trim() || 'destino'}`, kind: 'vuelo', f}); }
+    });
+    S.hoteles.forEach((h) => {
+      const nm = String(h.hotel || '').split('(')[0].split(':')[0].trim() || 'hotel';
+      if (h.check_out === fecha) out.push({t: firstDep < '10:00' ? '00:00' : '10:00', ico: '🧳', txt: 'Check-out ' + nm, kind: 'hotel'});
+      if (h.check_in === fecha) out.push({t: lastArr > '14:00' ? lastArr + '~' : '14:00', ico: '🏨', txt: 'Check-in ' + nm + (lastArr && lastArr < '12:00' ? ' (pedir early check-in)' : ''), kind: 'hotel'});
+    });
+    S.actividades.forEach((a) => { if (a.fecha === fecha) out.push({t: FRANJA_T[a.franja] || '12:00', ico: '🎟️', txt: (a.franja && a.franja !== 'Todo el día' ? a.franja + ' · ' : '') + (a.actividad || 'Actividad'), kind: 'act', a}); });
+    return out.sort((x, y) => x.t.localeCompare(y.t));
+  }
+  function agendaList(ag) {
+    const ul = el('ul', 'agenda');
+    ag.forEach((x) => { const li = el('li', 'ag-' + x.kind); li.appendChild(el('span', 'ico', x.ico));
+      if (x.kind === 'act') { const b = el('button', 'act-name', x.txt); b.type = 'button'; b.addEventListener('click', () => openInfo(x.a)); li.appendChild(b); } else li.appendChild(el('span', '', x.txt));
+      ul.appendChild(li); });
+    return ul;
+  }
+  const BASES = [['Cape Town', '🏙️', 'Cape Town', 'Island Club'], ['Arusha', '☕', 'Arusha', 'Tulia'], ['Safari', '🦁', 'Safari', 'Tarangire · Serengeti · Ngorongoro'], ['Nungwi', '🌴', 'Nungwi', 'RIU Jambo'], ['Jambiani', '🐚', 'Jambiani y Stone Town', 'Sharazad'], ['Praslin', '🐢', 'Praslin y La Digue', 'Paradise Sun'], ['Mahé', '🏝️', 'Mahé', 'Coral Strand']];
+  const baseFromText = (t) => { t = String(t || ''); return /safari|tarangire|serengeti|ngorongoro|eileen|wild camp|house of nature/i.test(t) ? 'Safari' : /cape town|island club/i.test(t) ? 'Cape Town' : /arusha|tulia/i.test(t) ? 'Arusha' : /nungwi|riu|kendwa/i.test(t) ? 'Nungwi' : /jambiani|sharazad|stone town|paje|michamvi|zanz/i.test(t) ? 'Jambiani' : /praslin|digue|paradise sun/i.test(t) ? 'Praslin' : /mah[eé]|coral strand/i.test(t) ? 'Mahé' : ''; };
+  const baseOf = (r) => r.base || baseFromText(r.destino);
+  const baseOfDay = (d) => /en vuelo/i.test(d.alojamiento || '') ? baseFromText(String(d.destino || '').split('→')[0]) : (baseFromText(d.alojamiento) || baseFromText(d.destino));
   function renderItin() {
     const days = [...S.itinerario].sort(byDate('fecha')); const t = todayISO();
     const box = $('#days'); box.replaceChildren();
@@ -918,11 +983,13 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     hs.forEach((h) => withKey('h:' + h._id, () => { const c = el('article', 'hotel'); c.style.setProperty('--acc', color(h.pais));
       const top = el('div', 'row'); top.append(el('h3', 'grow', h.hotel || '—'), editBtn('hoteles', h));
       const dl = el('dl', 'kv');
-      [['📍 Zona', h.zona], ['📅 Fechas', `${fd(h.check_in)} → ${fd(h.check_out)} · ${n(h.noches)} noches`], ['🍽️ Régimen', h.regimen], ['💸 Total', MOSTRAR_MONTOS && n(h.total_clp) ? clp(n(h.total_clp)) + (h.monto_original ? ' · ' + h.monto_original : '') : ''], ['💳 Pagado por', MOSTRAR_MONTOS ? h.pagado_por : ''], ['📝 Notas', h.notas]]
+      [['📍 Zona', h.zona], ['📅 Fechas', `${fd(h.check_in)} → ${fd(h.check_out)} · ${n(h.noches)} noches`], ['🛬 Llegada', hotelArr(h)], ['🛫 Salida', hotelDep(h)], ['🍽️ Régimen', h.regimen], ['💸 Total', MOSTRAR_MONTOS && n(h.total_clp) ? clp(n(h.total_clp)) + (h.monto_original ? ' · ' + h.monto_original : '') : ''], ['💳 Pagado por', MOSTRAR_MONTOS ? h.pagado_por : ''], ['📝 Notas', h.notas]]
         .forEach(([k, v]) => { if (v) dl.append(el('dt', '', k), el('dd', '', v)); });
       if (MOSTRAR_MONTOS && n(h.total_clp)) { const dd = [...dl.querySelectorAll('dt')].find((x) => x.textContent === '💸 Total'); if (dd) dd.nextElementSibling.appendChild(eyeBtn('h:' + h._id)); }
       c.append(top, dl); box.appendChild(c); }));
   }
+  const hotelArr = (h) => { const f = S.vuelos.find((x) => valid(x.fecha) && x.llegada && arrDate(x) === h.check_in); if (!f) return ''; const t = hhmm(f.llegada); return `${t} vuelo ${f.tramo || ''}` + (t < '12:00' ? ' · pedir early check-in' : ''); };
+  const hotelDep = (h) => { const f = S.vuelos.find((x) => x.fecha === h.check_out); if (!f) return ''; const t = hhmm(f.salida); return `${t} vuelo ${f.tramo || ''}` + (t < '12:00' ? ' · check-out temprano' : ''); };
   function renderPresupuesto() {
     KEY = 'pre-tot';
     const T = totals(); const ready = S.loaded.pagos;
@@ -1112,17 +1179,22 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     set('#a-n', L ? String(a.length) : '—'); set('#a-must', L ? String(a.filter((r) => /must/i.test(r.prioridad)).length) : '—');
     set('#a-res', L ? a.filter((r) => r.estado === 'Hecho').length + ' de ' + a.length : '—'); set('#a-gast', L ? clp(a.reduce((s, r) => s + spentOf(r._id), 0)) : '—'); set('#a-usd', L ? usd(a.reduce((s, r) => s + n(r.usd_pp) * 2, 0)) : '—');
     const body = $('#act-body'); body.replaceChildren();
-    const order = ['Cape Town', 'Tanzania', 'Zanzíbar', 'Praslin', 'La Digue', 'Mahé'];
-    [...a].sort((x, y) => ((order.indexOf(x.destino) + 99) % 99) - ((order.indexOf(y.destino) + 99) % 99) || String(x.actividad).localeCompare(String(y.actividad), 'es')).forEach((r) => {
+    const chips = $('#base-chips'); chips.replaceChildren();
+    [['', '🌍', 'Todas']].concat(BASES).forEach(([k, e, lbl]) => { const c = el('button', 'chip', `${e} ${lbl.split(' y ')[0]} (${k ? a.filter((r) => baseOf(r) === k).length : a.length})`); c.type = 'button'; c.setAttribute('aria-pressed', UI.base === k ? 'true' : 'false'); c.addEventListener('click', () => { UI.base = k; render(); }); chips.appendChild(c); });
+    const bi = (r) => { const i = BASES.findIndex((b) => b[0] === baseOf(r)); return i < 0 ? 99 : i; };
+    let grp = null;
+    [...a].filter((r) => !UI.base || baseOf(r) === UI.base).sort((x, y) => bi(x) - bi(y) || String(x.fecha || '9').localeCompare(String(y.fecha || '9')) || (/must/i.test(y.prioridad || '') - /must/i.test(x.prioridad || '')) || String(x.actividad).localeCompare(String(y.actividad), 'es')).forEach((r) => {
+      if (!UI.base && bi(r) !== grp) { grp = bi(r); const B = BASES[grp]; const g = el('tr', 'grp'); const td = el('td', '', B ? `${B[1]} ${B[2]} · ${B[3]}` : '📍 Otras'); td.colSpan = 8; g.appendChild(td); body.appendChild(g); }
       const tr = el('tr'); const name = el('td'); const nb = el('button', 'act-name', r.actividad || '—'); nb.type = 'button'; nb.addEventListener('click', () => openInfo(r)); name.appendChild(nb);
       if (/must/i.test(r.prioridad)) { const s = el('span', 'tag', '⭐ Must do'); s.style.marginLeft = '6px'; s.style.setProperty('--acc', 'var(--za)'); name.appendChild(s); }
+      if (valid(r.fecha)) name.appendChild(el('span', 'act-when', '📅 ' + fdl(r.fecha) + (r.franja && r.franja !== 'Todo el día' ? ' · ' + r.franja : '')));
       const st = el('td'); const done = r.estado === 'Reservado' || r.estado === 'Hecho';
       const b = el('button', 'pill ' + (done ? 'ok' : 'warn'), (r.estado === 'Hecho' ? '✓ ' : r.estado === 'Reservado' ? '🎟️ ' : '') + (r.estado || '—')); b.type = 'button';
       b.addEventListener('click', () => r.estado === 'Hecho' ? openAct(r) : quick('actividades', r, {estado: ACT_NEXT[r.estado] || 'Reservado'})); st.appendChild(b);
       const ed = el('td', 'hide-narrow'); ed.appendChild(editBtn('actividades', r));
       const ck = el('td'); const hecha = r.estado === 'Hecho'; const cb = el('button', 'box ' + (hecha ? 'ok' : ''), hecha ? '✓' : ''); cb.type = 'button'; cb.setAttribute('aria-label', (hecha ? 'Ver pagos de ' : 'Marcar como hecha: ') + (r.actividad || 'actividad')); cb.addEventListener('click', () => openAct(r)); ck.appendChild(cb);
       const sp = spentOf(r._id);
-      tr.append(ck, name, el('td', 'hide-narrow', r.destino || ''), el('td', 'hide-narrow', r.cuando || ''), el('td', 'num money', n(r.usd_pp) ? clp(n(r.usd_pp) * 2 * USD_CLP) : 'Gratis'), el('td', 'num money hide-narrow', sp ? clp(sp) : '—'), st, ed);
+      tr.append(ck, name, el('td', 'hide-narrow', r.destino || ''), el('td', 'hide-narrow', valid(r.fecha) ? '📅 ' + fd(r.fecha) : (r.cuando || '')), el('td', 'num money', n(r.usd_pp) ? clp(n(r.usd_pp) * 2 * USD_CLP) : 'Gratis'), el('td', 'num money hide-narrow', sp ? clp(sp) : '—'), st, ed);
       body.appendChild(tr);
     });
     if (!a.length) { const tr = el('tr'); const td = el('td', 'muted', L ? 'Sin actividades todavía.' : 'Cargando…'); td.colSpan = 8; tr.appendChild(td); body.appendChild(tr); }
@@ -1218,6 +1290,20 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     }
     gal.hidden = !fotos.length;
     const b = $('#in-body'); b.replaceChildren();
+    { const pl = el('div', 'in-plan'); pl.appendChild(el('h3', '', '📅 En el itinerario'));
+      const row = el('div', 'in-plan-row'); const sd = el('select'); sd.setAttribute('aria-label', 'Día del itinerario'); sd.appendChild(new Option('Sin fecha todavía', ''));
+      [...S.itinerario].filter((x) => valid(x.fecha)).sort(byDate('fecha')).forEach((x) => sd.appendChild(new Option(`${fdl(x.fecha)} · ${x.destino || ''}`, x.fecha)));
+      sd.value = valid(r.fecha) ? r.fecha : '';
+      const sf = el('select'); sf.setAttribute('aria-label', 'Momento del día'); ['Todo el día', 'Mañana', 'Tarde', 'Noche'].forEach((f) => sf.appendChild(new Option(f, f))); sf.value = r.franja || 'Todo el día';
+      sd.disabled = !canWrite; sf.disabled = !canWrite || !sd.value;
+      sd.addEventListener('change', () => quick('actividades', r, {fecha: sd.value, franja: sd.value ? sf.value : ''}));
+      sf.addEventListener('change', () => quick('actividades', r, {franja: sf.value}));
+      row.append(sd, sf); pl.appendChild(row);
+      if (valid(r.fecha)) { const ag = agenda(r.fecha).filter((x) => !(x.kind === 'act' && x.a._id === r._id));
+        if (ag.length) { pl.appendChild(el('span', 'muted', 'Ese día también tienen:')); pl.appendChild(agendaList(ag)); if (ag.some((x) => x.kind === 'vuelo')) pl.appendChild(el('span', 'warn-fly', '⚠ Ese día hay vuelo: revisen que el horario les calce.')); }
+        else pl.appendChild(el('span', 'muted', 'Ese día no tienen nada más agendado.')); }
+      else if (r.cuando) pl.appendChild(el('span', 'muted', 'Sugerencia: ' + r.cuando));
+      b.appendChild(pl); }
     const sec = (h, t) => { if (!t) return; const d = el('div'); d.append(el('h3', '', h), el('p', '', t)); b.appendChild(d); };
     sec('✨ Qué es', r.descripcion); sec('⏱ Duración y datos', String(r.notas || '').replace(/^⏱\s*/, '')); sec('🧭 Cómo hacerlo', r.como); sec('💡 Tips', r.tips);
     const est = n(r.usd_pp) * 2, sp = spentOf(r._id);
@@ -1237,9 +1323,39 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('#infosheet').hidden && $('#actsheet').hidden && $('#editor').hidden && $('#paysheet').hidden) closeInfo(); });
   $('#in-edit').addEventListener('click', () => { const r = infoRow(); if (r) openEditor('actividades', r); });
   $('#in-done').addEventListener('click', () => { const r = infoRow(); if (r) openAct(r); });
+  /* ---------- ficha de un pendiente ---------- */
+  var pendId = null;
+  const pendRow = () => S.pendientes.find((r) => r._id === pendId);
+  function fillPend() { const r = pendRow(); withKey(r && r.pago ? r.pago : null, fillPend_); }
+  function fillPend_() {
+    const r = pendRow(); if (!r) { closePend(); return; }
+    const item = r.pago ? S.pagos.find((q) => q._id === r.pago) : null;
+    set('#pd-title', r.tarea || 'Pendiente');
+    const tags = $('#pd-tags'); tags.replaceChildren();
+    [['📂', r.categoria], [r.estado === 'Listo' ? '✓' : r.estado === 'Por confirmar' ? '?' : '•', r.estado || 'Pendiente']].forEach(([e, t]) => { if (t) tags.appendChild(el('span', 'tag', e + ' ' + t)); });
+    const b = $('#pd-body'); b.replaceChildren();
+    if (r.nota) { const d = el('div'); d.append(el('h3', '', '📝 Detalle'), el('p', '', r.nota)); b.appendChild(d); }
+    if (item) {
+      const stt = stateOf(item); const d = el('div', 'in-price');
+      d.appendChild(el('b', '', `💸 ${item.item || 'Gasto'}: ` + (stt === 'Pagado' ? 'pagado ' + clp(paidOf(item)) : stt === 'Parcial' ? clp(paidOf(item)) + ' pagado de ' + clp(pptoOf(item)) : clp(pptoOf(item)) + ' por pagar')));
+      const who = [...new Set(abonos(item).map((a) => a.quien))]; if (who.length) d.appendChild(el('span', 'muted', '· Pagó ' + who.join(', ')));
+      d.appendChild(eyeBtn(item._id)); b.appendChild(d);
+    }
+    if (!r.nota && !item) b.appendChild(el('p', 'muted', 'Sin más detalles. Puedes agregar una nota con ✎ Editar.'));
+    const main = $('#pd-main');
+    main.textContent = item ? (stateOf(item) === 'Pagado' ? 'Ver pagos' : 'Registrar pago') : (r.estado === 'Listo' ? 'Marcar como pendiente' : 'Marcar como listo');
+    main.hidden = !canWrite && !item; $('#pd-edit').hidden = !canWrite;
+  }
+  function openPend(r) { pendId = r._id; fillPend(); $('#pendsheet').hidden = false; }
+  function closePend() { $('#pendsheet').hidden = true; pendId = null; }
+  $('#pd-close').addEventListener('click', closePend);
+  $('#pendsheet').addEventListener('click', (e) => { if (e.target.id === 'pendsheet') closePend(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('#pendsheet').hidden && $('#paysheet').hidden && $('#editor').hidden) closePend(); });
+  $('#pd-edit').addEventListener('click', () => { const r = pendRow(); if (r) openEditor('pendientes', r); });
+  $('#pd-main').addEventListener('click', () => { const r = pendRow(); if (!r) return; const item = r.pago ? S.pagos.find((q) => q._id === r.pago) : null; if (item) openPay(item); else quick('pendientes', r, {estado: r.estado === 'Listo' ? 'Pendiente' : 'Listo'}); });
   /* ---------- mostrar / ocultar montos ---------- */
   const paintVer = () => { document.body.classList.toggle('ver', VER); const b = $('#ver-montos'); b.textContent = VER ? '👁 Ocultar' : '🙈 Ver montos'; b.setAttribute('aria-pressed', VER ? 'true' : 'false'); };
-  const repaint = () => { paintVer(); render(); if (payId) fillPay(); if (actId) fillAct(); if (infoId) fillInfo(); document.querySelectorAll('[data-eye]').forEach((b) => { if (b.dataset.eye) paintEye(b); }); };
+  const repaint = () => { paintVer(); render(); if (payId) fillPay(); if (actId) fillAct(); if (infoId) fillInfo(); if (pendId) fillPend(); document.querySelectorAll('[data-eye]').forEach((b) => { if (b.dataset.eye) paintEye(b); }); };
   document.addEventListener('click', (e) => {
     const b = e.target.closest && e.target.closest('[data-eye]'); if (!b || !b.dataset.eye) return;
     e.stopPropagation(); e.preventDefault(); const k = b.dataset.eye; if (REVEAL.has(k)) REVEAL.delete(k); else REVEAL.add(k); repaint();
@@ -1267,14 +1383,9 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
         const box2 = el('button', 'box ' + st[1], st[0]); box2.type = 'button';
         box2.setAttribute('aria-label', item ? 'Registrar pago de ' + (r.tarea || 'este pendiente') : (r.estado === 'Listo' ? 'Marcar como pendiente' : 'Marcar como listo'));
         box2.addEventListener('click', () => item ? openPay(item) : quick('pendientes', r, {estado: r.estado === 'Listo' ? 'Pendiente' : 'Listo'}));
-        li.append(box2, el('span', 't', r.tarea || '—'), editBtn('pendientes', r));
-        if (item) withKey(item._id, () => {
-          const stt = stateOf(item); const cost = el('span', 'n money');
-          const pill = el('span', 'pill ' + (stt === 'Pagado' ? 'ok' : stt === 'Parcial' ? 'part' : 'warn'), stt === 'Pagado' ? '✓ Pagado ' + clp(paidOf(item)) : stt === 'Parcial' ? '◐ ' + clp(paidOf(item)) + ' de ' + clp(realOf(item)) : '💸 ' + clp(realOf(item)) + ' por pagar');
-          cost.appendChild(pill); const who = [...new Set(abonos(item).map((a) => a.quien))]; if (who.length) cost.appendChild(document.createTextNode(' ' + who.join(' · '))); cost.appendChild(eyeBtn(item._id));
-          li.appendChild(cost);
-        });
-        if (r.nota) li.appendChild(el('span', 'n', r.nota)); ul.appendChild(li);
+        const tb = el('button', 'pend-t', r.tarea || '—'); tb.type = 'button'; tb.setAttribute('aria-label', 'Ver detalle: ' + (r.tarea || 'pendiente')); tb.addEventListener('click', () => openPend(r));
+        li.append(box2, tb, el('span', 'flag', item ? (stateOf(item) === 'Pagado' ? '✓💸' : '💸') : (r.nota ? 'ⓘ' : '')));
+        ul.appendChild(li);
       });
       card.appendChild(ul); box.appendChild(card);
     }
@@ -1282,7 +1393,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   function renderTips() {
     const box = $('#tips-list'); box.replaceChildren();
     if (!S.tips.length) { emptyMsg(box, 'tips', 'Sin tips todavía.'); return; }
-    const META = {Documentos: ['🛂', 'var(--za)'], Dinero: ['💵', 'var(--tz)'], Salud: ['🩺', 'var(--sc)'], Seguridad: ['🛡️', 'var(--fly)'], Safari: ['🦒', 'var(--tz)'], 'Zanzíbar': ['🌴', 'var(--sc)'], Seychelles: ['🐢', 'var(--sc)'], Clima: ['🌤️', 'var(--za)']};
+    const META = {Documentos: ['🛂', 'var(--za)'], Dinero: ['💵', 'var(--tz)'], Salud: ['🩺', 'var(--sc)'], Seguridad: ['🛡️', 'var(--fly)'], Safari: ['🦒', 'var(--tz)'], 'Zanzíbar': ['🌴', 'var(--sc)'], Seychelles: ['🐢', 'var(--sc)'], Clima: ['🌤️', 'var(--za)'], 'Cape Town': ['🏙️', 'var(--za)'], Vuelos: ['✈️', 'var(--fly)']};
     const groups = new Map(); S.tips.forEach((r) => { const k = r.seccion || 'Otros'; if (!groups.has(k)) groups.set(k, []); groups.get(k).push(r); });
     for (const [sec, items] of groups) {
       const m = META[sec] || ['💡', 'var(--fly)']; const card = el('div', 'card'); card.style.setProperty('--acc', m[1]);
