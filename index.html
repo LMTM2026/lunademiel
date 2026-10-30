@@ -214,6 +214,11 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
 .field textarea { min-height: 4.5rem; resize: vertical; }
 .sheet-actions { display: flex; gap: 8px; justify-content: space-between; flex-wrap: wrap; }
 .payers { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); }
+[data-f], [data-quien], [data-cat] { cursor: pointer; }
+.kpi[data-f]:hover, .payer:hover, .bar-row[data-quien]:hover, .bar-row[data-cat]:hover, .bar-row[data-f]:hover { filter: brightness(.97); }
+.kpi.sel, .payer.sel { box-shadow: 0 0 0 3px var(--acc); }
+.filter-banner { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 10px 14px; border-radius: 14px; background: color-mix(in srgb, var(--sc) 14%, var(--panel)); border: 1px solid color-mix(in srgb, var(--sc) 35%, var(--line)); font-size: 14px; }
+.filter-banner b { font-weight: 700; }
 .payer { --acc: var(--sc); border-radius: 14px; padding: 12px 14px; display: grid; gap: 2px; background: color-mix(in srgb, var(--acc) 13%, var(--panel)); border: 1px solid color-mix(in srgb, var(--acc) 35%, var(--line)); }
 .payer .who { font-weight: 700; font-size: 13px; display: flex; gap: 6px; align-items: center; }
 .payer .amt { white-space: nowrap; font-family: var(--display); font-weight: 700; font-size: clamp(1rem, 4.6vw, 1.3rem); color: color-mix(in srgb, var(--acc) 75%, var(--ink)); }
@@ -286,9 +291,9 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
 
   <section class="page" id="resumen">
     <div class="kpis money">
-      <div class="kpi za"><span class="lbl">📝 Presupuesto total</span><span class="v" id="k-total">—</span></div>
-      <div class="kpi okc"><span class="lbl">✅ Ya pagado</span><span class="v" id="k-pagado">—</span></div>
-      <div class="kpi tz"><span class="lbl">⏳ Por pagar</span><span class="v" id="k-pend">—</span></div>
+      <div class="kpi za" data-f="todo" role="button" tabindex="0"><span class="lbl">📝 Presupuesto total</span><span class="v" id="k-total">—</span></div>
+      <div class="kpi okc" data-f="pagado" role="button" tabindex="0"><span class="lbl">✅ Ya pagado</span><span class="v" id="k-pagado">—</span></div>
+      <div class="kpi tz" data-f="porpagar" role="button" tabindex="0"><span class="lbl">⏳ Por pagar</span><span class="v" id="k-pend">—</span></div>
     </div>
     <p class="take money" id="takeaway">Cargando el presupuesto…</p>
     <div class="card rainbow">
@@ -351,10 +356,10 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
 
   <section class="page" id="presupuesto" hidden>
     <div class="kpis">
-      <div class="kpi fly"><span class="lbl">📝 Presupuesto</span><span class="v" id="p-ppto">—</span></div>
-      <div class="kpi za"><span class="lbl">🚨 Sobre presupuesto</span><span class="v" id="p-total">—</span></div>
-      <div class="kpi okc"><span class="lbl">✅ Pagado</span><span class="v" id="p-pagado">—</span></div>
-      <div class="kpi tz"><span class="lbl">⏳ Por pagar</span><span class="v" id="p-pend">—</span></div>
+      <div class="kpi fly" data-f="todo" role="button" tabindex="0"><span class="lbl">📝 Presupuesto</span><span class="v" id="p-ppto">—</span></div>
+      <div class="kpi za" data-f="sobre" role="button" tabindex="0"><span class="lbl">🚨 Sobre presupuesto</span><span class="v" id="p-total">—</span></div>
+      <div class="kpi okc" data-f="pagado" role="button" tabindex="0"><span class="lbl">✅ Pagado</span><span class="v" id="p-pagado">—</span></div>
+      <div class="kpi tz" data-f="porpagar" role="button" tabindex="0"><span class="lbl">⏳ Por pagar</span><span class="v" id="p-pend">—</span></div>
     </div>
     <div class="card rainbow">
       <div class="card-head"><h2>📈 Avance de pagos</h2></div>
@@ -377,7 +382,8 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
           <button class="chip" data-est="Pendiente" aria-pressed="false">⏳ Pendientes</button>
         </div>
       </div>
-      <p class="muted toggle-hint">Toca la casilla de un ítem para registrar un pago (quién pagó y cuánto). Puedes agregar varios pagos parciales. Si lo pagado supera el presupuesto, se marca en rojo; el presupuesto solo cambia si lo editan con ✎.</p>
+      <p class="muted toggle-hint">Toca la casilla de un ítem para registrar un pago (quién pagó y cuánto). Puedes agregar varios pagos parciales. Si lo pagado supera el presupuesto, se marca en rojo; el presupuesto solo cambia si lo editan con ✎. Toca los totales de arriba o a una persona para filtrar.</p>
+      <div class="filter-banner" id="pay-filter" hidden><span id="pay-filter-txt"></span><button class="chip" type="button" id="pay-filter-x">✕ Ver todo</button></div>
       <div class="tablebox">
         <table>
           <thead><tr>
@@ -656,6 +662,18 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     UI[key] = b.dataset[attr]; document.querySelectorAll(sel + ' .chip').forEach((x) => x.setAttribute('aria-pressed', x === b ? 'true' : 'false')); render();
   }));
   chipGroup('#pais-chips', 'pais', 'pais'); chipGroup('#est-chips', 'est', 'est');
+  /* ---------- filtros tocando totales, personas o categorías ---------- */
+  UI.vista = ''; UI.quien = ''; UI.cat = '';
+  const setFiltro = (f) => {
+    Object.assign(UI, {vista: '', quien: '', cat: '', est: ''}, f);
+    document.querySelectorAll('#est-chips .chip').forEach((x) => x.setAttribute('aria-pressed', x.dataset.est === '' ? 'true' : 'false'));
+    if (location.hash !== '#presupuesto') location.hash = 'presupuesto'; else render();
+    setTimeout(() => { const t = $('#pay-filter'); if (t && !t.hidden) t.scrollIntoView({behavior: 'smooth', block: 'start'}); }, 150);
+  };
+  const filtroDe = (el) => el.dataset.quien ? {quien: el.dataset.quien} : el.dataset.cat ? {cat: el.dataset.cat} : {vista: el.dataset.f === 'todo' ? '' : el.dataset.f};
+  document.addEventListener('click', (e) => { const t = e.target.closest('[data-f], [data-quien], [data-cat]'); if (t && !t.closest('#editor, #paysheet, #actsheet')) setFiltro(filtroDe(t)); });
+  document.addEventListener('keydown', (e) => { if (e.key !== 'Enter') return; const t = e.target.closest && e.target.closest('[data-f], [data-quien], [data-cat]'); if (t) setFiltro(filtroDe(t)); });
+  $('#pay-filter-x').addEventListener('click', (e) => { e.stopPropagation(); setFiltro({}); });
   $('#pay-q').addEventListener('input', (e) => { UI.q = e.target.value.trim().toLowerCase(); render(); });
   document.querySelectorAll('th[data-sort]').forEach((th) => th.addEventListener('click', () => {
     const c = th.dataset.sort; UI.dir = UI.sort === c ? -UI.dir : (/clp$/.test(c) ? -1 : 1); UI.sort = c;
@@ -742,7 +760,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     const m = new Map();
     S.pagos.forEach((r) => { const o = m.get(r.categoria) || {categoria: r.categoria || 'Sin categoría', real: 0, pagado: 0, pend: 0}; o.real += realOf(r); o.pagado += Math.min(paidOf(r), realOf(r)); o.pend += pendOf(r); m.set(r.categoria, o); });
     const cats = [...m.values()].sort((a, b) => b.real - a.real);
-    if (cats.length) barRows($('#cat-bars'), cats, (r) => r.categoria, [['pagado', 'var(--ok)'], ['pend', 'var(--pend)']], (r) => r.real); else emptyMsg($('#cat-bars'), 'pagos', 'Sin gastos todavía.');
+    if (cats.length) { barRows($('#cat-bars'), cats, (r) => r.categoria, [['pagado', 'var(--ok)'], ['pend', 'var(--pend)']], (r) => r.real); [...$('#cat-bars').querySelectorAll('.bar-row')].forEach((row, i) => { row.dataset.cat = cats[i].categoria; }); } else emptyMsg($('#cat-bars'), 'pagos', 'Sin gastos todavía.');
     const q = new Map(); S.pagos.forEach((r) => abonos(r).forEach((a) => q.set(a.quien || '—', (q.get(a.quien || '—') || 0) + n(a.monto))));
     const T0 = totals(); if (T0.pend > 0) q.set('Por pagar', T0.pend);
     const WHO = {Tarjeta: 'var(--sc)', Mario: 'var(--za)', Trini: 'var(--tz)', 'Por pagar': 'var(--pend)', Efectivo: 'var(--ok)'};
@@ -752,7 +770,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
       wb.replaceChildren(); const max = Math.max(...who.map((r) => r.monto), 1);
       who.forEach((r) => { const row = el('div', 'bar-row'); const tr = el('div', 'track'); const s = el('span'); const k = WHO[r.quien] || 'var(--fly)';
         s.style.width = (r.monto / max * 100) + '%'; s.style.background = `linear-gradient(90deg, color-mix(in srgb, ${k} 65%, #fff), ${k})`; tr.appendChild(s);
-        row.append(el('span', '', r.quien), tr, el('span', '', clpM(r.monto))); hover(row, wb, r.quien, [clp(r.monto)]); wb.appendChild(row); });
+        row.append(el('span', '', r.quien), tr, el('span', '', clpM(r.monto))); hover(row, wb, r.quien, [clp(r.monto)]); if (r.quien === 'Por pagar') row.dataset.f = 'porpagar'; else row.dataset.quien = r.quien; wb.appendChild(row); });
     } else emptyMsg(wb, 'pagos', 'Sin gastos todavía.');
   }
   function dayCard(d, today) {
@@ -831,14 +849,17 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     S.pagos.forEach((r) => abonos(r).forEach((a) => { per[a.quien] = (per[a.quien] || 0) + n(a.monto); cnt[a.quien] = (cnt[a.quien] || 0) + 1; }));
     const pb = $('#payers'); pb.replaceChildren(); const sumPaid = Object.values(per).reduce((s, v) => s + v, 0) || 1;
     Object.entries(per).filter(([k, v]) => v > 0 || k !== 'Efectivo').forEach(([k, v]) => {
-      const m = PAYER[k] || ['👤', 'var(--fly)']; const c = el('div', 'payer'); c.style.setProperty('--acc', m[1]);
+      const m = PAYER[k] || ['👤', 'var(--fly)']; const c = el('div', 'payer' + (UI.quien === k ? ' sel' : '')); c.style.setProperty('--acc', m[1]); c.dataset.quien = k; c.setAttribute('role', 'button'); c.tabIndex = 0;
       const mb = el('div', 'minibar'); const s = el('span'); s.style.width = (v / sumPaid * 100) + '%'; s.style.background = m[1]; mb.appendChild(s);
       c.append(el('span', 'who', m[0] + ' ' + k), el('span', 'amt', clp(v)), el('span', 'muted', (cnt[k] || 0) + ' pagos · ' + Math.round(v / sumPaid * 100) + '%'), mb); pb.appendChild(c);
     });
-    { const c = el('div', 'payer'); c.style.setProperty('--acc', 'var(--pend)'); c.append(el('span', 'who', '⏳ Por pagar'), el('span', 'amt', clp(T.pend)), el('span', 'muted', S.pagos.filter((r) => pendOf(r) > 0).length + ' ítems con saldo')); pb.appendChild(c); }
+    { const c = el('div', 'payer' + (UI.vista === 'porpagar' ? ' sel' : '')); c.style.setProperty('--acc', 'var(--pend)'); c.dataset.f = 'porpagar'; c.setAttribute('role', 'button'); c.tabIndex = 0; c.append(el('span', 'who', '⏳ Por pagar'), el('span', 'amt', clp(T.pend)), el('span', 'muted', S.pagos.filter((r) => pendOf(r) > 0).length + ' ítems con saldo')); pb.appendChild(c); }
     const body = $('#pay-body'); body.replaceChildren(); const num = /clp$/.test(UI.sort);
     const val = (r, k) => k === 'pagado_clp' ? paidOf(r) : k === 'pend_clp' ? pendOf(r) : k === 'estado' ? stateOf(r) : r[k];
-    const rows = S.pagos.filter((r) => (!UI.est || stateOf(r) === UI.est) && (!UI.q || `${r.item} ${r.categoria} ${abonos(r).map((a) => a.quien).join(' ')}`.toLowerCase().includes(UI.q)))
+    document.querySelectorAll('.kpi[data-f]').forEach((k) => k.classList.toggle('sel', !UI.quien && !UI.cat && (k.dataset.f === (UI.vista || 'todo')) && !!(UI.vista)));
+    const paidBy = (r) => UI.quien ? abonos(r).filter((a) => a.quien === UI.quien).reduce((s, a) => s + n(a.monto), 0) : paidOf(r);
+    const enVista = (r) => (!UI.vista || (UI.vista === 'pagado' ? paidOf(r) > 0 : UI.vista === 'porpagar' ? pendOf(r) > 0 : UI.vista === 'sobre' ? overOf(r) > 0 : true)) && (!UI.quien || paidBy(r) > 0) && (!UI.cat || r.categoria === UI.cat);
+    const rows = S.pagos.filter((r) => enVista(r) && (!UI.est || stateOf(r) === UI.est) && (!UI.q || `${r.item} ${r.categoria} ${abonos(r).map((a) => a.quien).join(' ')}`.toLowerCase().includes(UI.q)))
       .sort((a, b) => num ? (n(val(a, UI.sort)) - n(val(b, UI.sort))) * UI.dir : String(val(a, UI.sort) || '').localeCompare(String(val(b, UI.sort) || ''), 'es') * UI.dir);
     const CAT = {Vuelos: 'var(--fly)', Alojamiento: 'var(--tz)', Transporte: 'var(--za)', Actividades: 'var(--sc)'};
     rows.forEach((r) => {
@@ -853,13 +874,23 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
       const real = realOf(r), paid = paidOf(r);
       const ck = el('td'); const cb = el('button', 'box ' + (stt === 'Pagado' ? 'ok' : stt === 'Parcial' ? 'warn' : ''), stt === 'Pagado' ? '✓' : stt === 'Parcial' ? '◐' : ''); cb.type = 'button'; cb.setAttribute('aria-label', 'Registrar pago de ' + (r.item || 'este ítem')); cb.addEventListener('click', () => openPay(r)); ck.appendChild(cb);
       const ov = overOf(r); if (ov > 0) { cb.className = 'box bad'; cb.textContent = '!'; }
-      const pt = el('td', 'num', clp(paid)); if (real > 0 && paid > 0 && paid < real) { const mb = el('div', 'minibar'); const s = el('span'); s.style.width = Math.min(paid / real * 100, 100) + '%'; s.style.background = 'var(--ok)'; mb.appendChild(s); pt.appendChild(mb); }
+      const pt = el('td', 'num', clp(paidBy(r))); if (real > 0 && paid > 0 && paid < real) { const mb = el('div', 'minibar'); const s = el('span'); s.style.width = Math.min(paid / real * 100, 100) + '%'; s.style.background = 'var(--ok)'; mb.appendChild(s); pt.appendChild(mb); }
       const ed = el('td'); ed.appendChild(editBtn('pagos', r));
       if (ov > 0) pt.classList.add('over');
       tr.append(ck, name, el('td', 'hide-narrow', r.categoria || ''), el('td', 'num', clp(n(r.presupuesto_clp))), pt, el('td', 'num hide-narrow' + (ov > 0 ? ' over' : ''), ov > 0 ? '+' + clp(ov) + ' de más' : clp(pendOf(r))), st, ed);
       body.appendChild(tr);
     });
     if (!rows.length) { const tr = el('tr'); const td = el('td', 'muted', S.loaded.pagos ? 'Nada coincide con la búsqueda.' : 'Cargando…'); td.colSpan = 9; tr.appendChild(td); body.appendChild(tr); }
+    const fb = $('#pay-filter'); const activo = UI.vista || UI.quien || UI.cat; fb.hidden = !activo;
+    if (activo) {
+      const sum = (f) => rows.reduce((s, r) => s + f(r), 0); let txt;
+      if (UI.quien) txt = [(PAYER[UI.quien] || ['👤'])[0] + ' Pagado por ' + UI.quien, sum(paidBy)];
+      else if (UI.cat) txt = ['Categoría ' + UI.cat + ' · presupuesto', sum(pptoOf)];
+      else if (UI.vista === 'pagado') txt = ['✅ Pagado', sum(paidOf)];
+      else if (UI.vista === 'porpagar') txt = ['⏳ Por pagar', sum(pendOf)];
+      else txt = ['🚨 Sobre presupuesto', sum(overOf)];
+      const t = $('#pay-filter-txt'); t.replaceChildren(document.createTextNode(txt[0] + ': '), el('b', '', clp(txt[1])), document.createTextNode(' · ' + rows.length + (rows.length === 1 ? ' ítem' : ' ítems')));
+    }
     if (payId) fillPay();
   }
   /* ---------- pendientes con costo ---------- */
