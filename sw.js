@@ -1,6 +1,6 @@
 // Guarda una copia de la app para que abra sin internet (safari, aviones, islas).
 // Los datos del viaje los guarda Firebase en el teléfono y se sincronizan al volver la señal.
-const CACHE = 'luna-de-miel-v9';
+const CACHE = 'luna-de-miel-v10';
 const SHELL = [
   './', 'index.html', 'manifest.webmanifest', 'icon-192.png', 'icon-512.png', 'apple-touch-icon.png',
   'https://cdn.jsdelivr.net/npm/firebase@10.14.1/firebase-app-compat.js',
