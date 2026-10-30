@@ -269,6 +269,13 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
 .datos { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .sync { font-size: 12.5px; font-weight: 600; padding: 4px 10px; border-radius: 999px; background: rgba(255,255,255,.18); border: 1px solid rgba(255,255,255,.4); }
 .sin-montos .money { display: none !important; }
+.eye { font: inherit; font-size: 12.5px; font-weight: 700; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--panel); color: var(--ink); cursor: pointer; white-space: nowrap; }
+.eye.mini { font-size: 11.5px; padding: 1px 8px; margin-left: 6px; vertical-align: middle; }
+.eye[aria-expanded="true"] { background: var(--soft); }
+.ver .eye { display: none; }
+.eye-row { display: flex; justify-content: flex-end; margin-bottom: -4px; }
+.card-head .eye { margin-left: auto; }
+.hero-row .lock, .hero-row .sync { white-space: nowrap; }
 </style>
 </head>
 <body>
@@ -291,7 +298,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     <h1>África y Seychelles</h1>
     <p class="sub" id="trip-sub">Cape Town, safari en Tanzania, Zanzíbar y Seychelles</p>
     <div class="stops"><span class="stop">🏙️ Cape Town</span><span class="stop">🦁 Safari en Tanzania</span><span class="stop">🌴 Zanzíbar</span><span class="stop">🐢 Seychelles</span></div>
-    <div class="hero-row"><span class="cd" id="countdown">⏳ Cargando…</span><span style="display:flex;gap:8px;align-items:center"><span class="sync" id="sync">● En línea</span><button class="lock" id="logout" type="button">🔒 Salir</button></span></div>
+    <div class="hero-row"><span class="cd" id="countdown">⏳ Cargando…</span><span style="display:flex;gap:8px;align-items:center"><span class="sync" id="sync">● En línea</span><button class="lock" id="ver-montos" type="button" aria-pressed="false">🙈 Ver montos</button><button class="lock" id="logout" type="button">🔒 Salir</button></span></div>
   </header>
 
   <nav class="tabs" role="tablist" aria-label="Secciones">
@@ -306,6 +313,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   </nav>
 
   <section class="page" id="resumen">
+    <div class="eye-row"><button class="eye" type="button" data-eye="res-tot">▸ Ver montos</button></div>
     <div class="kpis money">
       <div class="kpi za" data-f="todo" role="button" tabindex="0"><span class="lbl">📝 Presupuesto total</span><span class="v" id="k-total">—</span></div>
       <div class="kpi okc" data-f="pagado" role="button" tabindex="0"><span class="lbl">✅ Ya pagado</span><span class="v" id="k-pagado">—</span></div>
@@ -319,9 +327,9 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
       <div class="legend"><span><i class="sw" style="background:var(--za)"></i>Ciudad</span><span><i class="sw" style="background:var(--tz)"></i>Safari</span><span><i class="sw" style="background:var(--sc)"></i>Playa</span><span><i class="sw" style="background:var(--fly)"></i>Vuelo</span></div>
     </div>
     <div class="grid money">
-      <div class="card za"><h2>📊 Gasto por categoría</h2><p class="muted">Presupuesto en CLP, pagado y por pagar. <b>Toca una categoría para ver el detalle.</b></p><div class="bars" id="cat-bars"></div>
+      <div class="card za"><div class="card-head"><h2>📊 Gasto por categoría</h2><button class="eye" type="button" data-eye="res-cat">▸ Ver montos</button></div><p class="muted">Presupuesto en CLP, pagado y por pagar. <b>Toca una categoría para ver el detalle.</b></p><div class="bars" id="cat-bars"></div>
         <div class="legend"><span><i class="sw" style="background:var(--ok)"></i>Pagado</span><span><i class="sw" style="background:var(--pend)"></i>Por pagar</span></div></div>
-      <div class="card sc"><h2>💳 Quién ha pagado</h2><p class="muted">Pagos registrados en CLP y lo que falta por pagar.</p><div class="bars" id="who-bars"></div></div>
+      <div class="card sc"><div class="card-head"><h2>💳 Quién ha pagado</h2><button class="eye" type="button" data-eye="res-who">▸ Ver montos</button></div><p class="muted">Pagos registrados en CLP y lo que falta por pagar.</p><div class="bars" id="who-bars"></div></div>
     </div>
     <div class="card fly">
       <h2>⚙️ Datos</h2>
@@ -350,6 +358,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   </section>
 
   <section class="page" id="vuelos" hidden>
+    <div class="eye-row"><button class="eye" type="button" data-eye="vue-tot">▸ Ver montos</button></div>
     <div class="kpis">
       <div class="kpi fly"><span class="lbl">✈️ Tramos</span><span class="v" id="k-tramos">—</span></div>
       <div class="kpi okc"><span class="lbl">🎟️ Comprados</span><span class="v" id="k-comprados">—</span></div>
@@ -360,6 +369,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   </section>
 
   <section class="page" id="hoteles" hidden>
+    <div class="eye-row"><button class="eye" type="button" data-eye="hot-tot">▸ Ver montos</button></div>
     <div class="kpis">
       <div class="kpi fly"><span class="lbl">🌙 Noches en hotel</span><span class="v" id="k-noches">—</span></div>
       <div class="kpi tz"><span class="lbl">🛏️ Estadías</span><span class="v" id="k-estadias">—</span></div>
@@ -371,6 +381,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   </section>
 
   <section class="page" id="presupuesto" hidden>
+    <div class="eye-row"><button class="eye" type="button" data-eye="pre-tot">▸ Ver montos</button></div>
     <div class="kpis">
       <div class="kpi fly" data-f="todo" role="button" tabindex="0"><span class="lbl">📝 Presupuesto</span><span class="v" id="p-ppto">—</span></div>
       <div class="kpi za" data-f="sobre" role="button" tabindex="0"><span class="lbl">🚨 Sobre presupuesto</span><span class="v" id="p-total">—</span></div>
@@ -413,6 +424,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   </section>
 
   <section class="page" id="actividades" hidden>
+    <div class="eye-row"><button class="eye" type="button" data-eye="act-tot">▸ Ver montos</button></div>
     <div class="kpis">
       <div class="kpi sc"><span class="lbl">🤿 Actividades</span><span class="v" id="a-n">—</span></div>
       <div class="kpi za"><span class="lbl">⭐ Must do</span><span class="v" id="a-must">—</span></div>
@@ -450,7 +462,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
 
 <div class="overlay" id="catsheet" hidden>
   <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="cat-title">
-    <div class="row"><h2 class="grow" id="cat-title">Categoría</h2><button class="edit" type="button" id="cat-close" aria-label="Cerrar">✕</button></div>
+    <div class="row"><h2 class="grow" id="cat-title">Categoría</h2><button class="eye" type="button" id="cs-eye" data-eye="">▸ Ver montos</button><button class="edit" type="button" id="cat-close" aria-label="Cerrar">✕</button></div>
     <div class="sumbox"><div><span class="muted">Presupuesto</span><b id="cs-ppto">—</b></div><div><span class="muted">Pagado</span><b id="cs-paid">—</b></div><div><span class="muted">Por pagar</span><b id="cs-pend">—</b></div></div>
     <div class="progress" id="cs-bar"></div>
     <p class="muted" id="cs-note" style="margin:0"></p>
@@ -480,7 +492,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
 </div>
 <div class="overlay" id="paysheet" hidden>
   <form class="sheet" id="pay-form" novalidate>
-    <div class="row"><h2 class="grow" id="pay-title">Pagos</h2><button class="edit" type="button" id="pay-close" aria-label="Cerrar">✕</button></div>
+    <div class="row"><h2 class="grow" id="pay-title">Pagos</h2><button class="eye" type="button" id="ps-eye" data-eye="">▸ Ver montos</button><button class="edit" type="button" id="pay-close" aria-label="Cerrar">✕</button></div>
     <div class="sumbox"><div><span class="muted">Presupuesto</span><b id="ps-real">—</b></div><div><span class="muted">Pagado</span><b id="ps-paid">—</b></div><div><span class="muted">Por pagar</span><b id="ps-pend">—</b></div></div>
     <div class="abonos" id="ps-list"></div>
     <h3>➕ Registrar un pago</h3>
@@ -499,7 +511,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
 </div>
 <div class="overlay" id="actsheet" hidden>
   <form class="sheet" id="act-form" novalidate>
-    <div class="row"><h2 class="grow" id="act-title">Actividad</h2><button class="edit" type="button" id="act-close" aria-label="Cerrar">✕</button></div>
+    <div class="row"><h2 class="grow" id="act-title">Actividad</h2><button class="eye" type="button" id="as-eye" data-eye="">▸ Ver montos</button><button class="edit" type="button" id="act-close" aria-label="Cerrar">✕</button></div>
     <div class="sumbox" style="grid-template-columns:repeat(2,1fr)"><div><span class="muted">Estimado (2 pax)</span><b id="as-est">—</b></div><div><span class="muted">Gastado</span><b id="as-spent">—</b></div></div>
     <div class="abonos" id="as-list"></div>
     <div class="form">
@@ -529,8 +541,16 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   const DIA = ['dom','lun','mar','mié','jue','vie','sáb'];
   const nf = new Intl.NumberFormat('es-CL', {maximumFractionDigits: 0});
   const n = (x) => { const v = Number(x); return isFinite(v) ? v : 0; };
-  const clp = (v) => (v < 0 ? '−$' : '$') + nf.format(Math.abs(Math.round(v)));
-  const clpM = (v) => '$' + (Math.abs(v) / 1e6).toLocaleString('es-CL', {maximumFractionDigits: 1}) + ' M';
+  /* Montos ocultos por defecto: se ven con la flecha de cada sección/ítem o con "Mostrar montos" (todo). */
+  let VER = false; const REVEAL = new Set(); let KEY = null;
+  const shown = () => VER || (KEY != null && REVEAL.has(KEY));
+  const withKey = (k, fn) => { const p = KEY; KEY = k; try { return fn(); } finally { KEY = p; } };
+  const clp = (v) => shown() ? (v < 0 ? '−$' : '$') + nf.format(Math.abs(Math.round(v))) : '$ •••••';
+  const clpM = (v) => shown() ? '$' + (Math.abs(v) / 1e6).toLocaleString('es-CL', {maximumFractionDigits: 1}) + ' M' : '$ ••• M';
+  const usd = (v) => shown() ? 'USD ' + nf.format(v) : 'USD •••';
+  const eyeOn = (k) => VER || REVEAL.has(k);
+  const paintEye = (b) => { const on = eyeOn(b.dataset.eye); b.textContent = b.classList.contains('mini') ? (on ? '▾' : '▸ $') : (on ? '▾ Ocultar montos' : '▸ Ver montos'); b.setAttribute('aria-expanded', on ? 'true' : 'false'); b.setAttribute('aria-label', on ? 'Ocultar montos' : 'Ver montos'); };
+  const eyeBtn = (k) => { const b = el('button', 'eye mini'); b.type = 'button'; b.dataset.eye = k; paintEye(b); return b; };
   const date = (s) => new Date(String(s || '').slice(0, 10) + 'T12:00:00');
   const valid = (s) => /^\d{4}-\d{2}-\d{2}/.test(String(s || ''));
   const fd = (s) => { if (!valid(s)) return '—'; const d = date(s); return d.getDate() + ' ' + MES[d.getMonth()]; };
@@ -741,7 +761,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     const page = TABS.find((t) => !document.getElementById(t).hidden) || 'resumen';
     renderHeader();
     if (catName) fillCat();
-    ({resumen: renderResumen, itinerario: renderItin, vuelos: renderVuelos, hoteles: renderHoteles, presupuesto: renderPresupuesto, actividades: renderAct, pendientes: renderPend, tips: renderTips})[page]();
+    withKey(null, ({resumen: renderResumen, itinerario: renderItin, vuelos: renderVuelos, hoteles: renderHoteles, presupuesto: renderPresupuesto, actividades: renderAct, pendientes: renderPend, tips: renderTips})[page]);
   }
   function renderHeader() {
     const days = [...S.itinerario].filter((d) => valid(d.fecha)).sort(byDate('fecha'));
@@ -766,6 +786,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     });
   }
   function renderResumen() {
+    KEY = 'res-tot';
     const T = totals(); const ready = S.loaded.pagos;
     set('#k-total', ready ? clp(T.total) : '—'); set('#k-pagado', ready ? clp(T.pagado) : '—'); set('#k-pend', ready ? clp(T.pend) : '—');
     const tk = $('#takeaway');
@@ -791,10 +812,12 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
       route.append(cells, lab);
     } else emptyMsg(route, 'itinerario', 'Agrega días en la pestaña Itinerario.');
     // categorías
+    KEY = 'res-cat';
     const m = new Map();
     S.pagos.forEach((r) => { const o = m.get(r.categoria) || {categoria: r.categoria || 'Sin categoría', real: 0, pagado: 0, pend: 0}; o.real += realOf(r); o.pagado += Math.min(paidOf(r), realOf(r)); o.pend += pendOf(r); m.set(r.categoria, o); });
     const cats = [...m.values()].sort((a, b) => b.real - a.real);
     if (cats.length) { barRows($('#cat-bars'), cats, (r) => r.categoria, [['pagado', 'var(--ok)'], ['pend', 'var(--pend)']], (r) => r.real); [...$('#cat-bars').querySelectorAll('.bar-row')].forEach((row, i) => { row.dataset.catd = cats[i].categoria; row.setAttribute('role', 'button'); row.tabIndex = 0; }); } else emptyMsg($('#cat-bars'), 'pagos', 'Sin gastos todavía.');
+    KEY = 'res-who';
     const q = new Map(); S.pagos.forEach((r) => abonos(r).forEach((a) => q.set(a.quien || '—', (q.get(a.quien || '—') || 0) + n(a.monto))));
     const T0 = totals(); if (T0.pend > 0) q.set('Por pagar', T0.pend);
     const WHO = {Tarjeta: 'var(--sc)', Mario: 'var(--za)', Trini: 'var(--tz)', 'Por pagar': 'var(--pend)', Efectivo: 'var(--ok)'};
@@ -830,12 +853,13 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     tb.append(dayCard(d, d.fecha === t), el('p', 'muted', note));
   }
   function renderVuelos() {
+    KEY = 'vue-tot';
     const v = [...S.vuelos].sort(byDate('fecha'));
     set('#k-tramos', S.loaded.vuelos ? String(v.length) : '—'); set('#k-comprados', S.loaded.vuelos ? String(v.filter((x) => x.estado === 'Comprado').length) : '—');
     set('#k-vuelos', S.loaded.vuelos ? clp(v.reduce((s, x) => s + n(x.total_clp), 0)) : '—');
     const box = $('#flights'); box.replaceChildren();
     if (!v.length) { emptyMsg(box, 'vuelos', 'Sin vuelos todavía.'); return; }
-    v.forEach((f) => {
+    v.forEach((f) => withKey('f:' + f._id, () => {
       const card = el('article', 'flight'); const [o, de] = String(f.tramo || '').split('→').map((s) => s.trim());
       const head = el('div', 'row'); const ok = f.estado === 'Comprado';
       head.append(el('h3', 'grow', '✈️ ' + fdl(f.fecha) + ' · ' + (f.tramo || '')), el('span', 'pill ' + (ok ? 'ok' : 'warn'), (ok ? '✓ ' : '? ') + (f.estado || '—')), editBtn('vuelos', f));
@@ -843,11 +867,12 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
       const line = el('div', 'line'); line.appendChild(el('span', '', [f.duracion, f.escala].filter(Boolean).join(' · ') || '—'));
       const b = el('div'); b.style.textAlign = 'right'; b.append(el('div', 'time', f.llegada || '—'), el('div', 'muted', de || '')); r.append(a, line, b);
       const meta = el('div', 'meta'); const kv = (k, val) => { const s = el('span', '', k + ' '); s.appendChild(el('b', '', val)); return s; };
-      meta.append(kv('Agencia', f.agencia || '—'), kv('Código', f.codigo || '—')); if (MOSTRAR_MONTOS) meta.append(kv('Total', n(f.total_clp) ? clp(n(f.total_clp)) : '—'));
+      meta.append(kv('Agencia', f.agencia || '—'), kv('Código', f.codigo || '—')); if (MOSTRAR_MONTOS && n(f.total_clp)) { const t = kv('Total', clp(n(f.total_clp))); t.appendChild(eyeBtn('f:' + f._id)); meta.append(t); }
       card.append(head, r, meta); if (f.notas) card.appendChild(el('p', 'muted', '📝 ' + f.notas)); box.appendChild(card);
-    });
+    }));
   }
   function renderHoteles() {
+    KEY = 'hot-tot';
     const hs = [...S.hoteles].sort(byDate('check_in'));
     set('#k-noches', S.loaded.hoteles ? String(hs.reduce((s, h) => s + n(h.noches), 0)) : '—'); set('#k-estadias', S.loaded.hoteles ? String(hs.length) : '—');
     set('#k-aloj', S.loaded.hoteles ? clp(hs.reduce((s, h) => s + n(h.total_clp), 0)) : '—');
@@ -855,24 +880,26 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     if (ok.length) {
       const t0 = Math.min(...ok.map((h) => +date(h.check_in))), t1 = Math.max(...ok.map((h) => +date(h.check_out))), span = Math.max(t1 - t0, 864e5);
       const pos = (s) => ((date(s) - t0) / span) * 100;
-      ok.forEach((h) => { const row = el('div', 'g-row'); const tr = el('div', 'g-track'); const bar = el('span'); const k = color(h.pais);
+      ok.forEach((h) => withKey('h:' + h._id, () => { const row = el('div', 'g-row'); const tr = el('div', 'g-track'); const bar = el('span'); const k = color(h.pais);
         bar.style.left = pos(h.check_in) + '%'; bar.style.width = Math.max(pos(h.check_out) - pos(h.check_in), 1.5) + '%'; bar.style.background = `linear-gradient(90deg, color-mix(in srgb, ${k} 60%, #fff), ${k})`;
         tr.appendChild(bar); row.append(el('span', 'lab', String(h.hotel || '').split('(')[0].split(':')[0].trim()), tr);
-        hover(row, g, h.hotel, [`${fd(h.check_in)} → ${fd(h.check_out)} · ${n(h.noches)} noches`, h.regimen, MOSTRAR_MONTOS && n(h.total_clp) ? clp(n(h.total_clp)) : '']); g.appendChild(row); });
+        hover(row, g, h.hotel, [`${fd(h.check_in)} → ${fd(h.check_out)} · ${n(h.noches)} noches`, h.regimen, MOSTRAR_MONTOS && n(h.total_clp) ? clp(n(h.total_clp)) : '']); g.appendChild(row); }));
       const ax = el('div', 'g-axis'); const ticks = el('div', 'g-ticks'); const step = (g.clientWidth || 600) < 480 ? 14 : 7;
       for (let t = t0; t <= t1; t += 864e5 * step) { const d = new Date(t); const s = el('span', '', d.getDate() + ' ' + MES[d.getMonth()]); s.style.left = ((t - t0) / span * 100) + '%'; ticks.appendChild(s); }
       ax.append(el('span'), ticks); g.appendChild(ax);
     } else emptyMsg(g, 'hoteles', 'Agrega hoteles con fechas para ver el calendario.');
     const box = $('#hotels'); box.replaceChildren();
     if (!hs.length) { emptyMsg(box, 'hoteles', 'Sin hoteles todavía.'); return; }
-    hs.forEach((h) => { const c = el('article', 'hotel'); c.style.setProperty('--acc', color(h.pais));
+    hs.forEach((h) => withKey('h:' + h._id, () => { const c = el('article', 'hotel'); c.style.setProperty('--acc', color(h.pais));
       const top = el('div', 'row'); top.append(el('h3', 'grow', h.hotel || '—'), editBtn('hoteles', h));
       const dl = el('dl', 'kv');
       [['📍 Zona', h.zona], ['📅 Fechas', `${fd(h.check_in)} → ${fd(h.check_out)} · ${n(h.noches)} noches`], ['🍽️ Régimen', h.regimen], ['💸 Total', MOSTRAR_MONTOS && n(h.total_clp) ? clp(n(h.total_clp)) + (h.monto_original ? ' · ' + h.monto_original : '') : ''], ['💳 Pagado por', MOSTRAR_MONTOS ? h.pagado_por : ''], ['📝 Notas', h.notas]]
         .forEach(([k, v]) => { if (v) dl.append(el('dt', '', k), el('dd', '', v)); });
-      c.append(top, dl); box.appendChild(c); });
+      if (MOSTRAR_MONTOS && n(h.total_clp)) { const dd = [...dl.querySelectorAll('dt')].find((x) => x.textContent === '💸 Total'); if (dd) dd.nextElementSibling.appendChild(eyeBtn('h:' + h._id)); }
+      c.append(top, dl); box.appendChild(c); }));
   }
   function renderPresupuesto() {
+    KEY = 'pre-tot';
     const T = totals(); const ready = S.loaded.pagos;
     set('#p-ppto', ready ? clp(T.ppto) : '—'); set('#p-total', ready ? clp(T.over) : '—'); $('#p-total').classList.toggle('over', T.over > 0); set('#p-pagado', ready ? clp(T.pagado) : '—'); set('#p-pend', ready ? clp(T.pend) : '—');
     const pr = $('#pay-progress'); pr.replaceChildren(); const base = Math.max(T.total, 1);
@@ -896,8 +923,8 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     const rows = S.pagos.filter((r) => enVista(r) && (!UI.est || stateOf(r) === UI.est) && (!UI.q || `${r.item} ${r.categoria} ${abonos(r).map((a) => a.quien).join(' ')}`.toLowerCase().includes(UI.q)))
       .sort((a, b) => num ? (n(val(a, UI.sort)) - n(val(b, UI.sort))) * UI.dir : String(val(a, UI.sort) || '').localeCompare(String(val(b, UI.sort) || ''), 'es') * UI.dir);
     const CAT = {Vuelos: 'var(--fly)', Alojamiento: 'var(--tz)', Transporte: 'var(--za)', Actividades: 'var(--sc)'};
-    rows.forEach((r) => {
-      const tr = el('tr'); const name = el('td'); const dot = el('span', 'dot'); dot.style.background = CAT[r.categoria] || 'var(--pend)'; name.append(dot, document.createTextNode(r.item || '—'));
+    rows.forEach((r) => withKey(r._id, () => {
+      const tr = el('tr'); const name = el('td'); const dot = el('span', 'dot'); dot.style.background = CAT[r.categoria] || 'var(--pend)'; name.append(dot, document.createTextNode(r.item || '—'), eyeBtn(r._id));
       const who = [...new Set(abonos(r).map((a) => a.quien))];
       if (who.length) { const w = el('div', 'muted'); w.textContent = 'Pagó: ' + who.map((k) => (PAYER[k] || ['👤'])[0] + ' ' + k).join(' · '); name.appendChild(w); }
       const stt = stateOf(r); const st = el('td');
@@ -913,7 +940,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
       if (ov > 0) pt.classList.add('over');
       tr.append(ck, name, el('td', 'hide-narrow', r.categoria || ''), el('td', 'num', clp(n(r.presupuesto_clp))), pt, el('td', 'num hide-narrow' + (ov > 0 ? ' over' : ''), ov > 0 ? '+' + clp(ov) + ' de más' : clp(pendOf(r))), st, ed);
       body.appendChild(tr);
-    });
+    }));
     if (!rows.length) { const tr = el('tr'); const td = el('td', 'muted', S.loaded.pagos ? 'Nada coincide con la búsqueda.' : 'Cargando…'); td.colSpan = 9; tr.appendChild(td); body.appendChild(tr); }
     const fb = $('#pay-filter'); const activo = UI.vista || UI.quien || UI.cat; fb.hidden = !activo;
     if (activo) {
@@ -939,8 +966,10 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   /* ---------- pagos por ítem ---------- */
   let payId = null;
   const payRow = () => S.pagos.find((r) => r._id === payId);
-  function fillPay() {
+  function fillPay() { withKey(payId, fillPay_); }
+  function fillPay_() {
     const r = payRow(); if (!r) { closePay(); return; }
+    $('#ps-eye').dataset.eye = r._id; paintEye($('#ps-eye'));
     set('#pay-title', '💳 ' + (r.item || 'Pagos')); set('#ps-real', clp(realOf(r))); set('#ps-paid', clp(paidOf(r))); const ovp = overOf(r); set('#ps-pend', ovp > 0 ? '+' + clp(ovp) : clp(pendOf(r))); $('#ps-pend').classList.toggle('over', ovp > 0); $('#ps-pend').previousElementSibling.textContent = ovp > 0 ? 'Sobre presupuesto' : 'Por pagar';
     const list = $('#ps-list'); list.replaceChildren();
     const ab = abonos(r);
@@ -959,7 +988,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     });
   }
   function openPay(r) {
-    if (!db) return; payId = r._id; $('#ab-monto').value = pendOf(r) || ''; $('#ab-fecha').value = todayISO(); $('#ab-nota').value = ''; $('#ab-err').hidden = true;
+    if (!db) return; payId = r._id; $('#ab-monto').value = eyeOn(r._id) ? (pendOf(r) || '') : ''; $('#ab-fecha').value = todayISO(); $('#ab-nota').value = ''; $('#ab-err').hidden = true;
     $('#pay-form').querySelectorAll('.form, h3, .sheet-actions').forEach((x) => { x.hidden = !canWrite; });
     fillPay(); $('#paysheet').hidden = false;
   }
@@ -984,12 +1013,14 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   const spentOf = (id) => actPagos(id).reduce((s, x) => s + n(x.a.monto), 0);
   const actItems = () => S.pagos.filter((p) => p.categoria === 'Actividades');
   const defItem = (r) => { const d = String(r.destino || ''); const want = /cape/i.test(d) ? 'X1' : /praslin|digue|mah|seych/i.test(d) ? 'X3' : 'X2'; const it = actItems(); return ((it.find((p) => p._id === want) || it[0]) || {})._id || ''; };
-  function fillAct() {
+  function fillAct() { withKey('act:' + actId, fillAct_); }
+  function fillAct_() {
     const r = actRow(); if (!r) { closeAct(); return; }
+    $('#as-eye').dataset.eye = 'act:' + r._id; paintEye($('#as-eye'));
     const hecha = r.estado === 'Hecho';
     set('#act-title', (hecha ? '✅ ' : '🎉 ') + (r.actividad || 'Actividad'));
     const est = n(r.usd_pp) * 2;
-    set('#as-est', est ? 'USD ' + nf.format(est) + ' ≈ ' + clp(est * USD_CLP) : 'Gratis');
+    set('#as-est', est ? usd(est) + ' ≈ ' + clp(est * USD_CLP) : 'Gratis');
     set('#as-spent', clp(spentOf(r._id)));
     const list = $('#as-list'); list.replaceChildren();
     const xs = actPagos(r._id);
@@ -1014,7 +1045,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   }
   function openAct(r) {
     if (!db) return; actId = r._id; $('#as-item').value = '';
-    $('#as-monto').value = r.estado === 'Hecho' ? '' : (Math.round(n(r.usd_pp) * 2 * USD_CLP) || '');
+    $('#as-monto').value = r.estado === 'Hecho' || !eyeOn('act:' + r._id) ? '' : (Math.round(n(r.usd_pp) * 2 * USD_CLP) || '');
     $('#as-fecha').value = todayISO(); undoArmed = false; $('#as-undo').textContent = 'Desmarcar';
     $('#act-form').querySelectorAll('.form, .sheet-actions').forEach((x) => { x.hidden = !canWrite; });
     fillAct(); $('#actsheet').hidden = false;
@@ -1051,9 +1082,10 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   });
   const ACT_NEXT = {'Por reservar': 'Reservado', Reservado: 'Por reservar', 'Por confirmar': 'Reservado', Libre: 'Reservado'};
   function renderAct() {
+    KEY = 'act-tot';
     const a = S.actividades; const L = S.loaded.actividades;
     set('#a-n', L ? String(a.length) : '—'); set('#a-must', L ? String(a.filter((r) => /must/i.test(r.prioridad)).length) : '—');
-    set('#a-res', L ? a.filter((r) => r.estado === 'Hecho').length + ' de ' + a.length : '—'); set('#a-gast', L ? clp(a.reduce((s, r) => s + spentOf(r._id), 0)) : '—'); set('#a-usd', L ? 'USD ' + nf.format(a.reduce((s, r) => s + n(r.usd_pp) * 2, 0)) : '—');
+    set('#a-res', L ? a.filter((r) => r.estado === 'Hecho').length + ' de ' + a.length : '—'); set('#a-gast', L ? clp(a.reduce((s, r) => s + spentOf(r._id), 0)) : '—'); set('#a-usd', L ? usd(a.reduce((s, r) => s + n(r.usd_pp) * 2, 0)) : '—');
     const body = $('#act-body'); body.replaceChildren();
     const order = ['Cape Town', 'Tanzania', 'Zanzíbar', 'Praslin', 'La Digue', 'Mahé'];
     [...a].sort((x, y) => ((order.indexOf(x.destino) + 99) % 99) - ((order.indexOf(y.destino) + 99) % 99) || String(x.actividad).localeCompare(String(y.actividad), 'es')).forEach((r) => {
@@ -1066,7 +1098,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
       const ed = el('td'); ed.appendChild(editBtn('actividades', r));
       const ck = el('td'); const hecha = r.estado === 'Hecho'; const cb = el('button', 'box ' + (hecha ? 'ok' : ''), hecha ? '✓' : ''); cb.type = 'button'; cb.setAttribute('aria-label', (hecha ? 'Ver pagos de ' : 'Marcar como hecha: ') + (r.actividad || 'actividad')); cb.addEventListener('click', () => openAct(r)); ck.appendChild(cb);
       const sp = spentOf(r._id);
-      tr.append(ck, name, el('td', '', r.destino || ''), el('td', 'hide-narrow', r.cuando || ''), el('td', 'num money hide-narrow', n(r.usd_pp) ? String(n(r.usd_pp)) : 'Gratis'), el('td', 'num money', sp ? clp(sp) : '—'), st, ed);
+      tr.append(ck, name, el('td', '', r.destino || ''), el('td', 'hide-narrow', r.cuando || ''), el('td', 'num money hide-narrow', n(r.usd_pp) ? (shown() ? String(n(r.usd_pp)) : '•••') : 'Gratis'), el('td', 'num money', sp ? clp(sp) : '—'), st, ed);
       body.appendChild(tr);
     });
     if (!a.length) { const tr = el('tr'); const td = el('td', 'muted', L ? 'Sin actividades todavía.' : 'Cargando…'); td.colSpan = 8; tr.appendChild(td); body.appendChild(tr); }
@@ -1076,8 +1108,9 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   var catName = null;
   const CATMETA = {Vuelos: ['✈️', 'vuelos', 'Vuelos'], Alojamiento: ['🏨', 'hoteles', 'Hoteles'], Actividades: ['🤿', 'actividades', 'Actividades'], Transporte: ['🚙'], Comidas: ['🍽️'], Compras: ['🛍️'], 'Visas y trámites': ['🛂', 'pendientes', 'Pendientes'], Salud: ['💉', 'pendientes', 'Pendientes'], Seguros: ['🛡️', 'pendientes', 'Pendientes'], Roaming: ['📶'], Propinas: ['🤝'], Imprevistos: ['🧯'], 'Gastos en viaje': ['💵']};
   const relRow = (title, right, sub, pillCls) => { const r = el('div', 'r'); r.appendChild(el('span', '', title)); r.appendChild(pillCls ? el('span', 'pill ' + pillCls, right) : el('b', '', right || '')); if (sub) r.appendChild(el('span', 'muted', sub)); return r; };
-  function fillCat() {
-    const cat = catName; const items = S.pagos.filter((r) => (r.categoria || 'Sin categoría') === cat);
+  function fillCat() { withKey('cat:' + catName, fillCat_); }
+  function fillCat_() {
+    const cat = catName; $('#cs-eye').dataset.eye = 'cat:' + cat; paintEye($('#cs-eye')); const items = S.pagos.filter((r) => (r.categoria || 'Sin categoría') === cat);
     if (!items.length) { closeCat(); return; }
     const meta = CATMETA[cat] || ['📋'];
     set('#cat-title', meta[0] + ' ' + cat);
@@ -1095,17 +1128,17 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     if (!per.size) who.appendChild(el('span', 'muted', 'Todavía no hay pagos registrados en esta categoría.'));
     // ítems del presupuesto
     const box = $('#cs-items'); box.replaceChildren();
-    [...items].sort((a, b) => pptoOf(b) - pptoOf(a)).forEach((r) => {
-      const b = el('button', 'cs-item'); b.type = 'button'; b.setAttribute('aria-label', 'Ver pagos de ' + (r.item || 'ítem'));
+    [...items].sort((a, b) => pptoOf(b) - pptoOf(a)).forEach((r) => withKey(r._id, () => {
+      const b = el('div', 'cs-item'); b.setAttribute('role', 'button'); b.tabIndex = 0; b.setAttribute('aria-label', 'Ver pagos de ' + (r.item || 'ítem'));
       const st = stateOf(r), ov = overOf(r);
-      const top = el('div', 'top'); top.append(el('span', 'nm', r.item || '—'), el('span', 'pill ' + (ov > 0 ? 'over-pill' : st === 'Pagado' ? 'ok' : st === 'Parcial' ? 'part' : 'warn'), ov > 0 ? '⚠ Sobre presupuesto' : st === 'Pagado' ? '✓ Pagado' : st === 'Parcial' ? '◐ Parcial' : '⏳ Por pagar'));
+      const top = el('div', 'top'); const nm = el('span', 'nm', r.item || '—'); nm.appendChild(eyeBtn(r._id)); top.append(nm, el('span', 'pill ' + (ov > 0 ? 'over-pill' : st === 'Pagado' ? 'ok' : st === 'Parcial' ? 'part' : 'warn'), ov > 0 ? '⚠ Sobre presupuesto' : st === 'Pagado' ? '✓ Pagado' : st === 'Parcial' ? '◐ Parcial' : '⏳ Por pagar'));
       const nums = el('div', 'nums'); const kv = (k, v, cls) => { const s2 = el('span', '', k + ' '); s2.appendChild(el('b', cls || '', v)); return s2; };
       nums.append(kv('Presupuesto', clp(pptoOf(r))), kv('Pagado', clp(paidOf(r))), ov > 0 ? kv('De más', '+' + clp(ov), 'over') : kv('Por pagar', clp(pendOf(r))));
       b.append(top, nums);
       if (abonos(r).length) { const abs = el('div', 'abs'); abonos(r).forEach((a) => { const m = PAYER[a.quien] || ['👤', 'var(--fly)']; const c = el('span', 'chip-who', `${m[0]} ${a.quien || '—'} ${clp(n(a.monto))}` + (a.ref && a.nota ? ' · ' + a.nota : '')); c.style.background = m[1]; abs.appendChild(c); }); b.appendChild(abs); }
       if (r.notas) b.appendChild(el('span', 'muted', '📝 ' + r.notas));
-      b.addEventListener('click', () => openPay(r)); box.appendChild(b);
-    });
+      b.addEventListener('click', () => openPay(r)); b.addEventListener('keydown', (e) => { if (e.key === 'Enter') openPay(r); }); box.appendChild(b);
+    }));
     // detalle de la hoja relacionada
     const ex = $('#cs-extra'); ex.replaceChildren(); const rel = el('div', 'cs-rel'); let h = '';
     if (cat === 'Vuelos') {
@@ -1119,7 +1152,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
       const a = S.actividades; const hechas = a.filter((r) => r.estado === 'Hecho');
       const estUsd = a.reduce((s2, r) => s2 + n(r.usd_pp) * 2, 0), gast = a.reduce((s2, r) => s2 + spentOf(r._id), 0);
       h = `🤿 Las actividades · ${hechas.length} de ${a.length} hechas`;
-      ex.appendChild(el('p', 'muted', `Si hicieran todas: USD ${nf.format(estUsd)} ≈ ${clp(estUsd * USD_CLP)} · gastado en actividades hechas: ${clp(gast)}.`));
+      ex.appendChild(el('p', 'muted', `Si hicieran todas: ${usd(estUsd)} ≈ ${clp(estUsd * USD_CLP)} · gastado en actividades hechas: ${clp(gast)}.`));
       const order = ['Cape Town', 'Tanzania', 'Zanzíbar', 'Praslin', 'La Digue', 'Mahé'];
       [...a].sort((x, y) => ((order.indexOf(x.destino) + 99) % 99) - ((order.indexOf(y.destino) + 99) % 99)).forEach((r) => {
         const sp = spentOf(r._id); const est = n(r.usd_pp) * 2;
@@ -1142,13 +1175,23 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   $('#cs-tab').addEventListener('click', () => { const to = $('#cs-tab').dataset.to; closeCat(); location.hash = to; });
   document.addEventListener('click', (e) => { const t = e.target.closest('[data-catd]'); if (t) openCat(t.dataset.catd); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.closest && e.target.closest('[data-catd]')) openCat(e.target.closest('[data-catd]').dataset.catd); });
+  /* ---------- mostrar / ocultar montos ---------- */
+  const paintVer = () => { document.body.classList.toggle('ver', VER); const b = $('#ver-montos'); b.textContent = VER ? '👁 Ocultar' : '🙈 Ver montos'; b.setAttribute('aria-pressed', VER ? 'true' : 'false'); };
+  const repaint = () => { paintVer(); render(); if (payId) fillPay(); if (actId) fillAct(); document.querySelectorAll('[data-eye]').forEach((b) => { if (b.dataset.eye) paintEye(b); }); };
+  document.addEventListener('click', (e) => {
+    const b = e.target.closest && e.target.closest('[data-eye]'); if (!b || !b.dataset.eye) return;
+    e.stopPropagation(); e.preventDefault(); const k = b.dataset.eye; if (REVEAL.has(k)) REVEAL.delete(k); else REVEAL.add(k); repaint();
+  }, true);
+  $('#ver-montos').addEventListener('click', () => { VER = !VER; if (!VER) REVEAL.clear(); repaint(); });
+  // Al salir de la app o bloquear el teléfono, todo vuelve a ocultarse.
+  document.addEventListener('visibilitychange', () => { if (document.hidden && (VER || REVEAL.size)) { VER = false; REVEAL.clear(); repaint(); } });
   function renderPend() {
     const p = S.pendientes; const tot = Math.max(p.length, 1);
     const listos = p.filter((r) => r.estado === 'Listo').length, conf = p.filter((r) => r.estado === 'Por confirmar').length;
     const pr = $('#todo-progress'); pr.replaceChildren();
     [[listos, 'var(--ok)'], [conf, 'var(--pend)']].forEach(([v, c]) => { const s = el('span'); s.style.width = (v / tot * 100) + '%'; s.style.background = c; pr.appendChild(s); });
     const conCosto = p.map((r) => r.pago && S.pagos.find((q) => q._id === r.pago)).filter(Boolean); const porPagar = [...new Set(conCosto)].reduce((s, q) => s + pendOf(q), 0);
-    set('#todo-note', S.loaded.pendientes ? `${listos} listos de ${p.length} · ${p.length - listos - conf} pendientes · ${conf} por confirmar` + (MOSTRAR_MONTOS && conCosto.length ? ` · ${clp(porPagar)} por pagar en pendientes` : '') : '—');
+    set('#todo-note', S.loaded.pendientes ? `${listos} listos de ${p.length} · ${p.length - listos - conf} pendientes · ${conf} por confirmar` + (VER && conCosto.length ? ` · ${clp(porPagar)} por pagar en pendientes` : '') : '—');
     const box = $('#checks'); box.replaceChildren();
     if (!p.length) { emptyMsg(box, 'pendientes', 'Sin pendientes. ¡Todo listo!'); return; }
     const META = {Documentos: ['🛂', 'var(--za)'], Salud: ['💉', 'var(--sc)'], Reservas: ['📌', 'var(--tz)'], 'Antes de viajar': ['🧳', 'var(--fly)'], 'Durante el viaje': ['🌍', 'var(--ok)']};
@@ -1163,12 +1206,12 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
         box2.setAttribute('aria-label', item ? 'Registrar pago de ' + (r.tarea || 'este pendiente') : (r.estado === 'Listo' ? 'Marcar como pendiente' : 'Marcar como listo'));
         box2.addEventListener('click', () => item ? openPay(item) : quick('pendientes', r, {estado: r.estado === 'Listo' ? 'Pendiente' : 'Listo'}));
         li.append(box2, el('span', 't', r.tarea || '—'), editBtn('pendientes', r));
-        if (item) {
+        if (item) withKey(item._id, () => {
           const stt = stateOf(item); const cost = el('span', 'n money');
           const pill = el('span', 'pill ' + (stt === 'Pagado' ? 'ok' : stt === 'Parcial' ? 'part' : 'warn'), stt === 'Pagado' ? '✓ Pagado ' + clp(paidOf(item)) : stt === 'Parcial' ? '◐ ' + clp(paidOf(item)) + ' de ' + clp(realOf(item)) : '💸 ' + clp(realOf(item)) + ' por pagar');
-          cost.appendChild(pill); const who = [...new Set(abonos(item).map((a) => a.quien))]; if (who.length) cost.appendChild(document.createTextNode(' ' + who.join(' · ')));
+          cost.appendChild(pill); const who = [...new Set(abonos(item).map((a) => a.quien))]; if (who.length) cost.appendChild(document.createTextNode(' ' + who.join(' · '))); cost.appendChild(eyeBtn(item._id));
           li.appendChild(cost);
-        }
+        });
         if (r.nota) li.appendChild(el('span', 'n', r.nota)); ul.appendChild(li);
       });
       card.appendChild(ul); box.appendChild(card);
