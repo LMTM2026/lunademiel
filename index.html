@@ -412,6 +412,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
       <div class="card-head"><h2>🧳 Antes de partir</h2><button class="btn add" data-add="pendientes" type="button">＋ Agregar pendiente</button></div>
       <div class="progress" id="todo-progress"></div>
       <p class="muted" id="todo-note">—</p>
+      <p class="muted toggle-hint">Los pendientes con costo están ligados al presupuesto: al tocar la casilla registras el pago, y quedan listos cuando se paga completo.</p>
     </div>
     <div class="checks" id="checks"></div>
   </section>
@@ -565,9 +566,9 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     itinerario: {name: 'día', fields: [['dia', 'Día n°', 'number'], ['fecha', 'Fecha', 'date'], ['pais', 'País', PAISES], ['tipo', 'Tipo', ['Vuelo', 'Ciudad', 'Safari', 'Playa']], ['destino', 'Destino', 'text', 'wide'], ['am', 'Mañana', 'area'], ['pm', 'Tarde', 'area'], ['alojamiento', 'Alojamiento'], ['transporte', 'Transporte'], ['notas', 'Notas', 'area']]},
     vuelos: {name: 'vuelo', fields: [['tramo', 'Tramo (Origen → Destino)', 'text', 'wide'], ['fecha', 'Fecha', 'date'], ['salida', 'Salida'], ['llegada', 'Llegada'], ['duracion', 'Duración'], ['escala', 'Escala'], ['agencia', 'Agencia'], ['codigo', 'Código de reserva'], ['total_clp', 'Total CLP (2 pax)', 'number'], ['estado', 'Estado', ['Comprado', 'Por confirmar', 'Pendiente']], ['notas', 'Notas', 'area']]},
     hoteles: {name: 'hotel', fields: [['hotel', 'Hotel', 'text', 'wide'], ['zona', 'Zona'], ['pais', 'País', PAISES], ['check_in', 'Check-in', 'date'], ['check_out', 'Check-out', 'date'], ['noches', 'Noches', 'number'], ['total_clp', 'Total CLP', 'number'], ['monto_original', 'Monto en moneda original'], ['regimen', 'Régimen'], ['pagado_por', 'Pagado por'], ['notas', 'Notas / confirmación', 'area']]},
-    pagos: {name: 'gasto', fields: [['item', 'Ítem', 'text', 'wide'], ['categoria', 'Categoría', ['Vuelos', 'Alojamiento', 'Transporte', 'Actividades', 'Comidas', 'Compras', 'Visas y trámites', 'Salud', 'Seguros', 'Roaming', 'Imprevistos', 'Gastos en viaje']], ['presupuesto_clp', 'Presupuesto CLP', 'number'], ['real_clp', 'Costo real CLP', 'number'], ['notas', 'Notas', 'area']]},
+    pagos: {name: 'gasto', fields: [['item', 'Ítem', 'text', 'wide'], ['categoria', 'Categoría', ['Vuelos', 'Alojamiento', 'Transporte', 'Actividades', 'Comidas', 'Compras', 'Visas y trámites', 'Salud', 'Seguros', 'Roaming', 'Propinas', 'Imprevistos', 'Gastos en viaje']], ['presupuesto_clp', 'Presupuesto CLP', 'number'], ['real_clp', 'Costo real CLP', 'number'], ['notas', 'Notas', 'area']]},
     actividades: {name: 'actividad', fields: [['actividad', 'Actividad', 'text', 'wide'], ['destino', 'Destino'], ['cuando', 'Cuándo'], ['usd_pp', 'USD por persona', 'number'], ['prioridad', 'Prioridad', ['', 'Must do']], ['estado', 'Estado', ['Por reservar', 'Reservado', 'Hecho', 'Por confirmar', 'Libre']], ['notas', 'Notas', 'area']]},
-    pendientes: {name: 'pendiente', fields: [['tarea', 'Tarea', 'text', 'wide'], ['categoria', 'Categoría', ['Documentos', 'Salud', 'Reservas', 'Antes de viajar', 'Durante el viaje']], ['estado', 'Estado', ['Pendiente', 'Por confirmar', 'Listo']], ['nota', 'Nota', 'area']]},
+    pendientes: {name: 'pendiente', fields: [['tarea', 'Tarea', 'text', 'wide'], ['categoria', 'Categoría', ['Documentos', 'Salud', 'Reservas', 'Antes de viajar', 'Durante el viaje']], ['estado', 'Estado', ['Pendiente', 'Por confirmar', 'Listo']], ['pago', 'Gasto del presupuesto (si tiene costo)', 'pagosref'], ['nota', 'Nota', 'area']]},
     tips: {name: 'tip', fields: [['seccion', 'Sección'], ['tema', 'Tema'], ['texto', 'Texto', 'area']]},
     config: {name: 'fondos', fields: [['propio', 'Fondos propios CLP', 'number'], ['regalos', 'Regalos CLP', 'number']]},
   };
@@ -588,6 +589,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
       const id = 'ed-' + k; const lab = el('label', '', label); lab.htmlFor = id;
       let input;
       if (Array.isArray(type)) { input = el('select'); type.forEach((o) => input.appendChild(new Option(o || '—', o))); }
+      else if (type === 'pagosref') { input = el('select'); input.appendChild(new Option('Sin costo', '')); [...S.pagos].sort((x, y) => String(x.item).localeCompare(String(y.item), 'es')).forEach((q) => input.appendChild(new Option((q.item || q._id) + ' · ' + clp(realOf(q)), q._id))); }
       else if (type === 'area') input = el('textarea');
       else { input = el('input'); input.type = type === 'number' ? 'number' : type === 'date' ? 'date' : 'text'; if (type === 'number') input.step = 'any'; }
       input.id = id; input.name = k;
@@ -850,6 +852,15 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     if (!rows.length) { const tr = el('tr'); const td = el('td', 'muted', S.loaded.pagos ? 'Nada coincide con la búsqueda.' : 'Cargando…'); td.colSpan = 9; tr.appendChild(td); body.appendChild(tr); }
     if (payId) fillPay();
   }
+  /* ---------- pendientes con costo ---------- */
+  // Un pendiente con costo queda listo cuando su gasto del presupuesto está pagado completo.
+  const syncPend = async (item, nuevos) => {
+    const paid = nuevos.reduce((s, a) => s + n(a.monto), 0); const full = paid > 0 && paid >= n(item.real_clp);
+    for (const q of S.pendientes.filter((x) => x.pago === item._id)) {
+      const want = full ? 'Listo' : (q.estado === 'Listo' ? 'Pendiente' : q.estado);
+      if (want !== q.estado) await db.collection('pendientes').doc(q._id).update({estado: want});
+    }
+  };
   /* ---------- pagos por ítem ---------- */
   let payId = null;
   const payRow = () => S.pagos.find((r) => r._id === payId);
@@ -867,7 +878,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
       del.addEventListener('click', async () => {
         if (!armed) { armed = true; del.textContent = '¿?'; del.title = 'Toca de nuevo para borrar'; return; }
         const next = abonos(r).filter((_, j) => j !== i);
-        try { await db.collection('pagos').doc(r._id).update({abonos: next}); toast('Pago borrado'); } catch (e) { writeErr(e); }
+        try { await db.collection('pagos').doc(r._id).update({abonos: next}); await syncPend(r, next); toast('Pago borrado'); } catch (e) { writeErr(e); }
       });
       row.append(chip, info, el('span'), del); list.appendChild(row);
     });
@@ -888,7 +899,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     if (!(monto > 0)) { $('#ab-err').hidden = false; return; }
     $('#ab-err').hidden = true;
     const ab = {quien: $('#ab-quien').value, monto, fecha: $('#ab-fecha').value || todayISO(), nota: $('#ab-nota').value.trim()};
-    try { await db.collection('pagos').doc(r._id).update({abonos: [...abonos(r), ab]}); toast('Pago registrado ✓'); $('#ab-nota').value = ''; const rr = payRow(); $('#ab-monto').value = rr ? pendOf(rr) || '' : ''; }
+    try { const nx = [...abonos(r), ab]; await db.collection('pagos').doc(r._id).update({abonos: nx}); await syncPend(r, nx); toast('Pago registrado ✓'); $('#ab-nota').value = ''; const rr = payRow(); $('#ab-monto').value = rr ? pendOf(rr) || '' : ''; }
     catch (err) { writeErr(err); }
   });
   /* ---------- actividades hechas ---------- */
@@ -991,7 +1002,8 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     const listos = p.filter((r) => r.estado === 'Listo').length, conf = p.filter((r) => r.estado === 'Por confirmar').length;
     const pr = $('#todo-progress'); pr.replaceChildren();
     [[listos, 'var(--ok)'], [conf, 'var(--pend)']].forEach(([v, c]) => { const s = el('span'); s.style.width = (v / tot * 100) + '%'; s.style.background = c; pr.appendChild(s); });
-    set('#todo-note', S.loaded.pendientes ? `${listos} listos de ${p.length} · ${p.length - listos - conf} pendientes · ${conf} por confirmar` : '—');
+    const conCosto = p.map((r) => r.pago && S.pagos.find((q) => q._id === r.pago)).filter(Boolean); const porPagar = [...new Set(conCosto)].reduce((s, q) => s + pendOf(q), 0);
+    set('#todo-note', S.loaded.pendientes ? `${listos} listos de ${p.length} · ${p.length - listos - conf} pendientes · ${conf} por confirmar` + (MOSTRAR_MONTOS && conCosto.length ? ` · ${clp(porPagar)} por pagar en pendientes` : '') : '—');
     const box = $('#checks'); box.replaceChildren();
     if (!p.length) { emptyMsg(box, 'pendientes', 'Sin pendientes. ¡Todo listo!'); return; }
     const META = {Documentos: ['🛂', 'var(--za)'], Salud: ['💉', 'var(--sc)'], Reservas: ['📌', 'var(--tz)'], 'Antes de viajar': ['🧳', 'var(--fly)'], 'Durante el viaje': ['🌍', 'var(--ok)']};
@@ -1001,9 +1013,18 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
       card.appendChild(el('h2', '', m[0] + ' ' + cat)); const ul = el('ul');
       items.forEach((r) => {
         const li = el('li', r.estado === 'Listo' ? 'done' : ''); const st = r.estado === 'Listo' ? ['✓', 'ok'] : r.estado === 'Por confirmar' ? ['?', 'warn'] : ['', ''];
-        const box2 = el('button', 'box ' + st[1], st[0]); box2.type = 'button'; box2.setAttribute('aria-label', r.estado === 'Listo' ? 'Marcar como pendiente' : 'Marcar como listo');
-        box2.addEventListener('click', () => quick('pendientes', r, {estado: r.estado === 'Listo' ? 'Pendiente' : 'Listo'}));
-        li.append(box2, el('span', 't', r.tarea || '—'), editBtn('pendientes', r)); if (r.nota) li.appendChild(el('span', 'n', r.nota)); ul.appendChild(li);
+        const item = r.pago ? S.pagos.find((q) => q._id === r.pago) : null;
+        const box2 = el('button', 'box ' + st[1], st[0]); box2.type = 'button';
+        box2.setAttribute('aria-label', item ? 'Registrar pago de ' + (r.tarea || 'este pendiente') : (r.estado === 'Listo' ? 'Marcar como pendiente' : 'Marcar como listo'));
+        box2.addEventListener('click', () => item ? openPay(item) : quick('pendientes', r, {estado: r.estado === 'Listo' ? 'Pendiente' : 'Listo'}));
+        li.append(box2, el('span', 't', r.tarea || '—'), editBtn('pendientes', r));
+        if (item) {
+          const stt = stateOf(item); const cost = el('span', 'n money');
+          const pill = el('span', 'pill ' + (stt === 'Pagado' ? 'ok' : stt === 'Parcial' ? 'part' : 'warn'), stt === 'Pagado' ? '✓ Pagado ' + clp(paidOf(item)) : stt === 'Parcial' ? '◐ ' + clp(paidOf(item)) + ' de ' + clp(realOf(item)) : '💸 ' + clp(realOf(item)) + ' por pagar');
+          cost.appendChild(pill); const who = [...new Set(abonos(item).map((a) => a.quien))]; if (who.length) cost.appendChild(document.createTextNode(' ' + who.join(' · ')));
+          li.appendChild(cost);
+        }
+        if (r.nota) li.appendChild(el('span', 'n', r.nota)); ul.appendChild(li);
       });
       card.appendChild(ul); box.appendChild(card);
     }
