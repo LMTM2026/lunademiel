@@ -374,11 +374,11 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
           <button class="chip" data-est="Pendiente" aria-pressed="false">⏳ Pendientes</button>
         </div>
       </div>
-      <p class="muted toggle-hint">Toca el estado de un ítem para registrar un pago: quién pagó y cuánto.</p>
+      <p class="muted toggle-hint">Toca la casilla de un ítem para registrar un pago (quién pagó y cuánto). Puedes agregar varios pagos parciales.</p>
       <div class="tablebox">
         <table>
           <thead><tr>
-            <th data-sort="item">Ítem</th><th data-sort="categoria" class="hide-narrow">Categoría</th>
+            <th></th><th data-sort="item">Ítem</th><th data-sort="categoria" class="hide-narrow">Categoría</th>
             <th data-sort="presupuesto_clp" class="num hide-narrow">Presupuesto</th><th data-sort="real_clp" class="num">Real</th><th data-sort="pagado_clp" class="num">Pagado</th><th data-sort="pend_clp" class="num hide-narrow">Por pagar</th><th data-sort="estado">Estado</th><th></th>
           </tr></thead>
           <tbody id="pay-body"></tbody>
@@ -391,15 +391,16 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     <div class="kpis">
       <div class="kpi sc"><span class="lbl">🤿 Actividades</span><span class="v" id="a-n">—</span></div>
       <div class="kpi za"><span class="lbl">⭐ Must do</span><span class="v" id="a-must">—</span></div>
-      <div class="kpi okc"><span class="lbl">🎟️ Reservadas o hechas</span><span class="v" id="a-res">—</span></div>
+      <div class="kpi okc"><span class="lbl">✅ Hechas</span><span class="v" id="a-res">—</span></div>
+      <div class="kpi za money"><span class="lbl">💸 Gastado en actividades</span><span class="v" id="a-gast">—</span></div>
       <div class="kpi tz money"><span class="lbl">💵 Costo est. (2 pax)</span><span class="v" id="a-usd">—</span></div>
     </div>
     <div class="card sc">
       <div class="card-head"><h2>🐬 Tours y actividades</h2><button class="btn add" data-add="actividades" type="button">＋ Agregar actividad</button></div>
-      <p class="muted toggle-hint">Toca el estado para pasarlo a reservado, hecho o por reservar.</p>
+      <p class="muted toggle-hint">Toca la casilla cuando hagan una actividad: registras cuánto costó y quién pagó, y se suma al presupuesto. El estado cambia entre reservado y por reservar.</p>
       <div class="tablebox">
         <table>
-          <thead><tr><th>Actividad</th><th>Destino</th><th class="hide-narrow">Cuándo</th><th class="num money">USD pp</th><th>Estado</th><th></th></tr></thead>
+          <thead><tr><th>Hecha</th><th>Actividad</th><th>Destino</th><th class="hide-narrow">Cuándo</th><th class="num money hide-narrow">USD pp</th><th class="num money">Gastado</th><th>Estado</th><th></th></tr></thead>
           <tbody id="act-body"></tbody>
         </table>
       </div>
@@ -441,7 +442,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     <div class="abonos" id="ps-list"></div>
     <h3>➕ Registrar un pago</h3>
     <div class="form">
-      <div class="field"><label for="ab-quien">Quién pagó</label><select id="ab-quien"><option>Tarjeta</option><option>Mario</option><option>Trini</option><option>Efectivo</option></select></div>
+      <div class="field"><label for="ab-quien">Quién pagó</label><select id="ab-quien"><option>Tarjeta</option><option>Mario</option><option>Trini</option></select></div>
       <div class="field"><label for="ab-monto">Monto CLP</label><input id="ab-monto" type="number" step="any" min="0" inputmode="numeric"></div>
       <div class="field"><label for="ab-fecha">Fecha</label><input id="ab-fecha" type="date"></div>
       <div class="field"><label for="ab-nota">Nota</label><input id="ab-nota" type="text" placeholder="Opcional"></div>
@@ -450,6 +451,23 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     <div class="sheet-actions">
       <button class="btn ghost" type="button" id="ab-todo">Completar lo que falta</button>
       <button class="btn" type="submit">Guardar pago</button>
+    </div>
+  </form>
+</div>
+<div class="overlay" id="actsheet" hidden>
+  <form class="sheet" id="act-form" novalidate>
+    <div class="row"><h2 class="grow" id="act-title">Actividad</h2><button class="edit" type="button" id="act-close" aria-label="Cerrar">✕</button></div>
+    <div class="sumbox" style="grid-template-columns:repeat(2,1fr)"><div><span class="muted">Estimado (2 pax)</span><b id="as-est">—</b></div><div><span class="muted">Gastado</span><b id="as-spent">—</b></div></div>
+    <div class="abonos" id="as-list"></div>
+    <div class="form">
+      <div class="field"><label for="as-quien">Quién pagó</label><select id="as-quien"><option>Tarjeta</option><option>Mario</option><option>Trini</option></select></div>
+      <div class="field"><label for="as-monto">Monto CLP</label><input id="as-monto" type="number" step="any" min="0" inputmode="numeric"></div>
+      <div class="field"><label for="as-item">Se suma a</label><select id="as-item"></select></div>
+      <div class="field"><label for="as-fecha">Fecha</label><input id="as-fecha" type="date"></div>
+    </div>
+    <div class="sheet-actions">
+      <button class="btn ghost" type="button" id="as-undo">Desmarcar</button>
+      <button class="btn" type="submit" id="as-save">Marcar como hecha</button>
     </div>
   </form>
 </div>
@@ -497,7 +515,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
 
   /* ---------- montos ---------- */
   // Cambiar a true para volver a mostrar montos, presupuesto y pagos.
-  const MOSTRAR_MONTOS = false;
+  const MOSTRAR_MONTOS = true;
   const MONEY_FIELD = /clp|usd|monto|pagado_por/;
   if (!MOSTRAR_MONTOS) document.body.classList.add('sin-montos');
 
@@ -644,11 +662,13 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   const abonos = (r) => Array.isArray(r.abonos) ? r.abonos : [];
   const paidOf = (r) => abonos(r).reduce((s, a) => s + n(a.monto), 0);
   const pendOf = (r) => Math.max(n(r.real_clp) - paidOf(r), 0);
+  const realOf = (r) => Math.max(n(r.real_clp), paidOf(r));
   const stateOf = (r) => { const p = paidOf(r), t = n(r.real_clp); return p <= 0 ? (t <= 0 ? 'Pagado' : 'Pendiente') : p >= t ? 'Pagado' : 'Parcial'; };
   const PAYER = {Tarjeta: ['💳', 'var(--sc)'], Mario: ['🙋‍♂️', 'var(--za)'], Trini: ['🙋‍♀️', 'var(--tz)'], Efectivo: ['💵', 'var(--ok)']};
+  const USD_CLP = 950;
   const totals = () => {
     const p = S.pagos;
-    const total = p.reduce((s, r) => s + n(r.real_clp), 0);
+    const total = p.reduce((s, r) => s + realOf(r), 0);
     const ppto = p.reduce((s, r) => s + n(r.presupuesto_clp), 0);
     const pagado = p.reduce((s, r) => s + Math.min(paidOf(r), Math.max(n(r.real_clp), paidOf(r))), 0);
     const fondos = n(S.fondos.propio) + n(S.fondos.regalos);
@@ -711,7 +731,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     } else emptyMsg(route, 'itinerario', 'Agrega días en la pestaña Itinerario.');
     // categorías
     const m = new Map();
-    S.pagos.forEach((r) => { const o = m.get(r.categoria) || {categoria: r.categoria || 'Sin categoría', real: 0, pagado: 0, pend: 0}; o.real += n(r.real_clp); o.pagado += Math.min(paidOf(r), n(r.real_clp)); o.pend += pendOf(r); m.set(r.categoria, o); });
+    S.pagos.forEach((r) => { const o = m.get(r.categoria) || {categoria: r.categoria || 'Sin categoría', real: 0, pagado: 0, pend: 0}; o.real += realOf(r); o.pagado += Math.min(paidOf(r), realOf(r)); o.pend += pendOf(r); m.set(r.categoria, o); });
     const cats = [...m.values()].sort((a, b) => b.real - a.real);
     if (cats.length) barRows($('#cat-bars'), cats, (r) => r.categoria, [['pagado', 'var(--ok)'], ['pend', 'var(--pend)']], (r) => r.real); else emptyMsg($('#cat-bars'), 'pagos', 'Sin gastos todavía.');
     const q = new Map(); S.pagos.forEach((r) => abonos(r).forEach((a) => q.set(a.quien || '—', (q.get(a.quien || '—') || 0) + n(a.monto))));
@@ -798,7 +818,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     [[T.pagado, 'var(--ok)'], [T.pend, 'var(--pend)']].forEach(([v, c]) => { const s = el('span'); s.style.width = (v / base * 100) + '%'; s.style.background = c; pr.appendChild(s); });
     set('#pay-note', ready ? `${Math.round(T.pct * 100)}% pagado · ${clp(T.pagado)} de ${clp(T.total)}` : '—');
     // quién ha pagado
-    const per = {Tarjeta: 0, Mario: 0, Trini: 0, Efectivo: 0}; const cnt = {};
+    const per = {Tarjeta: 0, Mario: 0, Trini: 0}; const cnt = {};
     S.pagos.forEach((r) => abonos(r).forEach((a) => { per[a.quien] = (per[a.quien] || 0) + n(a.monto); cnt[a.quien] = (cnt[a.quien] || 0) + 1; }));
     const pb = $('#payers'); pb.replaceChildren(); const sumPaid = Object.values(per).reduce((s, v) => s + v, 0) || 1;
     Object.entries(per).filter(([k, v]) => v > 0 || k !== 'Efectivo').forEach(([k, v]) => {
@@ -820,13 +840,14 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
       const b = el('button', 'pill ' + (stt === 'Pagado' ? 'ok' : stt === 'Parcial' ? 'part' : 'warn'), stt === 'Pagado' ? '✓ Pagado' : stt === 'Parcial' ? '◐ Parcial' : '⏳ Pendiente'); b.type = 'button';
       b.setAttribute('aria-label', 'Ver y registrar pagos de ' + (r.item || 'este ítem'));
       b.addEventListener('click', () => openPay(r)); st.appendChild(b);
-      const real = n(r.real_clp), paid = paidOf(r);
+      const real = realOf(r), paid = paidOf(r);
+      const ck = el('td'); const cb = el('button', 'box ' + (stt === 'Pagado' ? 'ok' : stt === 'Parcial' ? 'warn' : ''), stt === 'Pagado' ? '✓' : stt === 'Parcial' ? '◐' : ''); cb.type = 'button'; cb.setAttribute('aria-label', 'Registrar pago de ' + (r.item || 'este ítem')); cb.addEventListener('click', () => openPay(r)); ck.appendChild(cb);
       const pt = el('td', 'num', clp(paid)); if (real > 0 && paid > 0 && paid < real) { const mb = el('div', 'minibar'); const s = el('span'); s.style.width = Math.min(paid / real * 100, 100) + '%'; s.style.background = 'var(--ok)'; mb.appendChild(s); pt.appendChild(mb); }
       const ed = el('td'); ed.appendChild(editBtn('pagos', r));
-      tr.append(name, el('td', 'hide-narrow', r.categoria || ''), el('td', 'num hide-narrow', clp(n(r.presupuesto_clp))), el('td', 'num', clp(real)), pt, el('td', 'num hide-narrow', clp(pendOf(r))), st, ed);
+      tr.append(ck, name, el('td', 'hide-narrow', r.categoria || ''), el('td', 'num hide-narrow', clp(n(r.presupuesto_clp))), el('td', 'num', clp(real)), pt, el('td', 'num hide-narrow', clp(pendOf(r))), st, ed);
       body.appendChild(tr);
     });
-    if (!rows.length) { const tr = el('tr'); const td = el('td', 'muted', S.loaded.pagos ? 'Nada coincide con la búsqueda.' : 'Cargando…'); td.colSpan = 8; tr.appendChild(td); body.appendChild(tr); }
+    if (!rows.length) { const tr = el('tr'); const td = el('td', 'muted', S.loaded.pagos ? 'Nada coincide con la búsqueda.' : 'Cargando…'); td.colSpan = 9; tr.appendChild(td); body.appendChild(tr); }
     if (payId) fillPay();
   }
   /* ---------- pagos por ítem ---------- */
@@ -834,7 +855,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   const payRow = () => S.pagos.find((r) => r._id === payId);
   function fillPay() {
     const r = payRow(); if (!r) { closePay(); return; }
-    set('#pay-title', '💳 ' + (r.item || 'Pagos')); set('#ps-real', clp(n(r.real_clp))); set('#ps-paid', clp(paidOf(r))); set('#ps-pend', clp(pendOf(r)));
+    set('#pay-title', '💳 ' + (r.item || 'Pagos')); set('#ps-real', clp(realOf(r))); set('#ps-paid', clp(paidOf(r))); set('#ps-pend', clp(pendOf(r)));
     const list = $('#ps-list'); list.replaceChildren();
     const ab = abonos(r);
     if (!ab.length) list.appendChild(el('p', 'muted', 'Aún no hay pagos registrados para este ítem.'));
@@ -870,11 +891,83 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     try { await db.collection('pagos').doc(r._id).update({abonos: [...abonos(r), ab]}); toast('Pago registrado ✓'); $('#ab-nota').value = ''; const rr = payRow(); $('#ab-monto').value = rr ? pendOf(rr) || '' : ''; }
     catch (err) { writeErr(err); }
   });
-  const ACT_NEXT = {'Por reservar': 'Reservado', Reservado: 'Hecho', Hecho: 'Por reservar', 'Por confirmar': 'Reservado', Libre: 'Hecho'};
+  /* ---------- actividades hechas ---------- */
+  let actId = null;
+  const actRow = () => S.actividades.find((r) => r._id === actId);
+  const actPagos = (id) => { const out = []; S.pagos.forEach((p) => abonos(p).forEach((a) => { if (a.ref === 'act:' + id) out.push({p, a}); })); return out; };
+  const spentOf = (id) => actPagos(id).reduce((s, x) => s + n(x.a.monto), 0);
+  const actItems = () => S.pagos.filter((p) => p.categoria === 'Actividades');
+  const defItem = (r) => { const d = String(r.destino || ''); const want = /cape/i.test(d) ? 'X1' : /praslin|digue|mah|seych/i.test(d) ? 'X3' : 'X2'; const it = actItems(); return ((it.find((p) => p._id === want) || it[0]) || {})._id || ''; };
+  function fillAct() {
+    const r = actRow(); if (!r) { closeAct(); return; }
+    const hecha = r.estado === 'Hecho';
+    set('#act-title', (hecha ? '✅ ' : '🎉 ') + (r.actividad || 'Actividad'));
+    const est = n(r.usd_pp) * 2;
+    set('#as-est', est ? 'USD ' + nf.format(est) + ' ≈ ' + clp(est * USD_CLP) : 'Gratis');
+    set('#as-spent', clp(spentOf(r._id)));
+    const list = $('#as-list'); list.replaceChildren();
+    const xs = actPagos(r._id);
+    if (!xs.length) list.appendChild(el('p', 'muted', hecha ? 'Marcada como hecha, sin costo registrado.' : 'Registra cuánto costó y quién pagó. Si fue gratis, deja el monto en 0.'));
+    xs.forEach(({p, a}) => {
+      const m = PAYER[a.quien] || ['👤', 'var(--fly)']; const row = el('div', 'abono');
+      const chip = el('span', 'chip-who', m[0] + ' ' + (a.quien || '—')); chip.style.background = m[1];
+      const info = el('div'); info.append(el('div', 'm', clp(n(a.monto))), el('div', 'muted', [valid(a.fecha) ? fdl(a.fecha) : '', p.item].filter(Boolean).join(' · ')));
+      const del = el('button', 'edit', '🗑'); del.type = 'button'; del.setAttribute('aria-label', 'Borrar este pago'); let armed = false;
+      del.addEventListener('click', async () => {
+        if (!armed) { armed = true; del.textContent = '¿?'; del.title = 'Toca de nuevo para borrar'; return; }
+        const fp = S.pagos.find((q) => q._id === p._id); if (!fp) return;
+        const idx = abonos(fp).findIndex((x) => x.ref === a.ref && n(x.monto) === n(a.monto) && x.quien === a.quien && x.fecha === a.fecha);
+        try { await db.collection('pagos').doc(fp._id).update({abonos: abonos(fp).filter((_, j) => j !== idx)}); toast('Pago borrado'); } catch (e) { writeErr(e); }
+      });
+      row.append(chip, info, el('span'), canWrite ? del : el('span')); list.appendChild(row);
+    });
+    const sel = $('#as-item'); const cur = sel.value; const items = actItems();
+    sel.replaceChildren(...items.map((p) => new Option(p.item || p._id, p._id)));
+    sel.value = cur && items.some((p) => p._id === cur) ? cur : defItem(r);
+    $('#as-undo').hidden = !hecha; $('#as-save').textContent = hecha ? 'Agregar otro pago' : 'Marcar como hecha';
+  }
+  function openAct(r) {
+    if (!db) return; actId = r._id; $('#as-item').value = '';
+    $('#as-monto').value = r.estado === 'Hecho' ? '' : (Math.round(n(r.usd_pp) * 2 * USD_CLP) || '');
+    $('#as-fecha').value = todayISO(); undoArmed = false; $('#as-undo').textContent = 'Desmarcar';
+    $('#act-form').querySelectorAll('.form, .sheet-actions').forEach((x) => { x.hidden = !canWrite; });
+    fillAct(); $('#actsheet').hidden = false;
+  }
+  function closeAct() { $('#actsheet').hidden = true; actId = null; }
+  let undoArmed = false;
+  $('#act-close').addEventListener('click', closeAct);
+  $('#actsheet').addEventListener('click', (e) => { if (e.target.id === 'actsheet') closeAct(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('#actsheet').hidden) closeAct(); });
+  $('#act-form').addEventListener('submit', async (e) => {
+    e.preventDefault(); const r = actRow(); if (!r || !canWrite) return;
+    const monto = Number($('#as-monto').value) || 0; const itemId = $('#as-item').value;
+    if (monto < 0) return;
+    if (monto > 0 && !itemId) { toast('Agrega primero un ítem de Actividades en el presupuesto'); return; }
+    try {
+      if (monto > 0) {
+        const p = S.pagos.find((q) => q._id === itemId);
+        await db.collection('pagos').doc(itemId).update({abonos: [...abonos(p), {quien: $('#as-quien').value, monto, fecha: $('#as-fecha').value || todayISO(), nota: r.actividad || '', ref: 'act:' + r._id}]});
+      }
+      if (r.estado !== 'Hecho') await db.collection('actividades').doc(r._id).update({estado: 'Hecho'});
+      toast(monto > 0 ? 'Pago registrado ✓' : 'Marcada como hecha ✓'); $('#as-monto').value = '';
+    } catch (err) { writeErr(err); }
+  });
+  $('#as-undo').addEventListener('click', async () => {
+    const r = actRow(); if (!r || !canWrite) return;
+    if (!undoArmed) { undoArmed = true; $('#as-undo').textContent = '¿Seguro? Se borran sus pagos'; return; }
+    try {
+      for (const p of S.pagos.filter((q) => abonos(q).some((a) => a.ref === 'act:' + r._id))) {
+        await db.collection('pagos').doc(p._id).update({abonos: abonos(p).filter((a) => a.ref !== 'act:' + r._id)});
+      }
+      await db.collection('actividades').doc(r._id).update({estado: 'Por reservar'});
+      toast('Actividad desmarcada'); closeAct();
+    } catch (err) { writeErr(err); }
+  });
+  const ACT_NEXT = {'Por reservar': 'Reservado', Reservado: 'Por reservar', 'Por confirmar': 'Reservado', Libre: 'Reservado'};
   function renderAct() {
     const a = S.actividades; const L = S.loaded.actividades;
     set('#a-n', L ? String(a.length) : '—'); set('#a-must', L ? String(a.filter((r) => /must/i.test(r.prioridad)).length) : '—');
-    set('#a-res', L ? String(a.filter((r) => r.estado === 'Reservado' || r.estado === 'Hecho').length) : '—'); set('#a-usd', L ? 'USD ' + nf.format(a.reduce((s, r) => s + n(r.usd_pp) * 2, 0)) : '—');
+    set('#a-res', L ? a.filter((r) => r.estado === 'Hecho').length + ' de ' + a.length : '—'); set('#a-gast', L ? clp(a.reduce((s, r) => s + spentOf(r._id), 0)) : '—'); set('#a-usd', L ? 'USD ' + nf.format(a.reduce((s, r) => s + n(r.usd_pp) * 2, 0)) : '—');
     const body = $('#act-body'); body.replaceChildren();
     const order = ['Cape Town', 'Tanzania', 'Zanzíbar', 'Praslin', 'La Digue', 'Mahé'];
     [...a].sort((x, y) => ((order.indexOf(x.destino) + 99) % 99) - ((order.indexOf(y.destino) + 99) % 99) || String(x.actividad).localeCompare(String(y.actividad), 'es')).forEach((r) => {
@@ -883,12 +976,15 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
       if (r.notas) name.appendChild(el('div', 'muted', r.notas));
       const st = el('td'); const done = r.estado === 'Reservado' || r.estado === 'Hecho';
       const b = el('button', 'pill ' + (done ? 'ok' : 'warn'), (r.estado === 'Hecho' ? '✓ ' : r.estado === 'Reservado' ? '🎟️ ' : '') + (r.estado || '—')); b.type = 'button';
-      b.addEventListener('click', () => quick('actividades', r, {estado: ACT_NEXT[r.estado] || 'Reservado'})); st.appendChild(b);
+      b.addEventListener('click', () => r.estado === 'Hecho' ? openAct(r) : quick('actividades', r, {estado: ACT_NEXT[r.estado] || 'Reservado'})); st.appendChild(b);
       const ed = el('td'); ed.appendChild(editBtn('actividades', r));
-      tr.append(name, el('td', '', r.destino || ''), el('td', 'hide-narrow', r.cuando || ''), el('td', 'num money', n(r.usd_pp) ? String(n(r.usd_pp)) : 'Gratis'), st, ed);
+      const ck = el('td'); const hecha = r.estado === 'Hecho'; const cb = el('button', 'box ' + (hecha ? 'ok' : ''), hecha ? '✓' : ''); cb.type = 'button'; cb.setAttribute('aria-label', (hecha ? 'Ver pagos de ' : 'Marcar como hecha: ') + (r.actividad || 'actividad')); cb.addEventListener('click', () => openAct(r)); ck.appendChild(cb);
+      const sp = spentOf(r._id);
+      tr.append(ck, name, el('td', '', r.destino || ''), el('td', 'hide-narrow', r.cuando || ''), el('td', 'num money hide-narrow', n(r.usd_pp) ? String(n(r.usd_pp)) : 'Gratis'), el('td', 'num money', sp ? clp(sp) : '—'), st, ed);
       body.appendChild(tr);
     });
-    if (!a.length) { const tr = el('tr'); const td = el('td', 'muted', L ? 'Sin actividades todavía.' : 'Cargando…'); td.colSpan = 6; tr.appendChild(td); body.appendChild(tr); }
+    if (!a.length) { const tr = el('tr'); const td = el('td', 'muted', L ? 'Sin actividades todavía.' : 'Cargando…'); td.colSpan = 8; tr.appendChild(td); body.appendChild(tr); }
+    if (actId) fillAct();
   }
   function renderPend() {
     const p = S.pendientes; const tot = Math.max(p.length, 1);
