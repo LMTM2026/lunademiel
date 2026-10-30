@@ -275,6 +275,18 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
 .ver .eye { display: none; }
 .eye-row { display: flex; justify-content: flex-end; margin-bottom: -4px; }
 .card-head .eye { margin-left: auto; }
+.gal { display: flex; gap: 8px; overflow-x: auto; scroll-snap-type: x mandatory; border-radius: 16px; scrollbar-width: thin; }
+.gal a { flex: 0 0 88%; scroll-snap-align: center; aspect-ratio: 4 / 3; border-radius: 14px; overflow: hidden; background: var(--soft); }
+.gal a:only-child { flex-basis: 100%; }
+.gal img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.in-tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.in-tags .tag { font-size: 12px; padding: 3px 10px; }
+.in-body { display: grid; gap: 14px; }
+.in-body h3 { margin: 0 0 3px; font-size: 14px; }
+.in-body p { margin: 0; font-size: 14.5px; line-height: 1.5; }
+.in-price { display: flex; gap: 6px 8px; align-items: center; flex-wrap: wrap; background: var(--soft); border-radius: 12px; padding: 9px 12px; font-size: 14px; }
+.in-body .credit { font-size: 11.5px; }
+.act-name { font: inherit; font-weight: 600; text-align: left; background: none; border: 0; padding: 0; color: inherit; cursor: pointer; text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--ink) 25%, transparent); text-underline-offset: 3px; }
 .hero-row .lock, .hero-row .sync { white-space: nowrap; }
 </style>
 </head>
@@ -434,10 +446,10 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     </div>
     <div class="card sc">
       <div class="card-head"><h2>🐬 Tours y actividades</h2><button class="btn add" data-add="actividades" type="button">＋ Agregar actividad</button></div>
-      <p class="muted toggle-hint">Toca la casilla cuando hagan una actividad: registras cuánto costó y quién pagó, y se suma al presupuesto. El estado cambia entre reservado y por reservar.</p>
+      <p class="muted toggle-hint">Toca el nombre de una actividad para ver fotos, detalles y cómo hacerla. Toca la casilla cuando hagan una actividad: registras cuánto costó y quién pagó, y se suma al presupuesto. El estado cambia entre reservado y por reservar.</p>
       <div class="tablebox">
         <table>
-          <thead><tr><th>Hecha</th><th>Actividad</th><th>Destino</th><th class="hide-narrow">Cuándo</th><th class="num money hide-narrow">USD pp</th><th class="num money">Gastado</th><th>Estado</th><th></th></tr></thead>
+          <thead><tr><th>✓</th><th>Actividad</th><th class="hide-narrow">Destino</th><th class="hide-narrow">Cuándo</th><th class="num money">Precio (2)</th><th class="num money hide-narrow">Gastado</th><th>Estado</th><th class="hide-narrow"></th></tr></thead>
           <tbody id="act-body"></tbody>
         </table>
       </div>
@@ -474,6 +486,18 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     <div class="sheet-actions">
       <button class="btn ghost" type="button" id="cs-tab" hidden>Ir a la hoja</button>
       <button class="btn" type="button" id="cs-filter" style="margin-left:auto">Ver en Presupuesto</button>
+    </div>
+  </div>
+</div>
+<div class="overlay" id="infosheet" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="in-title">
+    <div class="row"><h2 class="grow" id="in-title">Actividad</h2><button class="edit" type="button" id="in-close" aria-label="Cerrar">✕</button></div>
+    <div class="in-tags" id="in-tags"></div>
+    <div class="gal" id="in-gal"></div>
+    <div class="in-body" id="in-body"></div>
+    <div class="sheet-actions">
+      <button class="btn ghost" type="button" id="in-edit">✎ Editar</button>
+      <button class="btn" type="button" id="in-done" style="margin-left:auto">Marcar como hecha</button>
     </div>
   </div>
 </div>
@@ -629,7 +653,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     vuelos: {name: 'vuelo', fields: [['tramo', 'Tramo (Origen → Destino)', 'text', 'wide'], ['fecha', 'Fecha', 'date'], ['salida', 'Salida'], ['llegada', 'Llegada'], ['duracion', 'Duración'], ['escala', 'Escala'], ['agencia', 'Agencia'], ['codigo', 'Código de reserva'], ['total_clp', 'Total CLP (2 pax)', 'number'], ['estado', 'Estado', ['Comprado', 'Por confirmar', 'Pendiente']], ['notas', 'Notas', 'area']]},
     hoteles: {name: 'hotel', fields: [['hotel', 'Hotel', 'text', 'wide'], ['zona', 'Zona'], ['pais', 'País', PAISES], ['check_in', 'Check-in', 'date'], ['check_out', 'Check-out', 'date'], ['noches', 'Noches', 'number'], ['total_clp', 'Total CLP', 'number'], ['monto_original', 'Monto en moneda original'], ['regimen', 'Régimen'], ['pagado_por', 'Pagado por'], ['notas', 'Notas / confirmación', 'area']]},
     pagos: {name: 'gasto', fields: [['item', 'Ítem', 'text', 'wide'], ['categoria', 'Categoría', ['Vuelos', 'Alojamiento', 'Transporte', 'Actividades', 'Comidas', 'Compras', 'Visas y trámites', 'Salud', 'Seguros', 'Roaming', 'Propinas', 'Imprevistos', 'Gastos en viaje']], ['presupuesto_clp', 'Presupuesto CLP', 'number'], ['notas', 'Notas', 'area']]},
-    actividades: {name: 'actividad', fields: [['actividad', 'Actividad', 'text', 'wide'], ['destino', 'Destino'], ['cuando', 'Cuándo'], ['usd_pp', 'USD por persona', 'number'], ['prioridad', 'Prioridad', ['', 'Must do']], ['estado', 'Estado', ['Por reservar', 'Reservado', 'Hecho', 'Por confirmar', 'Libre']], ['notas', 'Notas', 'area']]},
+    actividades: {name: 'actividad', fields: [['actividad', 'Actividad', 'text', 'wide'], ['destino', 'Destino'], ['cuando', 'Cuándo'], ['usd_pp', 'USD por persona', 'number'], ['prioridad', 'Prioridad', ['', 'Must do']], ['estado', 'Estado', ['Por reservar', 'Reservado', 'Hecho', 'Por confirmar', 'Libre']], ['notas', 'Duración y datos', 'area'], ['descripcion', 'Qué es', 'area'], ['como', 'Cómo hacerlo', 'area'], ['tips', 'Tips', 'area']]},
     pendientes: {name: 'pendiente', fields: [['tarea', 'Tarea', 'text', 'wide'], ['categoria', 'Categoría', ['Documentos', 'Salud', 'Reservas', 'Antes de viajar', 'Durante el viaje']], ['estado', 'Estado', ['Pendiente', 'Por confirmar', 'Listo']], ['pago', 'Gasto del presupuesto (si tiene costo)', 'pagosref'], ['nota', 'Nota', 'area']]},
     tips: {name: 'tip', fields: [['seccion', 'Sección'], ['tema', 'Tema'], ['texto', 'Texto', 'area']]},
     config: {name: 'fondos', fields: [['propio', 'Fondos propios CLP', 'number'], ['regalos', 'Regalos CLP', 'number']]},
@@ -761,6 +785,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     const page = TABS.find((t) => !document.getElementById(t).hidden) || 'resumen';
     renderHeader();
     if (catName) fillCat();
+    if (infoId) fillInfo();
     withKey(null, ({resumen: renderResumen, itinerario: renderItin, vuelos: renderVuelos, hoteles: renderHoteles, presupuesto: renderPresupuesto, actividades: renderAct, pendientes: renderPend, tips: renderTips})[page]);
   }
   function renderHeader() {
@@ -1089,16 +1114,15 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     const body = $('#act-body'); body.replaceChildren();
     const order = ['Cape Town', 'Tanzania', 'Zanzíbar', 'Praslin', 'La Digue', 'Mahé'];
     [...a].sort((x, y) => ((order.indexOf(x.destino) + 99) % 99) - ((order.indexOf(y.destino) + 99) % 99) || String(x.actividad).localeCompare(String(y.actividad), 'es')).forEach((r) => {
-      const tr = el('tr'); const name = el('td', '', r.actividad || '—');
+      const tr = el('tr'); const name = el('td'); const nb = el('button', 'act-name', r.actividad || '—'); nb.type = 'button'; nb.addEventListener('click', () => openInfo(r)); name.appendChild(nb);
       if (/must/i.test(r.prioridad)) { const s = el('span', 'tag', '⭐ Must do'); s.style.marginLeft = '6px'; s.style.setProperty('--acc', 'var(--za)'); name.appendChild(s); }
-      if (r.notas) name.appendChild(el('div', 'muted', r.notas));
       const st = el('td'); const done = r.estado === 'Reservado' || r.estado === 'Hecho';
       const b = el('button', 'pill ' + (done ? 'ok' : 'warn'), (r.estado === 'Hecho' ? '✓ ' : r.estado === 'Reservado' ? '🎟️ ' : '') + (r.estado || '—')); b.type = 'button';
       b.addEventListener('click', () => r.estado === 'Hecho' ? openAct(r) : quick('actividades', r, {estado: ACT_NEXT[r.estado] || 'Reservado'})); st.appendChild(b);
-      const ed = el('td'); ed.appendChild(editBtn('actividades', r));
+      const ed = el('td', 'hide-narrow'); ed.appendChild(editBtn('actividades', r));
       const ck = el('td'); const hecha = r.estado === 'Hecho'; const cb = el('button', 'box ' + (hecha ? 'ok' : ''), hecha ? '✓' : ''); cb.type = 'button'; cb.setAttribute('aria-label', (hecha ? 'Ver pagos de ' : 'Marcar como hecha: ') + (r.actividad || 'actividad')); cb.addEventListener('click', () => openAct(r)); ck.appendChild(cb);
       const sp = spentOf(r._id);
-      tr.append(ck, name, el('td', '', r.destino || ''), el('td', 'hide-narrow', r.cuando || ''), el('td', 'num money hide-narrow', n(r.usd_pp) ? (shown() ? String(n(r.usd_pp)) : '•••') : 'Gratis'), el('td', 'num money', sp ? clp(sp) : '—'), st, ed);
+      tr.append(ck, name, el('td', 'hide-narrow', r.destino || ''), el('td', 'hide-narrow', r.cuando || ''), el('td', 'num money', n(r.usd_pp) ? clp(n(r.usd_pp) * 2 * USD_CLP) : 'Gratis'), el('td', 'num money hide-narrow', sp ? clp(sp) : '—'), st, ed);
       body.appendChild(tr);
     });
     if (!a.length) { const tr = el('tr'); const td = el('td', 'muted', L ? 'Sin actividades todavía.' : 'Cargando…'); td.colSpan = 8; tr.appendChild(td); body.appendChild(tr); }
@@ -1157,7 +1181,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
       [...a].sort((x, y) => ((order.indexOf(x.destino) + 99) % 99) - ((order.indexOf(y.destino) + 99) % 99)).forEach((r) => {
         const sp = spentOf(r._id); const est = n(r.usd_pp) * 2;
         const row = relRow((/must/i.test(r.prioridad) ? '⭐ ' : '') + (r.actividad || '—'), (r.estado === 'Hecho' ? '✓ ' : r.estado === 'Reservado' ? '🎟️ ' : '') + (r.estado || '—'), [r.destino, r.cuando, est ? 'Estimado ' + clp(est * USD_CLP) : 'Gratis', sp ? 'Gastado ' + clp(sp) : ''].filter(Boolean).join(' · '), r.estado === 'Hecho' || r.estado === 'Reservado' ? 'ok' : 'warn');
-        row.style.cursor = 'pointer'; row.setAttribute('role', 'button'); row.tabIndex = 0; row.addEventListener('click', () => openAct(r)); rel.appendChild(row);
+        row.style.cursor = 'pointer'; row.setAttribute('role', 'button'); row.tabIndex = 0; row.addEventListener('click', () => openInfo(r)); rel.appendChild(row);
       });
     } else {
       const ids = new Set(items.map((r) => r._id)); const ps = S.pendientes.filter((q) => ids.has(q.pago));
@@ -1175,9 +1199,47 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   $('#cs-tab').addEventListener('click', () => { const to = $('#cs-tab').dataset.to; closeCat(); location.hash = to; });
   document.addEventListener('click', (e) => { const t = e.target.closest('[data-catd]'); if (t) openCat(t.dataset.catd); });
   document.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.closest && e.target.closest('[data-catd]')) openCat(e.target.closest('[data-catd]').dataset.catd); });
+  /* ---------- ficha de una actividad (fotos y detalles) ---------- */
+  var infoId = null;
+  const infoRow = () => S.actividades.find((r) => r._id === infoId);
+  const FOTO = (f, w) => 'https://commons.wikimedia.org/wiki/Special:FilePath/' + encodeURIComponent(f) + '?width=' + w;
+  function fillInfo() { withKey(REVEAL.has('act-tot') ? 'act-tot' : 'act:' + infoId, fillInfo_); }
+  function fillInfo_() {
+    const r = infoRow(); if (!r) { closeInfo(); return; }
+    set('#in-title', r.actividad || 'Actividad');
+    const tags = $('#in-tags'); tags.replaceChildren(); const must = /must/i.test(r.prioridad || '');
+    [['📍', r.destino], ['📅', r.cuando], ['⭐', must ? 'Must do' : ''], [r.estado === 'Hecho' ? '✓' : r.estado === 'Reservado' ? '🎟️' : '•', r.estado]].forEach(([e, t]) => { if (t) tags.appendChild(el('span', 'tag', e + ' ' + t)); });
+    const gal = $('#in-gal'); const fotos = Array.isArray(r.fotos) ? r.fotos.filter(Boolean) : [];
+    if (gal.dataset.k !== fotos.join('|')) {
+      gal.dataset.k = fotos.join('|');
+      gal.replaceChildren(...fotos.map((f) => { const a = el('a'); a.href = 'https://commons.wikimedia.org/wiki/File:' + encodeURIComponent(String(f).replace(/ /g, '_')); a.target = '_blank'; a.rel = 'noopener'; a.setAttribute('aria-label', 'Ver foto en Wikimedia Commons');
+        const im = el('img'); im.loading = 'lazy'; im.alt = r.actividad || 'Foto'; im.src = FOTO(f, 900); im.addEventListener('error', () => a.remove()); a.appendChild(im); return a; }));
+      gal.scrollLeft = 0;
+    }
+    gal.hidden = !fotos.length;
+    const b = $('#in-body'); b.replaceChildren();
+    const sec = (h, t) => { if (!t) return; const d = el('div'); d.append(el('h3', '', h), el('p', '', t)); b.appendChild(d); };
+    sec('✨ Qué es', r.descripcion); sec('⏱ Duración y datos', String(r.notas || '').replace(/^⏱\s*/, '')); sec('🧭 Cómo hacerlo', r.como); sec('💡 Tips', r.tips);
+    const est = n(r.usd_pp) * 2, sp = spentOf(r._id);
+    const pr = el('div', 'in-price'); pr.appendChild(el('b', '', est ? '💵 Estimado para los dos: ' + usd(est) + ' ≈ ' + clp(est * USD_CLP) : '💵 Gratis'));
+    if (sp) pr.appendChild(el('span', 'muted', '· Gastado: ' + clp(sp)));
+    if ((est || sp) && !REVEAL.has('act-tot')) pr.appendChild(eyeBtn('act:' + r._id));
+    b.appendChild(pr);
+    if (!r.descripcion && !r.como && !r.tips) b.appendChild(el('p', 'muted', 'Sin más detalles todavía. Puedes agregarlos con ✎ Editar.'));
+    if (fotos.length) b.appendChild(el('p', 'muted credit', 'Fotos: Wikimedia Commons. Desliza para ver más; toca una para ver autor y licencia.'));
+    $('#in-done').textContent = r.estado === 'Hecho' ? '✓ Ver pagos' : 'Marcar como hecha';
+    $('#in-edit').hidden = !canWrite; $('#in-done').hidden = !db;
+  }
+  function openInfo(r) { infoId = r._id; $('#in-gal').dataset.k = ''; fillInfo(); $('#infosheet').hidden = false; const sh = $('#infosheet .sheet'); if (sh) sh.scrollTop = 0; }
+  function closeInfo() { $('#infosheet').hidden = true; infoId = null; }
+  $('#in-close').addEventListener('click', closeInfo);
+  $('#infosheet').addEventListener('click', (e) => { if (e.target.id === 'infosheet') closeInfo(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('#infosheet').hidden && $('#actsheet').hidden && $('#editor').hidden && $('#paysheet').hidden) closeInfo(); });
+  $('#in-edit').addEventListener('click', () => { const r = infoRow(); if (r) openEditor('actividades', r); });
+  $('#in-done').addEventListener('click', () => { const r = infoRow(); if (r) openAct(r); });
   /* ---------- mostrar / ocultar montos ---------- */
   const paintVer = () => { document.body.classList.toggle('ver', VER); const b = $('#ver-montos'); b.textContent = VER ? '👁 Ocultar' : '🙈 Ver montos'; b.setAttribute('aria-pressed', VER ? 'true' : 'false'); };
-  const repaint = () => { paintVer(); render(); if (payId) fillPay(); if (actId) fillAct(); document.querySelectorAll('[data-eye]').forEach((b) => { if (b.dataset.eye) paintEye(b); }); };
+  const repaint = () => { paintVer(); render(); if (payId) fillPay(); if (actId) fillAct(); if (infoId) fillInfo(); document.querySelectorAll('[data-eye]').forEach((b) => { if (b.dataset.eye) paintEye(b); }); };
   document.addEventListener('click', (e) => {
     const b = e.target.closest && e.target.closest('[data-eye]'); if (!b || !b.dataset.eye) return;
     e.stopPropagation(); e.preventDefault(); const k = b.dataset.eye; if (REVEAL.has(k)) REVEAL.delete(k); else REVEAL.add(k); repaint();
