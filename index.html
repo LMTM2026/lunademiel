@@ -214,8 +214,8 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
 .field textarea { min-height: 4.5rem; resize: vertical; }
 .sheet-actions { display: flex; gap: 8px; justify-content: space-between; flex-wrap: wrap; }
 .payers { display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr)); }
-[data-f], [data-quien], [data-cat] { cursor: pointer; }
-.kpi[data-f]:hover, .payer:hover, .bar-row[data-quien]:hover, .bar-row[data-cat]:hover, .bar-row[data-f]:hover { filter: brightness(.97); }
+[data-f], [data-quien], [data-cat], [data-catd] { cursor: pointer; }
+.kpi[data-f]:hover, .payer:hover, .bar-row[data-quien]:hover, .bar-row[data-cat]:hover, .bar-row[data-catd]:hover, .bar-row[data-f]:hover { filter: brightness(.97); }
 .kpi.sel, .payer.sel { box-shadow: 0 0 0 3px var(--acc); }
 .filter-banner { display: flex; gap: 10px; align-items: center; justify-content: space-between; flex-wrap: wrap; padding: 10px 14px; border-radius: 14px; background: color-mix(in srgb, var(--sc) 14%, var(--panel)); border: 1px solid color-mix(in srgb, var(--sc) 35%, var(--line)); font-size: 14px; }
 .filter-banner b { font-weight: 700; }
@@ -228,6 +228,22 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
 .abonos { display: grid; gap: 6px; }
 .abono { display: grid; grid-template-columns: auto 1fr auto auto; gap: 10px; align-items: center; padding: 8px 12px; border-radius: 12px; background: var(--soft); font-size: 13.5px; }
 .abono .m { font-weight: 700; }
+.cs-items { display: grid; gap: 8px; }
+.cs-item { display: grid; gap: 6px; padding: 10px 12px; border-radius: 14px; background: var(--soft); border: 1px solid transparent; text-align: left; font: inherit; color: inherit; cursor: pointer; width: 100%; }
+.cs-item:hover { border-color: var(--line); }
+.cs-item .top { display: flex; gap: 8px; align-items: baseline; justify-content: space-between; flex-wrap: wrap; }
+.cs-item .nm { font-weight: 700; }
+.cs-item .nums { display: flex; gap: 12px; flex-wrap: wrap; font-size: 13px; color: var(--muted); }
+.cs-item .nums b { color: var(--ink); font-weight: 700; }
+.cs-item .nums .over { color: var(--bad); }
+.cs-item .abs { display: flex; gap: 6px; flex-wrap: wrap; }
+.cs-who { display: flex; gap: 8px; flex-wrap: wrap; }
+.cs-who .chip-who { font-size: 12.5px; padding: 4px 10px; }
+.cs-rel { display: grid; gap: 6px; }
+.cs-rel .r { display: grid; grid-template-columns: 1fr auto; gap: 2px 10px; align-items: center; padding: 8px 12px; border-radius: 12px; background: var(--soft); font-size: 13.5px; }
+.cs-rel .r .muted { grid-column: 1 / -1; font-size: 12.5px; }
+.cat-hint { font-size: 12.5px; margin-top: 8px; }
+#catsheet h3 { margin: 4px 0 0; font-size: 15px; }
 .chip-who { font-size: 12px; font-weight: 700; padding: 2px 9px; border-radius: 999px; color: #fff; }
 .sumbox { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 .sumbox div { background: var(--soft); border-radius: 12px; padding: 8px 10px; display: grid; gap: 2px; }
@@ -303,7 +319,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
       <div class="legend"><span><i class="sw" style="background:var(--za)"></i>Ciudad</span><span><i class="sw" style="background:var(--tz)"></i>Safari</span><span><i class="sw" style="background:var(--sc)"></i>Playa</span><span><i class="sw" style="background:var(--fly)"></i>Vuelo</span></div>
     </div>
     <div class="grid money">
-      <div class="card za"><h2>📊 Gasto por categoría</h2><p class="muted">Monto real en CLP, pagado y por pagar.</p><div class="bars" id="cat-bars"></div>
+      <div class="card za"><h2>📊 Gasto por categoría</h2><p class="muted">Presupuesto en CLP, pagado y por pagar. <b>Toca una categoría para ver el detalle.</b></p><div class="bars" id="cat-bars"></div>
         <div class="legend"><span><i class="sw" style="background:var(--ok)"></i>Pagado</span><span><i class="sw" style="background:var(--pend)"></i>Por pagar</span></div></div>
       <div class="card sc"><h2>💳 Quién ha pagado</h2><p class="muted">Pagos registrados en CLP y lo que falta por pagar.</p><div class="bars" id="who-bars"></div></div>
     </div>
@@ -432,6 +448,23 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   </section>
 </div>
 
+<div class="overlay" id="catsheet" hidden>
+  <div class="sheet" role="dialog" aria-modal="true" aria-labelledby="cat-title">
+    <div class="row"><h2 class="grow" id="cat-title">Categoría</h2><button class="edit" type="button" id="cat-close" aria-label="Cerrar">✕</button></div>
+    <div class="sumbox"><div><span class="muted">Presupuesto</span><b id="cs-ppto">—</b></div><div><span class="muted">Pagado</span><b id="cs-paid">—</b></div><div><span class="muted">Por pagar</span><b id="cs-pend">—</b></div></div>
+    <div class="progress" id="cs-bar"></div>
+    <p class="muted" id="cs-note" style="margin:0"></p>
+    <div class="cs-who" id="cs-who"></div>
+    <h3>🧾 Qué incluye el presupuesto</h3>
+    <p class="muted" style="margin:0;font-size:12.5px">Toca un ítem para ver o registrar sus pagos.</p>
+    <div class="cs-items" id="cs-items"></div>
+    <div id="cs-extra" style="display:grid;gap:8px"></div>
+    <div class="sheet-actions">
+      <button class="btn ghost" type="button" id="cs-tab" hidden>Ir a la hoja</button>
+      <button class="btn" type="button" id="cs-filter" style="margin-left:auto">Ver en Presupuesto</button>
+    </div>
+  </div>
+</div>
 <div class="overlay" id="editor" hidden>
   <form class="sheet" id="editor-form" novalidate>
     <h2 id="editor-title">Editar</h2>
@@ -671,7 +704,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     setTimeout(() => { const t = $('#pay-filter'); if (t && !t.hidden) t.scrollIntoView({behavior: 'smooth', block: 'start'}); }, 150);
   };
   const filtroDe = (el) => el.dataset.quien ? {quien: el.dataset.quien} : el.dataset.cat ? {cat: el.dataset.cat} : {vista: el.dataset.f === 'todo' ? '' : el.dataset.f};
-  document.addEventListener('click', (e) => { const t = e.target.closest('[data-f], [data-quien], [data-cat]'); if (t && !t.closest('#editor, #paysheet, #actsheet')) setFiltro(filtroDe(t)); });
+  document.addEventListener('click', (e) => { const t = e.target.closest('[data-f], [data-quien], [data-cat]'); if (t && !t.closest('#editor, #paysheet, #actsheet, #catsheet')) setFiltro(filtroDe(t)); });
   document.addEventListener('keydown', (e) => { if (e.key !== 'Enter') return; const t = e.target.closest && e.target.closest('[data-f], [data-quien], [data-cat]'); if (t) setFiltro(filtroDe(t)); });
   $('#pay-filter-x').addEventListener('click', (e) => { e.stopPropagation(); setFiltro({}); });
   $('#pay-q').addEventListener('input', (e) => { UI.q = e.target.value.trim().toLowerCase(); render(); });
@@ -707,6 +740,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
   function render() {
     const page = TABS.find((t) => !document.getElementById(t).hidden) || 'resumen';
     renderHeader();
+    if (catName) fillCat();
     ({resumen: renderResumen, itinerario: renderItin, vuelos: renderVuelos, hoteles: renderHoteles, presupuesto: renderPresupuesto, actividades: renderAct, pendientes: renderPend, tips: renderTips})[page]();
   }
   function renderHeader() {
@@ -760,7 +794,7 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     const m = new Map();
     S.pagos.forEach((r) => { const o = m.get(r.categoria) || {categoria: r.categoria || 'Sin categoría', real: 0, pagado: 0, pend: 0}; o.real += realOf(r); o.pagado += Math.min(paidOf(r), realOf(r)); o.pend += pendOf(r); m.set(r.categoria, o); });
     const cats = [...m.values()].sort((a, b) => b.real - a.real);
-    if (cats.length) { barRows($('#cat-bars'), cats, (r) => r.categoria, [['pagado', 'var(--ok)'], ['pend', 'var(--pend)']], (r) => r.real); [...$('#cat-bars').querySelectorAll('.bar-row')].forEach((row, i) => { row.dataset.cat = cats[i].categoria; }); } else emptyMsg($('#cat-bars'), 'pagos', 'Sin gastos todavía.');
+    if (cats.length) { barRows($('#cat-bars'), cats, (r) => r.categoria, [['pagado', 'var(--ok)'], ['pend', 'var(--pend)']], (r) => r.real); [...$('#cat-bars').querySelectorAll('.bar-row')].forEach((row, i) => { row.dataset.catd = cats[i].categoria; row.setAttribute('role', 'button'); row.tabIndex = 0; }); } else emptyMsg($('#cat-bars'), 'pagos', 'Sin gastos todavía.');
     const q = new Map(); S.pagos.forEach((r) => abonos(r).forEach((a) => q.set(a.quien || '—', (q.get(a.quien || '—') || 0) + n(a.monto))));
     const T0 = totals(); if (T0.pend > 0) q.set('Por pagar', T0.pend);
     const WHO = {Tarjeta: 'var(--sc)', Mario: 'var(--za)', Trini: 'var(--tz)', 'Por pagar': 'var(--pend)', Efectivo: 'var(--ok)'};
@@ -1038,6 +1072,76 @@ tbody tr:hover td { background: color-mix(in srgb, var(--sc) 7%, transparent); }
     if (!a.length) { const tr = el('tr'); const td = el('td', 'muted', L ? 'Sin actividades todavía.' : 'Cargando…'); td.colSpan = 8; tr.appendChild(td); body.appendChild(tr); }
     if (actId) fillAct();
   }
+  /* ---------- detalle de una categoría (desde el Resumen) ---------- */
+  var catName = null;
+  const CATMETA = {Vuelos: ['✈️', 'vuelos', 'Vuelos'], Alojamiento: ['🏨', 'hoteles', 'Hoteles'], Actividades: ['🤿', 'actividades', 'Actividades'], Transporte: ['🚙'], Comidas: ['🍽️'], Compras: ['🛍️'], 'Visas y trámites': ['🛂', 'pendientes', 'Pendientes'], Salud: ['💉', 'pendientes', 'Pendientes'], Seguros: ['🛡️', 'pendientes', 'Pendientes'], Roaming: ['📶'], Propinas: ['🤝'], Imprevistos: ['🧯'], 'Gastos en viaje': ['💵']};
+  const relRow = (title, right, sub, pillCls) => { const r = el('div', 'r'); r.appendChild(el('span', '', title)); r.appendChild(pillCls ? el('span', 'pill ' + pillCls, right) : el('b', '', right || '')); if (sub) r.appendChild(el('span', 'muted', sub)); return r; };
+  function fillCat() {
+    const cat = catName; const items = S.pagos.filter((r) => (r.categoria || 'Sin categoría') === cat);
+    if (!items.length) { closeCat(); return; }
+    const meta = CATMETA[cat] || ['📋'];
+    set('#cat-title', meta[0] + ' ' + cat);
+    const ppto = items.reduce((s, r) => s + pptoOf(r), 0), paid = items.reduce((s, r) => s + paidOf(r), 0), pend = items.reduce((s, r) => s + pendOf(r), 0), over = items.reduce((s, r) => s + overOf(r), 0);
+    set('#cs-ppto', clp(ppto)); set('#cs-paid', clp(paid)); set('#cs-pend', clp(pend));
+    const bar = $('#cs-bar'); bar.replaceChildren(); const base = Math.max(ppto, paid, 1);
+    [[Math.min(paid, ppto), 'var(--ok)'], [over, 'var(--bad)'], [pend, 'var(--pend)']].forEach(([v, c]) => { if (v > 0) { const s2 = el('span'); s2.style.width = (v / base * 100) + '%'; s2.style.background = c; bar.appendChild(s2); } });
+    const nPaid = items.filter((r) => stateOf(r) === 'Pagado').length;
+    const T = totals();
+    set('#cs-note', `${ppto ? Math.round(Math.min(paid, ppto) / ppto * 100) : 0}% pagado · ${nPaid} de ${items.length} ítems listos · ${T.ppto ? (ppto / T.ppto * 100).toLocaleString('es-CL', {maximumFractionDigits: 1}) : 0}% del viaje` + (over > 0 ? ` · ⚠ ${clp(over)} sobre presupuesto` : ''));
+    // quién pagó en esta categoría
+    const who = $('#cs-who'); who.replaceChildren(); const per = new Map();
+    items.forEach((r) => abonos(r).forEach((a) => per.set(a.quien || '—', (per.get(a.quien || '—') || 0) + n(a.monto))));
+    [...per].sort((a, b) => b[1] - a[1]).forEach(([q, v]) => { const m = PAYER[q] || ['👤', 'var(--fly)']; const c = el('span', 'chip-who', `${m[0]} ${q} · ${clp(v)}`); c.style.background = m[1]; who.appendChild(c); });
+    if (!per.size) who.appendChild(el('span', 'muted', 'Todavía no hay pagos registrados en esta categoría.'));
+    // ítems del presupuesto
+    const box = $('#cs-items'); box.replaceChildren();
+    [...items].sort((a, b) => pptoOf(b) - pptoOf(a)).forEach((r) => {
+      const b = el('button', 'cs-item'); b.type = 'button'; b.setAttribute('aria-label', 'Ver pagos de ' + (r.item || 'ítem'));
+      const st = stateOf(r), ov = overOf(r);
+      const top = el('div', 'top'); top.append(el('span', 'nm', r.item || '—'), el('span', 'pill ' + (ov > 0 ? 'over-pill' : st === 'Pagado' ? 'ok' : st === 'Parcial' ? 'part' : 'warn'), ov > 0 ? '⚠ Sobre presupuesto' : st === 'Pagado' ? '✓ Pagado' : st === 'Parcial' ? '◐ Parcial' : '⏳ Por pagar'));
+      const nums = el('div', 'nums'); const kv = (k, v, cls) => { const s2 = el('span', '', k + ' '); s2.appendChild(el('b', cls || '', v)); return s2; };
+      nums.append(kv('Presupuesto', clp(pptoOf(r))), kv('Pagado', clp(paidOf(r))), ov > 0 ? kv('De más', '+' + clp(ov), 'over') : kv('Por pagar', clp(pendOf(r))));
+      b.append(top, nums);
+      if (abonos(r).length) { const abs = el('div', 'abs'); abonos(r).forEach((a) => { const m = PAYER[a.quien] || ['👤', 'var(--fly)']; const c = el('span', 'chip-who', `${m[0]} ${a.quien || '—'} ${clp(n(a.monto))}` + (a.ref && a.nota ? ' · ' + a.nota : '')); c.style.background = m[1]; abs.appendChild(c); }); b.appendChild(abs); }
+      if (r.notas) b.appendChild(el('span', 'muted', '📝 ' + r.notas));
+      b.addEventListener('click', () => openPay(r)); box.appendChild(b);
+    });
+    // detalle de la hoja relacionada
+    const ex = $('#cs-extra'); ex.replaceChildren(); const rel = el('div', 'cs-rel'); let h = '';
+    if (cat === 'Vuelos') {
+      h = '✈️ Los vuelos';
+      [...S.vuelos].sort(byDate('fecha')).forEach((f) => rel.appendChild(relRow((valid(f.fecha) ? fd(f.fecha) + ' · ' : '') + (f.tramo || '—'), (f.estado === 'Comprado' ? '✓ ' : '? ') + (f.estado || '—'), [f.salida && f.llegada ? f.salida + ' → ' + f.llegada : '', f.agencia, f.codigo ? 'Código ' + f.codigo : '', n(f.total_clp) ? clp(n(f.total_clp)) : ''].filter(Boolean).join(' · '), f.estado === 'Comprado' ? 'ok' : 'warn')));
+    } else if (cat === 'Alojamiento') {
+      const hs = [...S.hoteles].sort(byDate('check_in'));
+      h = `🏨 Las estadías · ${hs.reduce((s2, x) => s2 + n(x.noches), 0)} noches`;
+      hs.forEach((x) => rel.appendChild(relRow(x.hotel || '—', n(x.total_clp) ? clp(n(x.total_clp)) : '', [`${fd(x.check_in)} → ${fd(x.check_out)} · ${n(x.noches)} noches`, x.regimen, x.pagado_por ? 'Pagó ' + x.pagado_por : ''].filter(Boolean).join(' · '))));
+    } else if (cat === 'Actividades') {
+      const a = S.actividades; const hechas = a.filter((r) => r.estado === 'Hecho');
+      const estUsd = a.reduce((s2, r) => s2 + n(r.usd_pp) * 2, 0), gast = a.reduce((s2, r) => s2 + spentOf(r._id), 0);
+      h = `🤿 Las actividades · ${hechas.length} de ${a.length} hechas`;
+      ex.appendChild(el('p', 'muted', `Si hicieran todas: USD ${nf.format(estUsd)} ≈ ${clp(estUsd * USD_CLP)} · gastado en actividades hechas: ${clp(gast)}.`));
+      const order = ['Cape Town', 'Tanzania', 'Zanzíbar', 'Praslin', 'La Digue', 'Mahé'];
+      [...a].sort((x, y) => ((order.indexOf(x.destino) + 99) % 99) - ((order.indexOf(y.destino) + 99) % 99)).forEach((r) => {
+        const sp = spentOf(r._id); const est = n(r.usd_pp) * 2;
+        const row = relRow((/must/i.test(r.prioridad) ? '⭐ ' : '') + (r.actividad || '—'), (r.estado === 'Hecho' ? '✓ ' : r.estado === 'Reservado' ? '🎟️ ' : '') + (r.estado || '—'), [r.destino, r.cuando, est ? 'Estimado ' + clp(est * USD_CLP) : 'Gratis', sp ? 'Gastado ' + clp(sp) : ''].filter(Boolean).join(' · '), r.estado === 'Hecho' || r.estado === 'Reservado' ? 'ok' : 'warn');
+        row.style.cursor = 'pointer'; row.setAttribute('role', 'button'); row.tabIndex = 0; row.addEventListener('click', () => openAct(r)); rel.appendChild(row);
+      });
+    } else {
+      const ids = new Set(items.map((r) => r._id)); const ps = S.pendientes.filter((q) => ids.has(q.pago));
+      if (ps.length) { h = '✅ Pendientes ligados'; ps.forEach((q) => rel.appendChild(relRow(q.tarea || '—', q.estado === 'Listo' ? '✓ Listo' : q.estado || 'Pendiente', q.nota || '', q.estado === 'Listo' ? 'ok' : 'warn'))); }
+    }
+    if (h) { ex.prepend(el('h3', '', h)); ex.appendChild(rel); }
+    const tb = $('#cs-tab'); tb.hidden = !meta[1]; if (meta[1]) { tb.textContent = 'Ir a ' + meta[2] + ' →'; tb.dataset.to = meta[1]; }
+  }
+  function openCat(cat) { catName = cat; fillCat(); $('#catsheet').hidden = false; const sh = $('#catsheet .sheet'); if (sh) sh.scrollTop = 0; }
+  function closeCat() { $('#catsheet').hidden = true; catName = null; }
+  $('#cat-close').addEventListener('click', closeCat);
+  $('#catsheet').addEventListener('click', (e) => { if (e.target.id === 'catsheet') closeCat(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && !$('#catsheet').hidden && $('#paysheet').hidden && $('#actsheet').hidden) closeCat(); });
+  $('#cs-filter').addEventListener('click', () => { const c = catName; closeCat(); setFiltro({cat: c}); });
+  $('#cs-tab').addEventListener('click', () => { const to = $('#cs-tab').dataset.to; closeCat(); location.hash = to; });
+  document.addEventListener('click', (e) => { const t = e.target.closest('[data-catd]'); if (t) openCat(t.dataset.catd); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Enter' && e.target.closest && e.target.closest('[data-catd]')) openCat(e.target.closest('[data-catd]').dataset.catd); });
   function renderPend() {
     const p = S.pendientes; const tot = Math.max(p.length, 1);
     const listos = p.filter((r) => r.estado === 'Listo').length, conf = p.filter((r) => r.estado === 'Por confirmar').length;
