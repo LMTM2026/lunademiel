@@ -411,7 +411,7 @@ tr.grp td { background: color-mix(in srgb, var(--sc) 10%, var(--panel)); font-we
   </section>
 
   <section class="page" id="presupuesto" hidden>
-    <div class="eye-row"><button class="eye" type="button" data-eye="pre-tot">▸ Ver montos</button></div>
+    <div class="eye-row"><button class="eye" type="button" data-eye="pre-tot">▸ Ver todos</button></div>
     <div class="kpis">
       <div class="kpi fly" data-f="todo" role="button" tabindex="0"><span class="lbl">📝 Presupuesto</span><span class="v" id="p-ppto">—</span></div>
       <div class="kpi za" data-f="sobre" role="button" tabindex="0"><span class="lbl">🚨 Sobre presupuesto</span><span class="v" id="p-total">—</span></div>
@@ -428,7 +428,7 @@ tr.grp td { background: color-mix(in srgb, var(--sc) 10%, var(--panel)); font-we
       <div class="payers" id="payers"></div>
     </div>
     <div class="card sc">
-      <div class="card-head"><h2>🧾 Todos los ítems</h2><button class="btn add" data-add="pagos" type="button">＋ Agregar gasto</button></div>
+      <div class="card-head"><h2>🧾 Todos los ítems</h2><span style="display:flex;gap:8px;flex-wrap:wrap;margin-left:auto"><button class="eye" type="button" data-eye="pre-tot">▸ Ver todos</button><button class="btn add" data-add="pagos" type="button">＋ Agregar gasto</button></span></div>
       <div class="toolbar" style="justify-content:flex-start">
         <input class="search" id="pay-q" type="search" placeholder="Buscar ítem, categoría o quién pagó" aria-label="Buscar">
         <div class="chips" id="est-chips">
@@ -599,7 +599,7 @@ tr.grp td { background: color-mix(in srgb, var(--sc) 10%, var(--panel)); font-we
   const clpM = (v) => shown() ? '$' + (Math.abs(v) / 1e6).toLocaleString('es-CL', {maximumFractionDigits: 1}) + ' M' : '$ ••• M';
   const usd = (v) => shown() ? 'USD ' + nf.format(v) : 'USD •••';
   const eyeOn = (k) => VER || REVEAL.has(k);
-  const paintEye = (b) => { const on = eyeOn(b.dataset.eye); b.textContent = b.classList.contains('mini') ? (on ? '▾' : '▸ $') : (on ? '▾ Ocultar montos' : '▸ Ver montos'); b.setAttribute('aria-expanded', on ? 'true' : 'false'); b.setAttribute('aria-label', on ? 'Ocultar montos' : 'Ver montos'); };
+  const paintEye = (b) => { const on = eyeOn(b.dataset.eye); b.textContent = b.classList.contains('mini') ? (on ? '▾' : '▸ $') : b.closest('#presupuesto') ? (on ? '▾ Ocultar todos' : '▸ Ver todos') : (on ? '▾ Ocultar montos' : '▸ Ver montos'); b.setAttribute('aria-expanded', on ? 'true' : 'false'); b.setAttribute('aria-label', on ? 'Ocultar montos' : 'Ver montos'); };
   const eyeBtn = (k) => { const b = el('button', 'eye mini'); b.type = 'button'; b.dataset.eye = k; paintEye(b); return b; };
   const date = (s) => new Date(String(s || '').slice(0, 10) + 'T12:00:00');
   const valid = (s) => /^\d{4}-\d{2}-\d{2}/.test(String(s || ''));
@@ -1020,8 +1020,9 @@ tr.grp td { background: color-mix(in srgb, var(--sc) 10%, var(--panel)); font-we
     const rows = S.pagos.filter((r) => enVista(r) && (!UI.est || stateOf(r) === UI.est) && (!UI.q || `${r.item} ${r.categoria} ${abonos(r).map((a) => a.quien).join(' ')}`.toLowerCase().includes(UI.q)))
       .sort((a, b) => num ? (n(val(a, UI.sort)) - n(val(b, UI.sort))) * UI.dir : String(val(a, UI.sort) || '').localeCompare(String(val(b, UI.sort) || ''), 'es') * UI.dir);
     const CAT = {Vuelos: 'var(--fly)', Alojamiento: 'var(--tz)', Transporte: 'var(--za)', Actividades: 'var(--sc)'};
-    rows.forEach((r) => withKey(r._id, () => {
-      const tr = el('tr'); const name = el('td'); const dot = el('span', 'dot'); dot.style.background = CAT[r.categoria] || 'var(--pend)'; name.append(dot, document.createTextNode(r.item || '—'), eyeBtn(r._id));
+    const todos = REVEAL.has('pre-tot');
+    rows.forEach((r) => withKey(todos ? 'pre-tot' : r._id, () => {
+      const tr = el('tr'); const name = el('td'); const dot = el('span', 'dot'); dot.style.background = CAT[r.categoria] || 'var(--pend)'; name.append(dot, document.createTextNode(r.item || '—')); if (!todos) name.appendChild(eyeBtn(r._id));
       const who = [...new Set(abonos(r).map((a) => a.quien))];
       if (who.length) { const w = el('div', 'muted'); w.textContent = 'Pagó: ' + who.map((k) => (PAYER[k] || ['👤'])[0] + ' ' + k).join(' · '); name.appendChild(w); }
       const stt = stateOf(r); const st = el('td');
