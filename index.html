@@ -305,6 +305,7 @@ tr.grp td { background: color-mix(in srgb, var(--sc) 10%, var(--panel)); font-we
 .pend-t { font: inherit; text-align: left; background: none; border: 0; padding: 0; color: inherit; cursor: pointer; line-height: 1.35; }
 .checks li.done .pend-t { text-decoration: line-through; color: var(--muted); }
 .checks li .flag { font-size: 13px; }
+.day-act { display: block; margin-top: 2px; font-weight: 600; }
 .act-name { font: inherit; font-weight: 600; text-align: left; background: none; border: 0; padding: 0; color: inherit; cursor: pointer; text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--ink) 25%, transparent); text-underline-offset: 3px; }
 .hero-row .lock, .hero-row .sync { white-space: nowrap; }
 </style>
@@ -567,7 +568,7 @@ tr.grp td { background: color-mix(in srgb, var(--sc) 10%, var(--panel)); font-we
       <div class="field"><label for="as-quien">Quién pagó</label><select id="as-quien"><option>Tarjeta</option><option>Mario</option><option>Trini</option></select></div>
       <div class="field"><label for="as-monto">Monto CLP</label><input id="as-monto" type="number" step="any" min="0" inputmode="numeric"></div>
       <div class="field"><label for="as-item">Se suma a</label><select id="as-item"></select></div>
-      <div class="field"><label for="as-fecha">Fecha</label><input id="as-fecha" type="date"></div>
+      <div class="field"><label for="as-fecha">Día</label><input id="as-fecha" type="date"></div>
     </div>
     <div class="sheet-actions">
       <button class="btn ghost" type="button" id="as-undo">Desmarcar</button>
@@ -888,9 +889,13 @@ tr.grp td { background: color-mix(in srgb, var(--sc) 10%, var(--panel)); font-we
     const body = el('div', 'body'); const top = el('div', 'row'); const h = el('h3', 'grow', d.destino || 'Sin destino');
     top.append(h, el('span', 'tag', d.tipo || '—')); if (today) top.appendChild(el('span', 'tag hoy', '📍 Hoy')); top.appendChild(editBtn('itinerario', d));
     body.appendChild(top);
-    const ag = agenda(d.fecha); if (ag.length) body.appendChild(agendaList(ag));
+    const ag = agenda(d.fecha).filter((x) => x.kind !== 'act'); if (ag.length) body.appendChild(agendaList(ag));
     const dl = el('dl', 'kv');
-    [['☀️ Mañana', d.am], ['🌅 Tarde', d.pm], ['🛏️ Noche', d.alojamiento], ['🚙 Transporte', d.transporte], ['📝 Notas', d.notas]].forEach(([k, v]) => { if (v) dl.append(el('dt', '', k), el('dd', '', v)); });
+    const acts = (fr) => S.actividades.filter((a) => valid(a.fecha) && a.fecha === d.fecha && (a.franja || 'Todo el día') === fr);
+    const row = (k, txt, fr) => { const list = fr ? acts(fr) : []; if (!txt && !list.length) return; const dd = el('dd'); if (txt) dd.appendChild(el('div', '', txt));
+      list.forEach((a) => { const b = el('button', 'act-name day-act', '🎟️ ' + (a.actividad || 'Actividad')); b.type = 'button'; b.addEventListener('click', () => openInfo(a)); dd.appendChild(b); }); dl.append(el('dt', '', k), dd); };
+    row('🗓️ Todo el día', '', 'Todo el día'); row('☀️ Mañana', d.am, 'Mañana'); row('🌅 Tarde', d.pm, 'Tarde'); row('🌙 Noche', '', 'Noche');
+    row('🛏️ Alojamiento', d.alojamiento); row('🚙 Transporte', d.transporte); row('📝 Notas', d.notas);
     if (dl.children.length) body.appendChild(dl);
     const base = baseOfDay(d);
     if (base && db) { const ad = el('button', 'day-add', '＋ Actividad'); ad.type = 'button'; ad.addEventListener('click', () => { UI.base = base; location.hash = 'actividades'; }); body.appendChild(ad); }
@@ -1138,7 +1143,7 @@ tr.grp td { background: color-mix(in srgb, var(--sc) 10%, var(--panel)); font-we
   function openAct(r) {
     if (!db) return; actId = r._id; $('#as-item').value = '';
     $('#as-monto').value = r.estado === 'Hecho' || !eyeOn('act:' + r._id) ? '' : (Math.round(n(r.usd_pp) * 2 * USD_CLP) || '');
-    $('#as-fecha').value = todayISO(); undoArmed = false; $('#as-undo').textContent = 'Desmarcar';
+    $('#as-fecha').value = valid(r.fecha) ? r.fecha : todayISO(); undoArmed = false; $('#as-undo').textContent = 'Desmarcar';
     $('#act-form').querySelectorAll('.form, .sheet-actions').forEach((x) => { x.hidden = !canWrite; });
     fillAct(); $('#actsheet').hidden = false;
   }
@@ -1157,7 +1162,9 @@ tr.grp td { background: color-mix(in srgb, var(--sc) 10%, var(--panel)); font-we
         const p = S.pagos.find((q) => q._id === itemId);
         await db.collection('pagos').doc(itemId).update({abonos: [...abonos(p), {quien: $('#as-quien').value, monto, fecha: $('#as-fecha').value || todayISO(), nota: r.actividad || '', ref: 'act:' + r._id}]});
       }
-      if (r.estado !== 'Hecho') await db.collection('actividades').doc(r._id).update({estado: 'Hecho'});
+      const dia = $('#as-fecha').value; const enViaje = S.itinerario.some((x) => x.fecha === dia);
+      const upd = {}; if (r.estado !== 'Hecho') upd.estado = 'Hecho'; if (enViaje && dia !== r.fecha) { upd.fecha = dia; upd.franja = r.franja || 'Mañana'; }
+      if (Object.keys(upd).length) await db.collection('actividades').doc(r._id).update(upd);
       toast(monto > 0 ? 'Pago registrado ✓' : 'Marcada como hecha ✓'); $('#as-monto').value = '';
     } catch (err) { writeErr(err); }
   });
@@ -1192,7 +1199,7 @@ tr.grp td { background: color-mix(in srgb, var(--sc) 10%, var(--panel)); font-we
       const b = el('button', 'pill ' + (done ? 'ok' : 'warn'), (r.estado === 'Hecho' ? '✓ ' : r.estado === 'Reservado' ? '🎟️ ' : '') + (r.estado || '—')); b.type = 'button';
       b.addEventListener('click', () => r.estado === 'Hecho' ? openAct(r) : quick('actividades', r, {estado: ACT_NEXT[r.estado] || 'Reservado'})); st.appendChild(b);
       const ed = el('td', 'hide-narrow'); ed.appendChild(editBtn('actividades', r));
-      const ck = el('td'); const hecha = r.estado === 'Hecho'; const cb = el('button', 'box ' + (hecha ? 'ok' : ''), hecha ? '✓' : ''); cb.type = 'button'; cb.setAttribute('aria-label', (hecha ? 'Ver pagos de ' : 'Marcar como hecha: ') + (r.actividad || 'actividad')); cb.addEventListener('click', () => openAct(r)); ck.appendChild(cb);
+      const ck = el('td'); const hecha = r.estado === 'Hecho'; const cb = el('button', 'box ' + (hecha ? 'ok' : ''), hecha ? '✓' : ''); cb.type = 'button'; cb.setAttribute('aria-label', (hecha ? 'Ver pagos de ' : 'Planificar: ') + (r.actividad || 'actividad')); cb.addEventListener('click', () => hecha ? openAct(r) : openInfo(r)); ck.appendChild(cb);
       const sp = spentOf(r._id);
       tr.append(ck, name, el('td', 'hide-narrow', r.destino || ''), el('td', 'hide-narrow', valid(r.fecha) ? '📅 ' + fd(r.fecha) : (r.cuando || '')), el('td', 'num money', n(r.usd_pp) ? clp(n(r.usd_pp) * 2 * USD_CLP) : 'Gratis'), el('td', 'num money hide-narrow', sp ? clp(sp) : '—'), st, ed);
       body.appendChild(tr);
@@ -1294,7 +1301,7 @@ tr.grp td { background: color-mix(in srgb, var(--sc) 10%, var(--panel)); font-we
       const row = el('div', 'in-plan-row'); const sd = el('select'); sd.setAttribute('aria-label', 'Día del itinerario'); sd.appendChild(new Option('Sin fecha todavía', ''));
       [...S.itinerario].filter((x) => valid(x.fecha)).sort(byDate('fecha')).forEach((x) => sd.appendChild(new Option(`${fdl(x.fecha)} · ${x.destino || ''}`, x.fecha)));
       sd.value = valid(r.fecha) ? r.fecha : '';
-      const sf = el('select'); sf.setAttribute('aria-label', 'Momento del día'); ['Todo el día', 'Mañana', 'Tarde', 'Noche'].forEach((f) => sf.appendChild(new Option(f, f))); sf.value = r.franja || 'Todo el día';
+      const sf = el('select'); sf.setAttribute('aria-label', 'Momento del día'); ['Mañana', 'Tarde', 'Noche', 'Todo el día'].forEach((f) => sf.appendChild(new Option(f, f))); sf.value = r.franja || 'Mañana';
       sd.disabled = !canWrite; sf.disabled = !canWrite || !sd.value;
       sd.addEventListener('change', () => quick('actividades', r, {fecha: sd.value, franja: sd.value ? sf.value : ''}));
       sf.addEventListener('change', () => quick('actividades', r, {franja: sf.value}));
