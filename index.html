@@ -680,7 +680,7 @@ tr.grp td { background: color-mix(in srgb, var(--sc) 10%, var(--panel)); font-we
     hoteles: {name: 'hotel', fields: [['hotel', 'Hotel', 'text', 'wide'], ['zona', 'Zona'], ['pais', 'País', PAISES], ['check_in', 'Check-in', 'date'], ['check_out', 'Check-out', 'date'], ['noches', 'Noches', 'number'], ['total_clp', 'Total CLP', 'number'], ['monto_original', 'Monto en moneda original'], ['regimen', 'Régimen'], ['pagado_por', 'Pagado por'], ['notas', 'Notas / confirmación', 'area']]},
     pagos: {name: 'gasto', fields: [['item', 'Ítem', 'text', 'wide'], ['categoria', 'Categoría', ['Vuelos', 'Alojamiento', 'Transporte', 'Actividades', 'Comidas', 'Compras', 'Visas y trámites', 'Salud', 'Seguros', 'Roaming', 'Propinas', 'Imprevistos', 'Gastos en viaje']], ['presupuesto_clp', 'Presupuesto CLP', 'number'], ['notas', 'Notas', 'area']]},
     actividades: {name: 'actividad', fields: [['actividad', 'Actividad', 'text', 'wide'], ['destino', 'Destino'], ['cuando', 'Cuándo'], ['usd_pp', 'USD por persona', 'number'], ['prioridad', 'Prioridad', ['', 'Must do']], ['estado', 'Estado', ['Por reservar', 'Reservado', 'Hecho', 'Por confirmar', 'Libre']], ['fecha', 'Día en el itinerario', 'date'], ['franja', 'Momento del día', ['', 'Todo el día', 'Mañana', 'Tarde', 'Noche']], ['base', 'Estadía', ['', 'Cape Town', 'Arusha', 'Safari', 'Nungwi', 'Jambiani', 'Praslin', 'Mahé']], ['notas', 'Duración y datos', 'area'], ['descripcion', 'Qué es', 'area'], ['como', 'Cómo hacerlo', 'area'], ['tips', 'Tips', 'area']]},
-    pendientes: {name: 'pendiente', fields: [['tarea', 'Tarea', 'text', 'wide'], ['categoria', 'Categoría', ['Documentos', 'Salud', 'Reservas', 'Imprimir', 'Antes de viajar', 'Durante el viaje']], ['estado', 'Estado', ['Pendiente', 'Por confirmar', 'Listo']], ['pago', 'Gasto del presupuesto (si tiene costo)', 'pagosref'], ['nota', 'Nota', 'area']]},
+    pendientes: {name: 'pendiente', fields: [['tarea', 'Tarea', 'text', 'wide'], ['categoria', 'Categoría', ['Documentos', 'Salud', 'Reservas', 'Imprimir', 'Antes de viajar', 'Durante el viaje']], ['estado', 'Estado', ['Pendiente', 'Por confirmar', 'Listo']], ['costo', 'Precio aprox. (CLP)', 'number'], ['pago', 'Gasto del presupuesto (si tiene costo)', 'pagosref'], ['nota', 'Nota', 'area']]},
     tips: {name: 'tip', fields: [['seccion', 'Sección'], ['tema', 'Tema'], ['texto', 'Texto', 'area']]},
     config: {name: 'fondos', fields: [['propio', 'Fondos propios CLP', 'number'], ['regalos', 'Regalos CLP', 'number']]},
   };
@@ -1334,7 +1334,7 @@ tr.grp td { background: color-mix(in srgb, var(--sc) 10%, var(--panel)); font-we
   /* ---------- ficha de un pendiente ---------- */
   var pendId = null;
   const pendRow = () => S.pendientes.find((r) => r._id === pendId);
-  function fillPend() { const r = pendRow(); withKey(r && r.pago ? r.pago : null, fillPend_); }
+  function fillPend() { const r = pendRow(); withKey(r && r.pago ? r.pago : 'pend:' + pendId, fillPend_); }
   function fillPend_() {
     const r = pendRow(); if (!r) { closePend(); return; }
     const item = r.pago ? S.pagos.find((q) => q._id === r.pago) : null;
@@ -1343,6 +1343,7 @@ tr.grp td { background: color-mix(in srgb, var(--sc) 10%, var(--panel)); font-we
     [['📂', r.categoria], [r.estado === 'Listo' ? '✓' : r.estado === 'Por confirmar' ? '?' : '•', r.estado || 'Pendiente']].forEach(([e, t]) => { if (t) tags.appendChild(el('span', 'tag', e + ' ' + t)); });
     const b = $('#pd-body'); b.replaceChildren();
     if (r.nota) { const d = el('div'); d.append(el('h3', '', '📝 Detalle'), el('p', '', r.nota)); b.appendChild(d); }
+    if (n(r.costo)) { const d = el('div', 'in-price'); d.appendChild(el('b', '', '💵 Precio aprox.: ' + clp(n(r.costo)))); d.appendChild(eyeBtn(r.pago || 'pend:' + r._id)); b.appendChild(d); }
     if (item) {
       const stt = stateOf(item); const d = el('div', 'in-price');
       d.appendChild(el('b', '', `💸 ${item.item || 'Gasto'}: ` + (stt === 'Pagado' ? 'pagado ' + clp(paidOf(item)) : stt === 'Parcial' ? clp(paidOf(item)) + ' pagado de ' + clp(pptoOf(item)) : clp(pptoOf(item)) + ' por pagar')));
@@ -1392,7 +1393,7 @@ tr.grp td { background: color-mix(in srgb, var(--sc) 10%, var(--panel)); font-we
         box2.setAttribute('aria-label', item ? 'Registrar pago de ' + (r.tarea || 'este pendiente') : (r.estado === 'Listo' ? 'Marcar como pendiente' : 'Marcar como listo'));
         box2.addEventListener('click', () => item ? openPay(item) : quick('pendientes', r, {estado: r.estado === 'Listo' ? 'Pendiente' : 'Listo'}));
         const tb = el('button', 'pend-t', r.tarea || '—'); tb.type = 'button'; tb.setAttribute('aria-label', 'Ver detalle: ' + (r.tarea || 'pendiente')); tb.addEventListener('click', () => openPend(r));
-        li.append(box2, tb, el('span', 'flag', item ? (stateOf(item) === 'Pagado' ? '✓💸' : '💸') : (r.nota ? 'ⓘ' : '')));
+        li.append(box2, tb, el('span', 'flag', item ? (stateOf(item) === 'Pagado' ? '✓💸' : '💸') : n(r.costo) ? '💵' : (r.nota ? 'ⓘ' : '')));
         ul.appendChild(li);
       });
       card.appendChild(ul); box.appendChild(card);
